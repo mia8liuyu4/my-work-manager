@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>餐廳抽籤機器</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background: #f9f9f9; }
+    h1 { color: #2c3e50; }
+    .section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    button { margin-top: 10px; padding: 8px 12px; border: none; border-radius: 5px; background: #3498db; color: #fff; cursor: pointer; }
+    button:hover { background: #2980b9; }
+    input, select { margin-top: 5px; padding: 5px; }
+    select[multiple] { height: 120px; }
+    .result { margin-top: 15px; font-size: 1.2em; color: #27ae60; }
+    .error { color: red; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h1>🎲 餐廳抽籤機器</h1>
+
+  <!-- 抽籤區 -->
+  <div class="section">
+    <button onclick="drawRestaurant()">抽籤</button>
+    <div id="result" class="result"></div>
+  </div>
+
+  <!-- 餐廳清單 -->
+  <div class="section">
+    <h2>📋 餐廳清單</h2>
+    <ul id="restaurantList"></ul>
+  </div>
+
+  <!-- 新增餐廳 -->
+  <div class="section">
+    <h2>➕ 新增餐廳</h2>
+    <label>餐廳名稱：<input type="text" id="name"></label><br>
+    <label>公休日 (可多選，留空=全年無休)：<br>
+      <select id="closed" multiple>
+        <option value="Monday">星期一</option>
+        <option value="Tuesday">星期二</option>
+        <option value="Wednesday">星期三</option>
+        <option value="Thursday">星期四</option>
+        <option value="Friday">星期五</option>
+        <option value="Saturday">星期六</option>
+        <option value="Sunday">星期日</option>
+      </select>
+    </label><br>
+    <label>餐廳特色：<input type="text" id="info"></label><br>
+    <button onclick="addRestaurant()">新增</button>
+  </div>
+
+  <!-- 編修餐廳 -->
+  <div class="section">
+    <h2>✏️ 編修餐廳</h2>
+    <label>選擇餐廳：
+      <select id="editSelect"></select>
+    </label><br>
+    <label>新名稱：<input type="text" id="editName"></label><br>
+    <label>新公休日 (可多選，留空=全年無休)：<br>
+      <select id="editClosed" multiple>
+        <option value="Monday">星期一</option>
+        <option value="Tuesday">星期二</option>
+        <option value="Wednesday">星期三</option>
+        <option value="Thursday">星期四</option>
+        <option value="Friday">星期五</option>
+        <option value="Saturday">星期六</option>
+        <option value="Sunday">星期日</option>
+      </select>
+    </label><br>
+    <label>新特色：<input type="text" id="editInfo"></label><br>
+    <button onclick="updateRestaurant()">更新</button>
+    <button onclick="deleteRestaurant()">刪除</button>
+  </div>
+
+  <script>
+    // 從 localStorage 載入資料
+    let restaurants = JSON.parse(localStorage.getItem("restaurants")) || [
+
+    ];
+
+    // 儲存到 localStorage
+    function saveData() {
+      localStorage.setItem("restaurants", JSON.stringify(restaurants));
+    }
+
+    // 抽籤功能
+    function drawRestaurant() {
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+      const available = restaurants.filter(r => !r.closed.includes(today));
+      const resultDiv = document.getElementById("result");
+
+      if (available.length > 0) {
+        const choice = available[Math.floor(Math.random() * available.length)];
+        resultDiv.innerHTML = `今天推薦：<b>${choice.name}</b> - ${choice.info}`;
+        resultDiv.className = "result";
+      } else {
+        resultDiv.innerHTML = "今天所有餐廳都公休 😅";
+        resultDiv.className = "error";
+      }
+    }
+
+    // 顯示清單
+    function refreshList() {
+      const list = document.getElementById("restaurantList");
+      const select = document.getElementById("editSelect");
+      list.innerHTML = "";
+      select.innerHTML = "";
+
+      restaurants.forEach((r, i) => {
+        const closedText = r.closed.length ? r.closed.join(", ") : "全年無休";
+        const li = document.createElement("li");
+        li.textContent = `${i+1}. ${r.name} (公休: ${closedText}) - ${r.info}`;
+        list.appendChild(li);
+
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = r.name;
+        select.appendChild(opt);
+      });
+    }
+
+    // 新增餐廳
+    function addRestaurant() {
+      const name = document.getElementById("name").value.trim();
+      const closedSelect = document.getElementById("closed");
+      const info = document.getElementById("info").value.trim();
+
+      if (!name) { alert("請輸入餐廳名稱！"); return; }
+
+      const closedDays = Array.from(closedSelect.selectedOptions).map(opt => opt.value);
+      restaurants.push({ name, closed: closedDays, info });
+      saveData();
+      alert(`已新增餐廳：${name}`);
+      refreshList();
+    }
+
+    // 更新餐廳
+    function updateRestaurant() {
+      const idx = document.getElementById("editSelect").value;
+      if (idx === "") return;
+
+      const r = restaurants[idx];
+      const newName = document.getElementById("editName").value.trim();
+      const newClosedSelect = document.getElementById("editClosed");
+      const newInfo = document.getElementById("editInfo").value.trim();
+
+      if (newName) r.name = newName;
+      const closedDays = Array.from(newClosedSelect.selectedOptions).map(opt => opt.value);
+      r.closed = closedDays;
+      if (newInfo) r.info = newInfo;
+
+      saveData();
+      alert("餐廳已更新！");
+      refreshList();
+    }
+
+    // 刪除餐廳
+    function deleteRestaurant() {
+      const idx = document.getElementById("editSelect").value;
+      if (idx === "") return;
+
+      const deleted = restaurants.splice(idx, 1);
+      saveData();
+      alert(`已刪除餐廳：${deleted[0].name}`);
+      refreshList();
+    }
+
+    // 初始化
+    refreshList();
+  </script>
+</body>
+</html>
