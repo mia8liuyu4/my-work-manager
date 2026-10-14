@@ -1,174 +1,40 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-  <meta charset="UTF-8">
-  <title>餐廳抽籤機器</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 30px; background: #f9f9f9; }
-    h1 { color: #2c3e50; }
-    .section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    button { margin-top: 10px; padding: 8px 12px; border: none; border-radius: 5px; background: #3498db; color: #fff; cursor: pointer; }
-    button:hover { background: #2980b9; }
-    input, select { margin-top: 5px; padding: 5px; }
-    select[multiple] { height: 120px; }
-    .result { margin-top: 15px; font-size: 1.2em; color: #27ae60; }
-    .error { color: red; }
-    ul { list-style: none; padding: 0; }
-    li { margin: 5px 0; }
-  </style>
-</head>
-<body>
-  <h1>🎲 餐廳抽籤機器</h1>
-
-  <!-- 抽籤區 -->
-  <div class="section">
-    <button onclick="drawRestaurant()">抽籤</button>
-    <div id="result" class="result"></div>
-  </div>
-
-  <!-- 餐廳清單 -->
-  <div class="section">
-    <h2>📋 餐廳清單</h2>
-    <ul id="restaurantList"></ul>
-  </div>
-
-  <!-- 新增餐廳 -->
-  <div class="section">
-    <h2>➕ 新增餐廳</h2>
-    <label>餐廳名稱：<input type="text" id="name"></label><br>
-    <label>公休日 (可多選，留空=全年無休)：<br>
-      <select id="closed" multiple>
-        <option value="Monday">星期一</option>
-        <option value="Tuesday">星期二</option>
-        <option value="Wednesday">星期三</option>
-        <option value="Thursday">星期四</option>
-        <option value="Friday">星期五</option>
-        <option value="Saturday">星期六</option>
-        <option value="Sunday">星期日</option>
-      </select>
-    </label><br>
-    <label>餐廳特色：<input type="text" id="info"></label><br>
-    <button onclick="addRestaurant()">新增</button>
-  </div>
-
-  <!-- 編修餐廳 -->
-  <div class="section">
-    <h2>✏️ 編修餐廳</h2>
-    <label>選擇餐廳：
-      <select id="editSelect"></select>
-    </label><br>
-    <label>新名稱：<input type="text" id="editName"></label><br>
-    <label>新公休日 (可多選，留空=全年無休)：<br>
-      <select id="editClosed" multiple>
-        <option value="Monday">星期一</option>
-        <option value="Tuesday">星期二</option>
-        <option value="Wednesday">星期三</option>
-        <option value="Thursday">星期四</option>
-        <option value="Friday">星期五</option>
-        <option value="Saturday">星期六</option>
-        <option value="Sunday">星期日</option>
-      </select>
-    </label><br>
-    <label>新特色：<input type="text" id="editInfo"></label><br>
-    <button onclick="updateRestaurant()">更新</button>
-    <button onclick="deleteRestaurant()">刪除</button>
-  </div>
-
-  <script>
-    // 從 localStorage 載入資料
-    let restaurants = JSON.parse(localStorage.getItem("restaurants")) || [
-
-    ];
-
-    // 儲存到 localStorage
-    function saveData() {
-      localStorage.setItem("restaurants", JSON.stringify(restaurants));
-    }
-
-    // 抽籤功能
-    function drawRestaurant() {
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-      const available = restaurants.filter(r => !r.closed.includes(today));
-      const resultDiv = document.getElementById("result");
-
-      if (available.length > 0) {
-        const choice = available[Math.floor(Math.random() * available.length)];
-        resultDiv.innerHTML = `今天推薦：<b>${choice.name}</b> - ${choice.info}`;
-        resultDiv.className = "result";
-      } else {
-        resultDiv.innerHTML = "今天所有餐廳都公休 😅";
-        resultDiv.className = "error";
-      }
-    }
-
-    // 顯示清單
-    function refreshList() {
-      const list = document.getElementById("restaurantList");
-      const select = document.getElementById("editSelect");
-      list.innerHTML = "";
-      select.innerHTML = "";
-
-      restaurants.forEach((r, i) => {
-        const closedText = r.closed.length ? r.closed.join(", ") : "全年無休";
-        const li = document.createElement("li");
-        li.textContent = `${i+1}. ${r.name} (公休: ${closedText}) - ${r.info}`;
-        list.appendChild(li);
-
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = r.name;
-        select.appendChild(opt);
-      });
-    }
-
-    // 新增餐廳
-    function addRestaurant() {
-      const name = document.getElementById("name").value.trim();
-      const closedSelect = document.getElementById("closed");
-      const info = document.getElementById("info").value.trim();
-
-      if (!name) { alert("請輸入餐廳名稱！"); return; }
-
-      const closedDays = Array.from(closedSelect.selectedOptions).map(opt => opt.value);
-      restaurants.push({ name, closed: closedDays, info });
-      saveData();
-      alert(`已新增餐廳：${name}`);
-      refreshList();
-    }
-
-    // 更新餐廳
-    function updateRestaurant() {
-      const idx = document.getElementById("editSelect").value;
-      if (idx === "") return;
-
-      const r = restaurants[idx];
-      const newName = document.getElementById("editName").value.trim();
-      const newClosedSelect = document.getElementById("editClosed");
-      const newInfo = document.getElementById("editInfo").value.trim();
-
-      if (newName) r.name = newName;
-      const closedDays = Array.from(newClosedSelect.selectedOptions).map(opt => opt.value);
-      r.closed = closedDays;
-      if (newInfo) r.info = newInfo;
-
-      saveData();
-      alert("餐廳已更新！");
-      refreshList();
-    }
-
-    // 刪除餐廳
-    function deleteRestaurant() {
-      const idx = document.getElementById("editSelect").value;
-      if (idx === "") return;
-
-      const deleted = restaurants.splice(idx, 1);
-      saveData();
-      alert(`已刪除餐廳：${deleted[0].name}`);
-      refreshList();
-    }
-
-    // 初始化
-    refreshList();
-  </script>
-</body>
-</html>
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>餐廳抽籤機器</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#243448;font-family:"Microsoft JhengHei",sans-serif}main{max-width:850px;margin:auto;padding:24px 16px}h1{font-size:26px;margin-bottom:8px}p{line-height:1.6}.muted{color:#65748a;font-size:14px}.tabs{display:flex;gap:10px;margin:24px 0}button,input{font:inherit}button{cursor:pointer;border:1px solid #cbd5e1;border-radius:10px;background:white;padding:11px 16px;min-height:44px;color:inherit}button.primary,.tabs button[aria-selected=true]{background:#2563eb;color:white;border-color:#2563eb}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}.tabs button{flex:1}.card{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:16px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.between{justify-content:space-between}h2{font-size:19px;margin:0 0 16px}.draw{width:100%;font-size:20px;padding:16px}.result{margin-top:16px;font-size:20px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}label.field{display:block;margin-bottom:16px}input[type=text]{display:block;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;margin-top:6px}fieldset{border:0;padding:0;margin:0 0 18px}legend{margin-bottom:10px}.days{display:flex;gap:8px;flex-wrap:wrap}.days label{border:1px solid #cbd5e1;padding:10px;border-radius:9px}.item{padding:16px 0;border-top:1px solid #e2e8f0}.item strong{font-size:18px;overflow-wrap:anywhere}.item p{margin:7px 0;overflow-wrap:anywhere}.danger{color:#b42318}.notice{background:#fff6da}.hidden{display:none}#status{min-height:24px;color:#275f42;margin:10px 0}summary{cursor:pointer;padding:5px 0}small{display:block;margin-top:8px;color:#65748a}@media(max-width:480px){main{padding:16px 12px}.card{padding:16px}h1{font-size:23px}}
+</style></head><body><main>
+<h1>餐廳抽籤機器</h1><p class="muted">公司午餐、家裡外食，分開管理，輕鬆決定今天吃什麼。</p>
+<div class="tabs" role="tablist" aria-label="餐廳地點"><button id="companyTab" role="tab" aria-selected="true" aria-controls="content">公司</button><button id="homeTab" role="tab" aria-selected="false" aria-controls="content">家裡</button></div>
+<div id="status" role="status" aria-live="polite"></div>
+<section id="migration" class="card notice hidden"><h2>找到舊版餐廳清單</h2><p>請選擇舊資料要放在哪個分頁。原始資料會保留。</p><div class="row"><button id="migrateCompany">匯入公司</button><button id="migrateHome">匯入家裡</button></div></section>
+<div id="content" role="tabpanel" aria-labelledby="companyTab">
+<section class="card"><h2 id="drawTitle">公司 · 今天吃什麼？</h2><p id="count" class="muted"></p><button id="draw" class="primary draw">幫我選一家</button><div id="result" class="result" role="status" aria-live="polite"></div><small>依裝置當天日期排除公休；實際營業時間請另行確認。</small></section>
+<section class="card"><div class="row between"><h2 id="listTitle">公司餐廳</h2><button id="newRestaurant" class="primary">＋ 新增餐廳</button></div><div id="list"></div></section>
+<section id="editor" class="card hidden"><h2 id="editorTitle">新增餐廳</h2><form id="form"><label class="field">餐廳名稱<input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當"></label><label class="field">特色／備註<input id="info" type="text" maxlength="500" placeholder="例如：步行 5 分鐘、素食可選"></label><fieldset><legend>固定公休日（未勾選表示無固定公休）</legend><div id="days" class="days"></div></fieldset><div class="row"><button type="submit" class="primary">儲存</button><button type="button" id="cancel">取消</button></div></form></section>
+</div>
+<section class="card"><details><summary>資料備份與還原</summary><p class="muted">資料只保存在目前瀏覽器。換裝置前請先匯出；還原會取代公司及家裡的清單。</p><div class="row"><button id="export">匯出備份</button><button id="import">匯入備份</button><input type="file" id="file" accept=".json,application/json" hidden></div></details></section>
+<p class="muted">公司與家裡的清單分開儲存。清除瀏覽器資料可能刪除清單，請定期備份。</p>
+</main><script>
+'use strict';
+const KEY='restaurant-picker-v2',days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],dayLabels=['日','一','二','三','四','五','六'];
+const $=id=>document.getElementById(id);let active='company',editId=null,legacy=[],data={version:2,company:[],home:[],legacyImported:false},storageOK=true;
+const id=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);
+function validateList(list){if(!Array.isArray(list))throw Error('餐廳清單格式錯誤');return list.map(r=>{if(!r||typeof r.name!=='string'||!r.name.trim()||!Array.isArray(r.closed)||r.closed.some(d=>!days.includes(d))||(r.info!==undefined&&typeof r.info!=='string'))throw Error('餐廳資料格式錯誤');return {id:id(),name:r.name.trim().slice(0,100),info:(r.info||'').slice(0,500),closed:[...new Set(r.closed)]}})}
+try{const saved=localStorage.getItem(KEY);if(saved){const parsed=JSON.parse(saved);if(parsed.version!==2)throw Error('版本不符');data={version:2,company:validateList(parsed.company),home:validateList(parsed.home),legacyImported:!!parsed.legacyImported}}const old=localStorage.getItem('restaurants');if(old&&!data.legacyImported)legacy=validateList(JSON.parse(old));}catch(e){storageOK=false;message('資料讀取失敗，未覆寫原始資料。請先確認瀏覽器儲存或備份。')}
+function message(text){$('status').textContent=text}
+function commit(next){if(!storageOK){message('目前無法安全儲存，請先匯出備份並檢查瀏覽器。');return false}try{localStorage.setItem(KEY,JSON.stringify(next));data=next;return true}catch(e){message('儲存失敗：空間不足或瀏覽器限制，請先匯出備份。');return false}}
+function today(){return days[new Date().getDay()]}
+function render(){const label=active==='company'?'公司':'家裡';$('companyTab').setAttribute('aria-selected',active==='company');$('homeTab').setAttribute('aria-selected',active==='home');$('content').setAttribute('aria-labelledby',active+'Tab');$('drawTitle').textContent=label+' · 今天吃什麼？';$('listTitle').textContent=label+'餐廳';const list=data[active],available=list.filter(r=>!r.closed.includes(today()));$('count').textContent=`星期${dayLabels[new Date().getDay()]} · 共 ${list.length} 家，今天可抽 ${available.length} 家`;$('draw').disabled=!available.length;$('list').replaceChildren();if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='還沒有餐廳，點「＋ 新增餐廳」建立清單。';$('list').append(p)}list.forEach(r=>{const div=document.createElement('div');div.className='item';const name=document.createElement('strong');name.textContent=r.name;const note=document.createElement('p');note.textContent=r.info||'未填寫備註';const closed=document.createElement('p');closed.className='muted';closed.textContent=(r.closed.includes(today())?'今天公休 · ':'')+(r.closed.length?'公休：'+r.closed.map(d=>'星期'+dayLabels[days.indexOf(d)]).join('、'):'無固定公休');const row=document.createElement('div');row.className='row';const edit=document.createElement('button');edit.textContent='編輯';edit.onclick=()=>openEditor(r);const del=document.createElement('button');del.textContent='刪除';del.className='danger';del.onclick=()=>{if(confirm('確定刪除「'+r.name+'」？')){const next={...data,[active]:data[active].filter(x=>x.id!==r.id)};if(commit(next)){if(editId===r.id)closeEditor();$('result').textContent='';render();message('已刪除 '+r.name)}}};row.append(edit,del);div.append(name,note,closed,row);$('list').append(div)});$('migration').classList.toggle('hidden',!legacy.length||data.legacyImported)}
+for(let n=1;n<=7;n++){const i=n%7,label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.name='closed';input.value=days[i];label.append(input,document.createTextNode(' 星期'+dayLabels[i]));$('days').append(label)}
+function closeEditor(){$('editor').classList.add('hidden');$('form').reset();editId=null}
+function openEditor(r=null){editId=r?.id||null;$('form').reset();$('name').value=r?.name||'';$('info').value=r?.info||'';document.querySelectorAll('[name=closed]').forEach(c=>c.checked=!!r?.closed.includes(c.value));$('editorTitle').textContent=(active==='company'?'公司':'家裡')+' · '+(r?'編輯餐廳':'新增餐廳');$('editor').classList.remove('hidden');$('name').focus();$('editor').scrollIntoView({behavior:'smooth',block:'nearest'})}
+function switchTab(place){active=place;closeEditor();$('result').textContent='';message('');render()}
+$('companyTab').onclick=()=>switchTab('company');$('homeTab').onclick=()=>switchTab('home');document.querySelectorAll('[role=tab]').forEach(b=>b.onkeydown=e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();switchTab(active==='company'?'home':'company');$(active+'Tab').focus()}});
+$('newRestaurant').onclick=()=>openEditor();$('cancel').onclick=closeEditor;
+$('form').onsubmit=e=>{e.preventDefault();const name=$('name').value.trim();if(!name){$('name').focus();return}if(data[active].some(r=>r.name===name&&r.id!==editId)){message('此分頁已有同名餐廳，請修改名稱。');return}const r={id:editId||id(),name,info:$('info').value.trim(),closed:Array.from(document.querySelectorAll('[name=closed]:checked'),c=>c.value)};const next={...data,[active]:editId?data[active].map(x=>x.id===editId?r:x):[...data[active],r]};if(commit(next)){closeEditor();$('result').textContent='';render();message('已儲存 '+name)}};
+$('draw').onclick=()=>{render();const available=data[active].filter(r=>!r.closed.includes(today()));if(!available.length){$('result').textContent=data[active].length?'今天清單內餐廳都公休。':'請先新增餐廳。';return}const r=available[Math.floor(Math.random()*available.length)];$('result').textContent='今天推薦：'+r.name+(r.info?'\n'+r.info:'')};
+function migrate(place){const next={...data,[place]:[...data[place],...legacy],legacyImported:true};if(commit(next)){switchTab(place);message('舊版清單已匯入，原始資料仍保留。')}}$('migrateCompany').onclick=()=>migrate('company');$('migrateHome').onclick=()=>migrate('home');
+$('export').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='餐廳清單備份-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('已匯出公司與家裡的清單。')};
+$('import').onclick=()=>$('file').click();$('file').onchange=async()=>{const file=$('file').files[0];if(!file)return;try{if(file.size>5000000)throw Error('備份檔過大');const parsed=JSON.parse(await file.text());if(parsed.version!==2)throw Error('請使用新版匯出的備份檔');const next={version:2,company:validateList(parsed.company),home:validateList(parsed.home),legacyImported:true};if(confirm(`將取代目前清單：公司 ${next.company.length} 家、家裡 ${next.home.length} 家。建議先匯出目前資料，確定還原？`)){if(commit(next)){closeEditor();$('result').textContent='';render();message('備份還原完成。')}}}catch(e){message('匯入失敗：'+e.message)}finally{$('file').value=''}};
+render();
+</script></body></html>
