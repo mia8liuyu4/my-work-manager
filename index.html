@@ -1,20 +1,435 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>餐廳抽籤機器</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#243448;font-family:"Microsoft JhengHei",sans-serif}main{max-width:850px;margin:auto;padding:24px 16px}h1{font-size:26px;margin-bottom:8px}p{line-height:1.6}.muted{color:#65748a;font-size:14px}.tabs{display:flex;gap:10px;margin:24px 0}button,input{font:inherit}button{cursor:pointer;border:1px solid #cbd5e1;border-radius:10px;background:white;padding:11px 16px;min-height:44px;color:inherit}button.primary,.tabs button[aria-selected=true]{background:#2563eb;color:white;border-color:#2563eb}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}.tabs button{flex:1}.card{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:16px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.between{justify-content:space-between}h2{font-size:19px;margin:0 0 16px}.draw{width:100%;font-size:20px;padding:16px}.result{margin-top:16px;font-size:20px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}label.field{display:block;margin-bottom:16px}input[type=text]{display:block;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;margin-top:6px}fieldset{border:0;padding:0;margin:0 0 18px}legend{margin-bottom:10px}.days{display:flex;gap:8px;flex-wrap:wrap}.days label{border:1px solid #cbd5e1;padding:10px;border-radius:9px}.item{padding:16px 0;border-top:1px solid #e2e8f0}.item strong{font-size:18px;overflow-wrap:anywhere}.item p{margin:7px 0;overflow-wrap:anywhere}.danger{color:#b42318}.notice{background:#fff6da}.hidden{display:none}#status{min-height:24px;color:#275f42;margin:10px 0}summary{cursor:pointer;padding:5px 0}small{display:block;margin-top:8px;color:#65748a}@media(max-width:480px){main{padding:16px 12px}.card{padding:16px}h1{font-size:23px}}
-</style></head><body><main>
-<h1>餐廳抽籤機器</h1><p class="muted">公司午餐、家裡外食，分開管理，輕鬆決定今天吃什麼。</p>
-<div class="tabs" role="tablist" aria-label="餐廳地點"><button id="companyTab" role="tab" aria-selected="true" aria-controls="content">公司</button><button id="homeTab" role="tab" aria-selected="false" aria-controls="content">家裡</button></div>
-<div id="status" role="status" aria-live="polite"></div>
-<section id="migration" class="card notice hidden"><h2>找到舊版餐廳清單</h2><p>請選擇舊資料要放在哪個分頁。原始資料會保留。</p><div class="row"><button id="migrateCompany">匯入公司</button><button id="migrateHome">匯入家裡</button></div></section>
-<div id="content" role="tabpanel" aria-labelledby="companyTab">
-<section class="card"><h2 id="drawTitle">公司 · 今天吃什麼？</h2><p id="count" class="muted"></p><button id="draw" class="primary draw">幫我選一家</button><div id="result" class="result" role="status" aria-live="polite"></div><small>依裝置當天日期排除公休；實際營業時間請另行確認。</small></section>
-<section class="card"><div class="row between"><h2 id="listTitle">公司餐廳</h2><button id="newRestaurant" class="primary">＋ 新增餐廳</button></div><div id="list"></div></section>
-<section id="editor" class="card hidden"><h2 id="editorTitle">新增餐廳</h2><form id="form"><label class="field">餐廳名稱<input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當"></label><label class="field">特色／備註<input id="info" type="text" maxlength="500" placeholder="例如：步行 5 分鐘、素食可選"></label><fieldset><legend>固定公休日（未勾選表示無固定公休）</legend><div id="days" class="days"></div></fieldset><div class="row"><button type="submit" class="primary">儲存</button><button type="button" id="cancel">取消</button></div></form></section>
-</div>
-<section class="card"><details><summary>資料備份與還原</summary><p class="muted">資料只保存在目前瀏覽器。換裝置前請先匯出；還原會取代公司及家裡的清單。</p><div class="row"><button id="export">匯出備份</button><button id="import">匯入備份</button><input type="file" id="file" accept=".json,application/json" hidden></div></details></section>
-<p class="muted">公司與家裡的清單分開儲存。清除瀏覽器資料可能刪除清單，請定期備份。</p>
-</main><script>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>餐廳抽籤機器</title>
+  <style>
+    /* 調色盤與主題變數定義 */
+    :root {
+      --palette-pink: #F599C6;
+      --palette-yellow: #FFEA88;
+      --palette-mint: #7DCCAD;
+      --palette-slate: #4D6787;
+      
+      --slate-hover: #3b506b;
+      --text-main: #2c3a4a;
+      --text-muted: #6f8296;
+      --bg-page: #f9fbfe;
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-border: #e8eef5;
+      --danger: #e25c5c;
+      --danger-bg: #fff1f1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(145deg, #fbfcfe 0%, #edf3f8 100%);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+      min-height: 100vh;
+    }
+
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 36px 18px;
+    }
+
+    /* 標題與簡介 */
+    h1 {
+      font-size: 28px;
+      margin: 0 0 8px 0;
+      font-weight: 800;
+      color: var(--palette-slate);
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    h2 {
+      font-size: 20px;
+      margin: 0 0 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    p { line-height: 1.6; margin: 0; }
+    .muted { color: var(--text-muted); font-size: 14.5px; }
+    .text-center { text-align: center; }
+
+    /* 分頁標籤 (Tabs) */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 24px auto 30px;
+      background: #e6eef5;
+      padding: 6px;
+      border-radius: 16px;
+      max-width: 380px;
+      box-shadow: inset 0 2px 4px rgba(77, 103, 135, 0.08);
+    }
+    .tabs button {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      color: var(--palette-slate);
+      font-weight: 700;
+      font-size: 15px;
+      min-height: 42px;
+      transition: all 0.25s ease;
+    }
+    .tabs button[aria-selected=true] {
+      background: var(--palette-slate);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(77, 103, 135, 0.25);
+    }
+
+    /* 卡片容器 */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 24px rgba(77, 103, 135, 0.06);
+      backdrop-filter: blur(12px);
+    }
+
+    /* 按鈕通用設計 */
+    button, input { font: inherit; }
+    button {
+      cursor: pointer;
+      border: 1px solid #d4e0ec;
+      border-radius: 12px;
+      background: white;
+      padding: 10px 18px;
+      min-height: 44px;
+      color: var(--text-main);
+      font-weight: 600;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    button:hover:not(:disabled) {
+      background: #f4f8fc;
+      border-color: #b9cee2;
+      transform: translateY(-1px);
+    }
+    button.primary {
+      background: var(--palette-slate);
+      color: white;
+      border-color: var(--palette-slate);
+      box-shadow: 0 4px 12px rgba(77, 103, 135, 0.18);
+    }
+    button.primary:hover:not(:disabled) {
+      background: var(--slate-hover);
+      border-color: var(--slate-hover);
+    }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid #94b9df;
+      outline-offset: 2px;
+    }
+
+    /* 核心抽籤大按鈕 (調色盤櫻花粉 #F599C6) */
+    .draw {
+      width: 100%;
+      font-size: 21px;
+      font-weight: 800;
+      padding: 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--palette-pink) 0%, #f082b7 100%);
+      color: white;
+      border: none;
+      margin-top: 14px;
+      box-shadow: 0 8px 22px rgba(245, 153, 198, 0.4);
+      letter-spacing: 0.5px;
+      transition: all 0.25s ease;
+    }
+    .draw:hover:not(:disabled) {
+      background: linear-gradient(135deg, #f78bbd 0%, #ea70a9 100%);
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 12px 28px rgba(245, 153, 198, 0.5);
+    }
+
+    /* 抽籤結果框 (調色盤奶油黃 #FFEA88) */
+    .result {
+      margin-top: 20px;
+      font-size: 21px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      display: none;
+    }
+    .result:not(:empty) {
+      display: block;
+      background: linear-gradient(135deg, #fffdeb 0%, var(--palette-yellow) 100%);
+      color: #634b00;
+      padding: 22px;
+      border-radius: 16px;
+      text-align: center;
+      font-weight: 800;
+      border: 2px dashed #eed051;
+      box-shadow: 0 8px 20px rgba(255, 234, 136, 0.4);
+      animation: bounceCard 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes bounceCard {
+      0% { transform: scale(0.9) translateY(12px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* 排版容器 */
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .between { justify-content: space-between; }
+
+    /* 表單樣式 */
+    label.field {
+      display: block;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    input[type=text] {
+      display: block;
+      width: 100%;
+      padding: 13px 15px;
+      border: 1.5px solid #d8e3ee;
+      border-radius: 12px;
+      margin-top: 8px;
+      background: #fafcfe;
+      transition: all 0.2s;
+    }
+    input[type=text]:focus {
+      background: white;
+      border-color: var(--palette-slate);
+    }
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0 0 24px;
+    }
+    legend {
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* 星期選擇 (調色盤薄荷綠 #7DCCAD) */
+    .days {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+    .days label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 9px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all 0.2s;
+      font-size: 14.5px;
+      color: var(--text-main);
+    }
+    .days label:hover {
+      background: #e7eef4;
+    }
+    .days label:has(input:checked) {
+      background: var(--palette-mint);
+      color: #0d4a32;
+      border-color: #61b897;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(125, 204, 173, 0.35);
+    }
+    .days input {
+      accent-color: var(--palette-slate);
+      width: 17px;
+      height: 17px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    /* 清單列表 */
+    .item {
+      padding: 18px 0;
+      border-bottom: 1px solid #edf2f7;
+      animation: fadeIn 0.3s ease;
+    }
+    .item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .item:first-child {
+      padding-top: 8px;
+    }
+    .item strong {
+      font-size: 17.5px;
+      overflow-wrap: anywhere;
+      color: var(--text-main);
+      display: block;
+    }
+    .item p {
+      margin: 5px 0 10px 0;
+      overflow-wrap: anywhere;
+    }
+    .item .row {
+      margin-top: 10px;
+    }
+    .item button {
+      padding: 6px 14px;
+      min-height: 34px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+
+    /* 刪除按鈕 */
+    .danger {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border-color: #fbd6d6;
+    }
+    .danger:hover:not(:disabled) {
+      background: #fde8e8;
+      border-color: #f7aaaa;
+    }
+
+    /* 舊資料匯入提示卡片 */
+    .notice {
+      background: linear-gradient(135deg, #fffef4 0%, #fff8d6 100%);
+      border-color: #f8e58a;
+    }
+
+    .hidden { display: none !important; }
+
+    #status {
+      min-height: 24px;
+      color: #247a56;
+      margin: 0 0 16px 0;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    /* 備份摺疊面板 */
+    summary {
+      cursor: pointer;
+      padding: 6px 0;
+      font-weight: 700;
+      color: var(--palette-slate);
+      transition: color 0.2s;
+    }
+    summary:hover { color: var(--slate-hover); }
+    details p { margin-top: 8px; margin-bottom: 16px; }
+    small { display: block; margin-top: 12px; color: var(--text-muted); text-align: center; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      main { padding: 20px 14px; }
+      .card { padding: 18px; border-radius: 16px; }
+      h1 { font-size: 24px; }
+      .draw { font-size: 19px; }
+      .item button { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🍽️ 餐廳抽籤機器</h1>
+  <p class="muted text-center">公司午餐、家裡外食分開管理，輕鬆決定今天吃什麼！</p>
+
+  <div class="tabs" role="tablist" aria-label="餐廳地點">
+    <button id="companyTab" role="tab" aria-selected="true" aria-controls="content">🏢 公司</button>
+    <button id="homeTab" role="tab" aria-selected="false" aria-controls="content">🏠 家裡</button>
+  </div>
+
+  <div id="status" role="status" aria-live="polite"></div>
+
+  <section id="migration" class="card notice hidden">
+    <h2>🔄 找到舊版餐廳清單</h2>
+    <p>請選擇舊資料要放在哪個分頁。原始資料會保留不受影響。</p>
+    <div class="row" style="margin-top: 12px;">
+      <button id="migrateCompany" class="primary">匯入公司</button>
+      <button id="migrateHome" class="primary">匯入家裡</button>
+    </div>
+  </section>
+
+  <div id="content" role="tabpanel" aria-labelledby="companyTab">
+
+    <!-- 抽籤卡片 -->
+    <section class="card">
+      <h2 id="drawTitle">公司 · 今天吃什麼？</h2>
+      <p id="count" class="muted"></p>
+      <button id="draw" class="primary draw">🎲 幫我選一家</button>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+      <small>💡 系統會依當天日期自動排除公休餐廳；實際營業狀況請另行確認。</small>
+    </section>
+
+    <!-- 列表卡片 -->
+    <section class="card">
+      <div class="row between" style="margin-bottom: 12px;">
+        <h2 id="listTitle" style="margin:0;">公司餐廳</h2>
+        <button id="newRestaurant" class="primary" style="background: var(--palette-mint); border-color: var(--palette-mint); color: #0f4c34;">＋ 新增餐廳</button>
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <!-- 編輯器卡片 -->
+    <section id="editor" class="card hidden">
+      <h2 id="editorTitle">新增餐廳</h2>
+      <form id="form">
+        <label class="field">餐廳名稱
+          <input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當">
+        </label>
+        <label class="field">特色／備註
+          <input id="info" type="text" maxlength="500" placeholder="例如：步行 5 分鐘、提供素食">
+        </label>
+        <fieldset>
+          <legend>固定公休日 <span class="muted" style="font-weight:normal;">(未勾選表示無固定公休)</span></legend>
+          <div id="days" class="days"></div>
+        </fieldset>
+        <div class="row">
+          <button type="submit" class="primary" style="flex: 2;">💾 儲存</button>
+          <button type="button" id="cancel" style="flex: 1;">取消</button>
+        </div>
+      </form>
+    </section>
+
+  </div>
+
+  <!-- 備份卡片 -->
+  <section class="card">
+    <details>
+      <summary>⚙️ 資料備份與還原</summary>
+      <p class="muted">資料僅保存在目前瀏覽器中。換裝置前請先匯出；還原備份會取代目前公司與家裡的清單。</p>
+      <div class="row">
+        <button id="export">📥 匯出備份</button>
+        <button id="import">📤 匯入備份</button>
+        <input type="file" id="file" accept=".json,application/json" hidden>
+      </div>
+    </details>
+  </section>
+
+  <p class="muted text-center" style="font-size: 13px;">
+    公司與家裡的清單分開儲存。清除瀏覽器資料可能會刪除清單，請定期備份。
+  </p>
+</main>
+
+<script>
 'use strict';
 const KEY='restaurant-picker-v2',days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],dayLabels=['日','一','二','三','四','五','六'];
 const $=id=>document.getElementById(id);let active='company',editId=null,legacy=[],data={version:2,company:[],home:[],legacyImported:false},storageOK=true;
@@ -24,17 +439,17 @@ try{const saved=localStorage.getItem(KEY);if(saved){const parsed=JSON.parse(save
 function message(text){$('status').textContent=text}
 function commit(next){if(!storageOK){message('目前無法安全儲存，請先匯出備份並檢查瀏覽器。');return false}try{localStorage.setItem(KEY,JSON.stringify(next));data=next;return true}catch(e){message('儲存失敗：空間不足或瀏覽器限制，請先匯出備份。');return false}}
 function today(){return days[new Date().getDay()]}
-function render(){const label=active==='company'?'公司':'家裡';$('companyTab').setAttribute('aria-selected',active==='company');$('homeTab').setAttribute('aria-selected',active==='home');$('content').setAttribute('aria-labelledby',active+'Tab');$('drawTitle').textContent=label+' · 今天吃什麼？';$('listTitle').textContent=label+'餐廳';const list=data[active],available=list.filter(r=>!r.closed.includes(today()));$('count').textContent=`星期${dayLabels[new Date().getDay()]} · 共 ${list.length} 家，今天可抽 ${available.length} 家`;$('draw').disabled=!available.length;$('list').replaceChildren();if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='還沒有餐廳，點「＋ 新增餐廳」建立清單。';$('list').append(p)}list.forEach(r=>{const div=document.createElement('div');div.className='item';const name=document.createElement('strong');name.textContent=r.name;const note=document.createElement('p');note.textContent=r.info||'未填寫備註';const closed=document.createElement('p');closed.className='muted';closed.textContent=(r.closed.includes(today())?'今天公休 · ':'')+(r.closed.length?'公休：'+r.closed.map(d=>'星期'+dayLabels[days.indexOf(d)]).join('、'):'無固定公休');const row=document.createElement('div');row.className='row';const edit=document.createElement('button');edit.textContent='編輯';edit.onclick=()=>openEditor(r);const del=document.createElement('button');del.textContent='刪除';del.className='danger';del.onclick=()=>{if(confirm('確定刪除「'+r.name+'」？')){const next={...data,[active]:data[active].filter(x=>x.id!==r.id)};if(commit(next)){if(editId===r.id)closeEditor();$('result').textContent='';render();message('已刪除 '+r.name)}}};row.append(edit,del);div.append(name,note,closed,row);$('list').append(div)});$('migration').classList.toggle('hidden',!legacy.length||data.legacyImported)}
+function render(){const label=active==='company'?'公司':'家裡';$('companyTab').setAttribute('aria-selected',active==='company');$('homeTab').setAttribute('aria-selected',active==='home');$('content').setAttribute('aria-labelledby',active+'Tab');$('drawTitle').textContent=label+' · 今天吃什麼？';$('listTitle').textContent=label+'餐廳';const list=data[active],available=list.filter(r=>!r.closed.includes(today()));$('count').textContent=`星期${dayLabels[new Date().getDay()]} · 共 ${list.length} 家，今天可抽 ${available.length} 家`;$('draw').disabled=!available.length;$('list').replaceChildren();if(!list.length){const p=document.createElement('p');p.className='muted';p.style.textAlign='center';p.style.padding='20px 0';p.textContent='還沒有餐廳，點「＋ 新增餐廳」建立清單。';$('list').append(p)}list.forEach(r=>{const div=document.createElement('div');div.className='item';const name=document.createElement('strong');name.textContent=r.name;const note=document.createElement('p');note.textContent=r.info||'未填寫備註';const closed=document.createElement('p');closed.className='muted';closed.textContent=(r.closed.includes(today())?'今天公休 · ':'')+(r.closed.length?'公休：'+r.closed.map(d=>'星期'+dayLabels[days.indexOf(d)]).join('、'):'無固定公休');const row=document.createElement('div');row.className='row';const edit=document.createElement('button');edit.textContent='編輯';edit.onclick=()=>openEditor(r);const del=document.createElement('button');del.textContent='刪除';del.className='danger';del.onclick=()=>{if(confirm('確定刪除「'+r.name+'」？')){const next={...data,[active]:data[active].filter(x=>x.id!==r.id)};if(commit(next)){if(editId===r.id)closeEditor();$('result').textContent='';render();message('已刪除 '+r.name)}}};row.append(edit,del);div.append(name,note,closed,row);$('list').append(div)});$('migration').classList.toggle('hidden',!legacy.length||data.legacyImported)}
 for(let n=1;n<=7;n++){const i=n%7,label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.name='closed';input.value=days[i];label.append(input,document.createTextNode(' 星期'+dayLabels[i]));$('days').append(label)}
 function closeEditor(){$('editor').classList.add('hidden');$('form').reset();editId=null}
-function openEditor(r=null){editId=r?.id||null;$('form').reset();$('name').value=r?.name||'';$('info').value=r?.info||'';document.querySelectorAll('[name=closed]').forEach(c=>c.checked=!!r?.closed.includes(c.value));$('editorTitle').textContent=(active==='company'?'公司':'家裡')+' · '+(r?'編輯餐廳':'新增餐廳');$('editor').classList.remove('hidden');$('name').focus();$('editor').scrollIntoView({behavior:'smooth',block:'nearest'})}
-function switchTab(place){active=place;closeEditor();$('result').textContent='';message('');render()}
-$('companyTab').onclick=()=>switchTab('company');$('homeTab').onclick=()=>switchTab('home');document.querySelectorAll('[role=tab]').forEach(b=>b.onkeydown=e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();switchTab(active==='company'?'home':'company');$(active+'Tab').focus()}});
+function openEditor(r=null){editId=r?.id||null;$('form').reset();$('name').value=r?.name\vert{}\vert{}'';$('info').value=r?.info||'';document.querySelectorAll('[name=closed]').forEach(c=>c.checked=!!r?.closed.includes(c.value));$('editorTitle').textContent=(active==='company'?'公司':'家裡')+' · '+(r?'編輯餐廳':'新增餐廳');$('editor').classList.remove('hidden');$('name').focus();$('editor').scrollIntoView({behavior:'smooth',block:'nearest'})}
+function switchTab(place){active=place;closeEditor();$('result').textContent='';message('');render()}$('companyTab').onclick=()=>switchTab('company');$('homeTab').onclick=()=>switchTab('home');document.querySelectorAll('[role=tab]').forEach(b=>b.onkeydown=e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();switchTab(active==='company'?'home':'company');$(active+'Tab').focus()}});
 $('newRestaurant').onclick=()=>openEditor();$('cancel').onclick=closeEditor;
 $('form').onsubmit=e=>{e.preventDefault();const name=$('name').value.trim();if(!name){$('name').focus();return}if(data[active].some(r=>r.name===name&&r.id!==editId)){message('此分頁已有同名餐廳，請修改名稱。');return}const r={id:editId||id(),name,info:$('info').value.trim(),closed:Array.from(document.querySelectorAll('[name=closed]:checked'),c=>c.value)};const next={...data,[active]:editId?data[active].map(x=>x.id===editId?r:x):[...data[active],r]};if(commit(next)){closeEditor();$('result').textContent='';render();message('已儲存 '+name)}};
-$('draw').onclick=()=>{render();const available=data[active].filter(r=>!r.closed.includes(today()));if(!available.length){$('result').textContent=data[active].length?'今天清單內餐廳都公休。':'請先新增餐廳。';return}const r=available[Math.floor(Math.random()*available.length)];$('result').textContent='今天推薦：'+r.name+(r.info?'\n'+r.info:'')};
-function migrate(place){const next={...data,[place]:[...data[place],...legacy],legacyImported:true};if(commit(next)){switchTab(place);message('舊版清單已匯入，原始資料仍保留。')}}$('migrateCompany').onclick=()=>migrate('company');$('migrateHome').onclick=()=>migrate('home');
-$('export').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='餐廳清單備份-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('已匯出公司與家裡的清單。')};
+$('draw').onclick=()=>{render();const available=data[active].filter(r=>!r.closed.includes(today()));if(!available.length){$('result').textContent=data[active].length?'今天清單內餐廳都公休。':'請先新增餐廳。';return}const r=available[Math.floor(Math.random()*available.length)];$('result').textContent='🎉 今天推薦：\n'+r.name+(r.info?'\n\n📌 '+r.info:'')};
+function migrate(place){const next={...data,[place]:[...data[place],...legacy],legacyImported:true};if(commit(next)){switchTab(place);message('舊版清單已匯入，原始資料仍保留。')}}$('migrateCompany').onclick=()=>migrate('company');$('migrateHome').onclick=()=>migrate('home');$('export').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='餐廳清單備份-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('已匯出公司與家裡的清單。')};
 $('import').onclick=()=>$('file').click();$('file').onchange=async()=>{const file=$('file').files[0];if(!file)return;try{if(file.size>5000000)throw Error('備份檔過大');const parsed=JSON.parse(await file.text());if(parsed.version!==2)throw Error('請使用新版匯出的備份檔');const next={version:2,company:validateList(parsed.company),home:validateList(parsed.home),legacyImported:true};if(confirm(`將取代目前清單：公司 ${next.company.length} 家、家裡 ${next.home.length} 家。建議先匯出目前資料，確定還原？`)){if(commit(next)){closeEditor();$('result').textContent='';render();message('備份還原完成。')}}}catch(e){message('匯入失敗：'+e.message)}finally{$('file').value=''}};
 render();
-</script></body></html>
+</script>
+</body>
+</html>
