@@ -1,15 +1,21 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js"></script>
+<script src="theme.js?v=1016d"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="auth-gate.css">
+<link rel="stylesheet" href="theme.css?v=1016d"><link rel="stylesheet" href="auth-gate.css?v=1016d">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>我的筆記｜我的日常</title><style>
 .notes-head .search{position:relative;flex:1 1 220px;max-width:340px}
 .search input{width:100%;min-height:42px;padding:9px 16px 9px 40px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
 .search .i{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
 .account{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);max-width:100%}
 #account{overflow-wrap:anywhere}
-#message{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--danger-soft);color:var(--danger);white-space:pre-wrap;font-size:14px}
+#message{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--butter-soft);color:var(--ink);white-space:pre-wrap;font-size:14px}
+.search-wrap{display:flex;flex-direction:column;gap:4px;flex:1 1 220px;max-width:340px}
+.search-wrap .search{max-width:none!important;flex:none!important}
+.search-all{display:flex;align-items:center;gap:6px;padding-left:14px;font-size:12px;color:var(--muted);cursor:pointer}
+.search-all input{accent-color:var(--accent)}
+#workspace.dropping{outline:3px dashed var(--accent);outline-offset:6px;border-radius:var(--radius)}
+#workspace.dropping::after{content:'放開來匯入檔案';position:fixed;left:50%;bottom:40px;transform:translateX(-50%);padding:12px 22px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;z-index:50}
 #message:empty{display:none}
 #login{max-width:440px;margin:40px auto;padding:30px}
 #login h2{margin:0 0 6px;font-size:22px}
@@ -65,7 +71,7 @@
 @media(max-width:640px){
  .page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}
  .page-head h1{font-size:21px}
- .notes-head .search{order:5;max-width:none;flex-basis:100%}
+ .search-wrap{order:5;max-width:none;flex-basis:100%}
  .account{order:6}
  #workspace{display:flex;flex-direction:column;gap:12px}
  .cat-panel,.pages-panel{padding:14px}
@@ -90,6 +96,10 @@
 <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5v10.5h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
 <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+<symbol id="i-bubble" viewBox="0 0 24 24"><circle cx="9" cy="10" r="5.5"/><circle cx="16.5" cy="15.5" r="3.5"/><circle cx="17" cy="6" r="2"/><path d="M6.8 8.2a2.6 2.6 0 0 1 2-1.4"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"/></symbol>
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
@@ -98,6 +108,7 @@
 <a href="index.html" id="home"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
 <a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
 <a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
+<a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
 <a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
 </nav>
@@ -108,7 +119,8 @@
 <span class="page-icon"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg></span>
 <div><h1>筆記</h1><p class="sub">記錄每一個靈感與想法</p></div>
 <span class="spacer"></span>
-<label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input id="search" type="search" placeholder="搜尋此分類的筆記…" aria-label="搜尋筆記"></label>
+<div class="search-wrap"><label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input id="search" type="search" placeholder="搜尋筆記標題或內容…" aria-label="搜尋筆記"></label><label class="search-all"><input id="searchAll" type="checkbox"> 搜尋全部分類</label></div>
+<button id="importBtn" class="btn pill" type="button" title="匯入 PDF、Word（.docx）或文字檔"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg>匯入檔案</button><input id="importFile" type="file" accept=".pdf,.docx,.txt,.md,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" multiple hidden>
 <button id="addPage" class="btn primary pill" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>新增筆記</button>
 <div data-theme-switch></div>
 <div class="account"><small id="account"></small><button id="logout" class="btn small hidden" type="button">登出</button></div>
@@ -123,7 +135,7 @@
 <div class="cat-foot deco"><img data-pose="note" alt=""><p class="hand">小小的筆記，<br>都是未來的大想法 ✨</p></div>
 </aside>
 <section class="panel pages-panel" aria-label="分類中的筆記">
-<h2 class="panel-title">這個分類的筆記<button id="refresh" class="btn small ghost" type="button"><svg class="i" aria-hidden="true"><use href="#i-sync"/></svg>同步</button></h2>
+<h2 class="panel-title"><span id="pagesTitle">這個分類的筆記</span><button id="refresh" class="btn small ghost" type="button"><svg class="i" aria-hidden="true"><use href="#i-sync"/></svg>同步</button></h2>
 <div id="pages" class="list"></div>
 </section>
 <section id="editor" class="panel" aria-label="筆記編輯區">
@@ -134,12 +146,12 @@
 <div id="conflict" class="hidden"><strong>有其他裝置修改了這篇筆記，或筆記已被刪除。</strong><p>你的文字仍保留在編輯區。可先下載，再載入雲端版本；或將目前內容另存新頁。</p><div class="editor-actions"><button id="cloud" class="btn" type="button">載入雲端版本</button><button id="copy" class="btn" type="button">另存新頁</button></div></div>
 <textarea id="content" aria-label="筆記內文" placeholder="寫下會議紀錄、研究想法或生活靈感…"></textarea>
 <div class="editor-actions"><button id="save" class="btn primary" type="button">立即儲存</button><button id="download" class="btn" type="button">下載這篇文字</button><button id="deletePage" class="btn danger" type="button">刪除筆記</button></div>
-<p class="editor-hint">停止輸入約 1 秒自動儲存。其他裝置的更新每 15 秒檢查一次；離線時請保留此頁並下載文字備份。</p>
+<p class="editor-hint">可以直接從網頁、Word、Email 複製後貼上；PDF 或 Word 檔可以用上方「匯入檔案」或直接拖進來。停止輸入約 1 秒自動儲存。其他裝置的更新每 15 秒檢查一次；離線時請保留此頁並下載文字備份。</p>
 </div>
 </section>
 </div>
 </main>
 </div>
-<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="messages.js"></script><script src="notes.js"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016d"></script><script src="messages.js?v=1016d"></script><script src="notes.js?v=1016d"></script><script src="notes-import.js?v=1016d"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>
