@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "我的日常",
+  "short_name": "我的日常",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FCF8F2",
+  "theme_color": "#FCF8F2",
+  "icons": [
+    {
+      "src": "app-icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
