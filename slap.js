@@ -10,13 +10,15 @@
   const pick = l => l[Math.floor(Math.random() * l.length)];
   const today = new Date().toISOString().slice(0, 10);
   const DEFAULT = 'slap-boss.svg';
-  const TOOLS = { hand: { emoji: '🖐️', word: '啪！' }, slipper: { emoji: '🩴', word: '啪噠！' }, hammer: { emoji: '🔨', word: '啾～' } };
+  // 拖鞋用自己畫的圖（拖鞋的表情符號在較舊的電腦上顯示不出來）
+  const SLIPPER = '<svg viewBox="0 0 60 100" width="0.62em" height="1em" aria-hidden="true"><path d="M30 4C46 4 54 18 52 38C50 56 46 64 47 78C48 92 40 98 30 98C20 98 12 92 13 78C14 64 10 56 8 38C6 18 14 4 30 4Z" fill="#F6C95C" stroke="#8A5A1F" stroke-width="3"/><path d="M30 9C42 9 48 20 46 37C44 54 41 63 42 77C43 88 37 93 30 93C23 93 17 88 18 77C19 63 16 54 14 37C12 20 18 9 30 9Z" fill="#FFF4D6"/><path d="M30 24L13 50M30 24L47 50" stroke="#3D7CC9" stroke-width="7" stroke-linecap="round"/><circle cx="30" cy="24" r="4" fill="#2F5F9E"/></svg>';
+  const TOOLS = { hand: { emoji: '🖐️', word: '啪！' }, slipper: { emoji: '', word: '啪噠！' }, hammer: { emoji: '🔨', word: '啾～' } };
   let weapon = 'hand', count = 0, combo = 0, last = 0, heat = 0, side = 1;
   try { const s = JSON.parse(localStorage.getItem('daily-slap') || '{}'); if (s.day === today) count = s.count || 0; if (TOOLS[s.weapon]) weapon = s.weapon; } catch {}
   const save = () => { try { localStorage.setItem('daily-slap', JSON.stringify({ day: today, count, weapon })); } catch {} };
 
   const SORRY = ['對不起我錯了！', '今天準時下班！', '這週不開會了！', '加薪！加薪！', '報告我自己寫！', '再也不半夜傳訊息了！', '你說的都對！', '饒了我吧～', '明天放你假！', '我請大家喝飲料！'];
-  const CHEER = { 10: '打得好！氣有沒有消一點？', 30: '三十下了，手會不會痛？', 50: '五十下！今天的怨氣清空中～', 100: '一百下！好了好了，喝口水休息一下 🧋' };
+  const CHEER = { 10: '打得好！氣有沒有消一點？', 30: '三十下了，手會不會痛？', 50: '五十下！今天的怨氣清空中～', 100: '一百下！好了好了，喝口水休息一下 🍵' };
 
   // ---- 音效 ----
   function hitSound() {
@@ -63,7 +65,7 @@
     head.style.setProperty('--side', side);
     stage.style.setProperty('--side', side);
     head.classList.remove('hit'); void head.offsetWidth; head.classList.add('hit');
-    tool.textContent = TOOLS[weapon].emoji;
+    if (weapon === 'slipper') tool.innerHTML = SLIPPER; else tool.textContent = TOOLS[weapon].emoji;
     tool.classList.remove('swing', 'from-left', 'from-right'); void tool.offsetWidth;
     tool.classList.add('swing', side > 0 ? 'from-left' : 'from-right');
 

@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016b"></script>
+<script src="theme.js?v=1016e"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016b"><link rel="stylesheet" href="auth-gate.css?v=1016b">
+<link rel="stylesheet" href="theme.css?v=1016e"><link rel="stylesheet" href="auth-gate.css?v=1016e">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>舒壓小遊戲｜我的日常</title><style>
 .relax-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;align-items:start}
 .sheet-panel{padding:22px}
@@ -76,7 +76,7 @@
 .game-tabs button{display:flex;align-items:center;gap:8px;min-height:46px;padding:9px 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:15px;font-weight:700;color:var(--muted)}
 .game-tabs button:hover{color:var(--ink);background:var(--surface2)}
 .game-tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
-.game-tabs .ge{font-size:20px}
+.game-tabs .ge{width:22px;height:22px}
 [data-panel][hidden]{display:none!important}
 /* 木魚 */
 .muyu-panel{padding:22px;text-align:center}
@@ -135,7 +135,7 @@
 @keyframes bubble{0%{opacity:0;transform:scale(.6)}12%,80%{opacity:1;transform:scale(1)}100%{opacity:0}}
 .slap-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}
 .weapons{display:flex;gap:6px}
-.weapons button{min-height:42px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px}
+.weapons button{display:inline-flex;align-items:center;gap:4px;min-height:42px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px}
 .weapons button[aria-checked=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700}
 .slap-count{font-size:14px;color:var(--muted)}.slap-count b{font-size:22px;color:var(--ink)}
 .face-panel{padding:18px}
@@ -175,6 +175,10 @@
 <symbol id="i-bubble" viewBox="0 0 24 24"><circle cx="9" cy="10" r="5.5"/><circle cx="16.5" cy="15.5" r="3.5"/><circle cx="17" cy="6" r="2"/><path d="M6.8 8.2a2.6 2.6 0 0 1 2-1.4"/></symbol>
 <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"/></symbol>
+<symbol id="i-muyu" viewBox="0 0 24 24"><path d="M3 15.5c0-4.6 4-8 9-8s9 3.4 9 8c0 2.4-3.6 3.5-9 3.5s-9-1.1-9-3.5Z"/><path d="M4.8 15c4.3 1.6 10.1 1.6 14.4 0"/><path d="M18.5 2.5 14.6 7"/><circle cx="13.6" cy="8" r="1.6"/></symbol>
+<symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 10.5V5a1.5 1.5 0 0 1 3 0v5.5M14 10.5V6.5a1.5 1.5 0 0 1 3 0v6c0 4.5-2.5 8-6.5 8-2.6 0-4.2-1.4-5.5-3.6L3.8 13.6a1.4 1.4 0 0 1 2.4-1.4L8 14.5"/></symbol>
+<symbol id="i-slipper" viewBox="0 0 24 24"><path d="M12 2.5c4 0 5.6 3.6 5.2 8-.3 3.3-.9 4.6-.8 7.3.1 2.6-1.9 3.7-4.4 3.7s-4.5-1.1-4.4-3.7c.1-2.7-.5-4-.8-7.3-.4-4.4 1.2-8 5.2-8Z"/><path d="M12 7 8.2 12M12 7l3.8 5"/></symbol>
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
@@ -198,9 +202,9 @@
 <div data-theme-switch></div>
 </header>
 <div class="game-tabs" role="tablist" aria-label="選擇小遊戲">
-<button type="button" role="tab" data-game="bubble" aria-controls="panel-bubble"><span class="ge" aria-hidden="true">🫧</span>戳泡泡</button>
-<button type="button" role="tab" data-game="muyu" aria-controls="panel-muyu"><span class="ge" aria-hidden="true">🪵</span>敲木魚</button>
-<button type="button" role="tab" data-game="slap" aria-controls="panel-slap"><span class="ge" aria-hidden="true">👋</span>打老闆</button>
+<button type="button" role="tab" data-game="bubble" aria-controls="panel-bubble"><svg class="i ge" aria-hidden="true"><use href="#i-bubble"/></svg>戳泡泡</button>
+<button type="button" role="tab" data-game="muyu" aria-controls="panel-muyu"><svg class="i ge" aria-hidden="true"><use href="#i-muyu"/></svg>敲木魚</button>
+<button type="button" role="tab" data-game="slap" aria-controls="panel-slap"><svg class="i ge" aria-hidden="true"><use href="#i-hand"/></svg>打老闆</button>
 </div>
 <div class="relax-grid">
 <div class="main-col">
@@ -248,7 +252,7 @@
 <div id="slapFx" aria-hidden="true"></div>
 </div>
 <div class="slap-bar">
-<div class="weapons" role="radiogroup" aria-label="選工具"><button type="button" role="radio" data-weapon="hand">🖐️ 巴掌</button><button type="button" role="radio" data-weapon="slipper">🩴 拖鞋</button><button type="button" role="radio" data-weapon="hammer">🔨 玩具槌</button></div>
+<div class="weapons" role="radiogroup" aria-label="選工具"><button type="button" role="radio" data-weapon="hand">🖐️ 巴掌</button><button type="button" role="radio" data-weapon="slipper"><svg class="i" aria-hidden="true"><use href="#i-slipper"/></svg>拖鞋</button><button type="button" role="radio" data-weapon="hammer">🔨 玩具槌</button></div>
 <span class="slap-count">今天打了 <b id="slapCount">0</b> 下</span>
 </div>
 <p class="hint">點臉的左邊打左臉、點右邊打右臉，連打五下會暈頭轉向。</p>
@@ -281,6 +285,6 @@
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016b"></script><script src="messages.js?v=1016b"></script><script src="relax.js?v=1016b"></script><script src="muyu.js?v=1016b"></script><script src="slap.js?v=1016b"></script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016e"></script><script src="messages.js?v=1016e"></script><script src="relax.js?v=1016e"></script><script src="muyu.js?v=1016e"></script><script src="slap.js?v=1016e"></script>
 <script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>
