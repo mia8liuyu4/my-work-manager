@@ -24,6 +24,7 @@
   const DONE = ['整張都戳完了，好舒服～', '全部戳破！心情也清爽了吧？', '一張戳完，再來一張嗎？'];
   const COMBO = ['連擊！', '手速好快！', '停不下來～'];
 
+  window.relaxTalk = (t, e) => talk(t, e);
   function talk(text, emoji) {
     say.textContent = fill(text);
     if (emoji) { face.textContent = emoji; face.classList.remove('pop'); void face.offsetWidth; face.classList.add('pop'); }
@@ -32,11 +33,19 @@
   }
 
   // ---- 聲音：用 WebAudio 合成「啵」的聲音，不需要音效檔 ----
-  function popSound(big) {
-    if (!sound) return;
+  window.relaxAudio = () => {
     try {
       ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
       if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    } catch { return null; }
+  };
+  window.relaxSound = () => sound;
+  window.relaxBuzz = ms => { if (buzz && navigator.vibrate) navigator.vibrate(ms); };
+  function popSound(big) {
+    if (!sound) return;
+    try {
+      ctx = window.relaxAudio(); if (!ctx) return;
       const t = ctx.currentTime;
       const len = Math.floor(ctx.sampleRate * 0.05);
       const buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0);
@@ -158,9 +167,27 @@
   $('relaxPet').onclick = () => talk(pick(['戳我也會啵一聲喔（才不會）', '慢慢戳，不用急～', '想到什麼煩惱，就寫進泡泡裡吧。', '{pet}陪你一起放鬆。']), '🥰');
 
   let resizeT;
-  window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (round === 0) build(); }, 300); });
+  window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (built && round === 0 && sheet.offsetParent) build(); }, 300); });
   syncToggles();
-  function start() { build(); talk(total ? `今天已經戳了 ${total} 顆，繼續放鬆吧～` : '按住滑過去可以一次戳一排喔！', '😊'); }
-  if (document.documentElement.hasAttribute('data-locked')) window.addEventListener('daily-unlocked', () => requestAnimationFrame(start), { once: true });
-  else start();
+  const tabs = [...document.querySelectorAll('[data-game]')];
+  let built = false;
+  function show(game, focus) {
+    if (!tabs.some(t => t.dataset.game === game)) game = 'bubble';
+    tabs.forEach(t => { const on = t.dataset.game === game; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
+    document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== game; });
+    if (game === 'bubble' && !built) { built = true; build(); }
+    window.dispatchEvent(new CustomEvent('relax-game', { detail: game }));
+    if (location.hash.slice(1) !== game) history.replaceState(null, '', '#' + game);
+  }
+  tabs.forEach((t, i) => {
+    t.onclick = () => show(t.dataset.game);
+    t.onkeydown = e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); show(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length].dataset.game, true); } };
+  });
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  function start() { show(location.hash.slice(1) || 'bubble'); if (location.hash.slice(1) && location.hash.slice(1) !== 'bubble') return; talk(total ? `今天已經戳了 ${total} 顆，繼續放鬆吧～` : '按住滑過去可以一次戳一排喔！', '😊'); }
+  // 等其他遊戲的程式（muyu.js、slap.js）都載入後再開始
+  const go = () => setTimeout(start, 0);
+  if (document.documentElement.hasAttribute('data-locked')) window.addEventListener('daily-unlocked', () => { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go, { once: true }); else go(); }, { once: true });
+  else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go, { once: true });
+  else go();
 })();

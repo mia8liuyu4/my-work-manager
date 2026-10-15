@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016a"></script>
+<script src="theme.js?v=1016b"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016a"><link rel="stylesheet" href="auth-gate.css?v=1016a">
+<link rel="stylesheet" href="theme.css?v=1016b"><link rel="stylesheet" href="auth-gate.css?v=1016b">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>舒壓小遊戲｜我的日常</title><style>
 .relax-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;align-items:start}
 .sheet-panel{padding:22px}
@@ -71,6 +71,92 @@
  .relax-bubble::after{left:-9px;top:50%;bottom:auto;transform:translateY(-50%);border:9px solid transparent;border-right-color:var(--accent-soft);border-left:0}
  .stats{margin-top:0}
 }
+
+.game-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.game-tabs button{display:flex;align-items:center;gap:8px;min-height:46px;padding:9px 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:15px;font-weight:700;color:var(--muted)}
+.game-tabs button:hover{color:var(--ink);background:var(--surface2)}
+.game-tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
+.game-tabs .ge{font-size:20px}
+[data-panel][hidden]{display:none!important}
+/* 木魚 */
+.muyu-panel{padding:22px;text-align:center}
+#muyuStage{position:relative;width:min(420px,100%);margin:6px auto 0;aspect-ratio:300/240;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:var(--radius)}
+#muyuStage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#muyuStage .fish{transform-origin:50% 85%}
+#muyuStage.hit .fish{animation:fishhit .28s ease-out}
+@keyframes fishhit{30%{transform:scale(1.04,.95)}70%{transform:scale(.99,1.01)}}
+#muyuStage .mallet{transform-box:view-box;transform-origin:270px 6px;transform:rotate(38deg);transition:transform .25s}
+#muyuStage.hit .mallet{animation:mallet .3s cubic-bezier(.4,0,.6,1)}
+@keyframes mallet{0%{transform:rotate(38deg)}40%{transform:rotate(0)}100%{transform:rotate(38deg)}}
+.merit{position:absolute;top:12%;transform:translateX(-50%);font-family:var(--hand);font-size:22px;font-weight:700;color:var(--accent-text);white-space:nowrap;pointer-events:none;animation:merit 1.4s ease-out forwards}
+@keyframes merit{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}20%{opacity:1;transform:translate(-50%,0) scale(1.05)}100%{opacity:0;transform:translate(-50%,-70px)}}
+.ripple{position:absolute;left:50%;top:58%;width:60%;aspect-ratio:2/1;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent) 40%,transparent);transform:translate(-50%,-50%) scale(.6);opacity:.8;pointer-events:none;animation:ripple .9s ease-out forwards}
+@keyframes ripple{to{transform:translate(-50%,-50%) scale(1.35);opacity:0}}
+#breathCue{margin:10px 0 0;min-height:28px;font-family:var(--hand);font-size:20px;color:var(--muted)}
+#muyuStage.auto+#breathCue{color:var(--accent-text)}
+.muyu-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.muyu-tools select{min-height:40px;padding:6px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:inherit;font-size:14px;color:var(--ink)}
+.muyu-tools label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+#autoBtn[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+/* 打老闆 */
+.slap-panel{padding:22px}
+#slapStage{--side:1;position:relative;height:420px;border-radius:calc(var(--radius) - 6px);background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--butter-soft) 80%,var(--surface)) 0 40px,color-mix(in srgb,var(--butter-soft) 50%,var(--surface)) 40px 80px);overflow:hidden;user-select:none;-webkit-user-select:none}
+[data-theme^=minimal] #slapStage{background:var(--surface2)}
+.boss-body{position:absolute;left:50%;bottom:-6px;width:300px;margin-left:-150px}
+.boss-body svg{display:block;width:100%}
+#nameTag{position:absolute;left:62%;top:56%;transform:rotate(-4deg);padding:2px 8px;border-radius:6px;background:#fff;border:2px solid #4A4A55;font-size:14px;font-weight:700;color:#333;max-width:96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#slapHead{--side:1;position:absolute;left:50%;top:112px;width:200px;height:200px;margin-left:-100px;border-radius:50%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transform-origin:50% 100%;box-shadow:0 0 0 5px #fff,0 8px 20px #0000002a;overflow:hidden;z-index:2}
+#slapHead:focus-visible{outline:4px solid var(--accent);outline-offset:6px}
+#slapFace{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+#slapRed{position:absolute;inset:0;background:radial-gradient(circle at 25% 62%,#ff4b4b 0 18%,transparent 30%),radial-gradient(circle at 75% 62%,#ff4b4b 0 18%,transparent 30%);opacity:0;mix-blend-mode:multiply;transition:opacity .5s;pointer-events:none}
+#slapMarks{position:absolute;inset:0;pointer-events:none}
+.palm{position:absolute;width:74px;height:84px;transform:translate(-50%,-50%) rotate(var(--r));background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 74 84'%3E%3Cg fill='%23E53935'%3E%3Cellipse cx='37' cy='56' rx='22' ry='24'/%3E%3Crect x='14' y='18' width='10' height='34' rx='5'/%3E%3Crect x='26' y='8' width='10' height='40' rx='5'/%3E%3Crect x='38' y='6' width='10' height='42' rx='5'/%3E%3Crect x='50' y='12' width='10' height='38' rx='5'/%3E%3Crect x='56' y='44' width='10' height='26' rx='5' transform='rotate(-40 61 57)'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;opacity:0;mix-blend-mode:multiply;animation:palm 1.6s ease-out forwards}
+@keyframes palm{0%{opacity:0}10%{opacity:.55}70%{opacity:.45}100%{opacity:0}}
+#slapHead.hit{animation:headhit .5s cubic-bezier(.2,1.4,.5,1)}
+@keyframes headhit{0%{transform:rotate(0)}20%{transform:translateX(calc(var(--side) * 26px)) rotate(calc(var(--side) * 22deg)) scale(.96,1.02)}55%{transform:translateX(calc(var(--side) * -6px)) rotate(calc(var(--side) * -6deg))}100%{transform:rotate(0)}}
+#slapStage.dizzy #slapHead{animation:dizzy .7s ease-in-out 3}
+@keyframes dizzy{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+#slapStage.dizzy::after{content:"💫";position:absolute;left:50%;top:84px;font-size:34px;transform:translateX(-50%);animation:orbit 1s linear infinite;z-index:4}
+@keyframes orbit{0%{transform:translateX(-120%)}50%{transform:translateX(20%)}100%{transform:translateX(-120%)}}
+#slapTool{position:absolute;top:170px;font-size:90px;line-height:1;opacity:0;pointer-events:none;z-index:5}
+#slapTool.swing.from-left{left:calc(50% - 190px);animation:swingL .35s ease-out}
+#slapTool.swing.from-right{right:calc(50% - 190px);animation:swingR .35s ease-out}
+@keyframes swingL{0%{opacity:1;transform:translateX(-60px) rotate(-40deg)}45%{opacity:1;transform:translateX(70px) rotate(10deg)}100%{opacity:0;transform:translateX(40px) rotate(0)}}
+@keyframes swingR{0%{opacity:1;transform:translateX(60px) rotate(40deg) scaleX(-1)}45%{opacity:1;transform:translateX(-70px) rotate(-10deg) scaleX(-1)}100%{opacity:0;transform:translateX(-40px) scaleX(-1)}}
+#slapFx{position:absolute;inset:0;pointer-events:none;z-index:6}
+.sfx{position:absolute;transform:translate(-50%,-50%);font-weight:900;pointer-events:none}
+.sfx.pow{font-size:34px;color:#E53935;-webkit-text-stroke:2px #fff;paint-order:stroke;font-family:var(--hand);animation:pow .7s cubic-bezier(.3,1.8,.5,1) forwards}
+@keyframes pow{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-15deg)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(-8deg)}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
+.sfx.star{font-size:20px;color:#F5B83D;animation:pop2 .65s ease-out forwards}
+@keyframes pop2{from{opacity:1;transform:translate(-50%,-50%) scale(.3)}to{opacity:0;transform:translate(-50%,-50%) scale(1.4) rotate(120deg)}}
+#slapBubble{position:absolute;right:6%;top:24px;max-width:38%;padding:10px 14px;border-radius:16px;background:#fff;color:#333;font-size:15px;font-weight:700;box-shadow:0 4px 14px #0000001a;opacity:0;z-index:4}
+#slapBubble::after{content:"";position:absolute;left:-9px;top:50%;transform:translateY(-50%);border:9px solid transparent;border-right-color:#fff;border-left:0}
+#slapBubble.show{animation:bubble 2.2s ease forwards}
+@keyframes bubble{0%{opacity:0;transform:scale(.6)}12%,80%{opacity:1;transform:scale(1)}100%{opacity:0}}
+.slap-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}
+.weapons{display:flex;gap:6px}
+.weapons button{min-height:42px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px}
+.weapons button[aria-checked=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700}
+.slap-count{font-size:14px;color:var(--muted)}.slap-count b{font-size:22px;color:var(--ink)}
+.face-panel{padding:18px}
+.face-panel h2{margin:0 0 4px;font-size:15px}
+.face-panel p{margin:0 0 10px;font-size:12px;color:var(--muted);line-height:1.6}
+.face-panel label.field{display:block;margin:10px 0;font-size:13px}
+.face-panel input[type=text]{display:block;width:100%;margin-top:5px;min-height:38px;padding:7px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.face-panel input[type=range]{width:100%;accent-color:var(--accent)}
+.upload{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;border-radius:12px;border:1.5px dashed var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700;cursor:pointer}
+.upload input{position:absolute;width:1px;height:1px;opacity:0}
+.upload:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;margin:8px 0}
+.check input{accent-color:var(--accent);width:18px;height:18px}
+#slapNote{display:block;font-size:12px;color:var(--danger);min-height:16px}
+@media(max-width:640px){
+ .game-tabs{gap:6px}.game-tabs button{flex:1;justify-content:center;padding:8px 6px;font-size:13px;flex-direction:column;gap:2px;min-height:58px}
+ #slapStage{height:360px}.boss-body{width:250px;margin-left:-125px}#slapHead{width:170px;height:170px;margin-left:-85px;top:96px}
+ #slapTool{font-size:70px;top:140px}#slapTool.swing.from-left{left:calc(50% - 150px)}#slapTool.swing.from-right{right:calc(50% - 150px)}
+ #slapBubble{right:3%;max-width:42%;font-size:13px}
+ .muyu-panel,.slap-panel{padding:14px}
+}
 @media(prefers-reduced-motion:reduce){.bubble{animation:none}}
 </style></head><body class="app">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -107,12 +193,18 @@
 <header class="page-head">
 <a class="back" href="index.html" aria-label="回首頁"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg></a>
 <span class="page-icon"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg></span>
-<div><h1>舒壓小遊戲</h1><p class="sub">戳戳泡泡，把壓力一起戳破</p></div>
+<div><h1>舒壓小遊戲</h1><p class="sub">戳泡泡、敲木魚、打老闆，挑一個放鬆一下</p></div>
 <span class="spacer"></span>
 <div data-theme-switch></div>
 </header>
+<div class="game-tabs" role="tablist" aria-label="選擇小遊戲">
+<button type="button" role="tab" data-game="bubble" aria-controls="panel-bubble"><span class="ge" aria-hidden="true">🫧</span>戳泡泡</button>
+<button type="button" role="tab" data-game="muyu" aria-controls="panel-muyu"><span class="ge" aria-hidden="true">🪵</span>敲木魚</button>
+<button type="button" role="tab" data-game="slap" aria-controls="panel-slap"><span class="ge" aria-hidden="true">👋</span>打老闆</button>
+</div>
 <div class="relax-grid">
-<section class="panel sheet-panel" aria-label="氣泡紙">
+<div class="main-col">
+<section id="panel-bubble" class="panel sheet-panel" data-panel="bubble" role="tabpanel" aria-label="戳泡泡">
 <div class="sheet-top"><h2>戳泡泡</h2>
 <div class="tools">
 <button id="soundBtn" class="btn" type="button" aria-pressed="true"><svg class="i" aria-hidden="true"><use href="#i-sound"/></svg><span>聲音 開</span></button>
@@ -123,23 +215,72 @@
 <div id="sheet"></div>
 <p class="hint">點一下戳一顆，按住滑過去可以一次戳一整排。灰色的是你的煩惱泡泡，用力把它戳破吧！</p>
 </section>
+<section id="panel-muyu" class="panel muyu-panel" data-panel="muyu" role="tabpanel" aria-label="敲木魚" hidden>
+<div id="muyuStage" role="button" tabindex="0" aria-label="敲木魚（也可以按空白鍵）">
+<svg viewBox="0 0 300 240" aria-hidden="true">
+<defs><radialGradient id="wood" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#D99A5B"/><stop offset=".55" stop-color="#B46F36"/><stop offset="1" stop-color="#7E4A22"/></radialGradient></defs>
+<ellipse cx="150" cy="212" rx="118" ry="22" fill="#D8574B"/><ellipse cx="150" cy="206" rx="112" ry="18" fill="#EE7A62"/>
+<g class="fish">
+<path d="M48 150C46 98 92 64 150 62C212 60 256 98 254 150C252 188 214 206 150 206C88 206 50 190 48 150Z" fill="url(#wood)" stroke="#6B3D1A" stroke-width="4"/>
+<path d="M60 150C110 170 194 170 244 148" fill="none" stroke="#4A2810" stroke-width="9" stroke-linecap="round"/>
+<path d="M62 150C110 162 194 162 242 146" fill="none" stroke="#2E180A" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+<path d="M110 92Q126 82 142 92M150 88Q166 78 182 88M128 112Q144 102 160 112" fill="none" stroke="#8A5126" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+<circle cx="84" cy="122" r="7" fill="#4A2810"/><circle cx="216" cy="122" r="7" fill="#4A2810"/>
+<ellipse cx="112" cy="86" rx="34" ry="13" fill="#fff" opacity=".22" transform="rotate(-14 112 86)"/>
+</g>
+<g class="mallet"><path d="M270 6L214 70" stroke="#6B3D1A" stroke-width="13" stroke-linecap="round"/><path d="M270 6L214 70" stroke="#C48A4E" stroke-width="7" stroke-linecap="round"/><ellipse cx="206" cy="76" rx="22" ry="15" fill="#E9C9A0" stroke="#6B3D1A" stroke-width="3" transform="rotate(-48 206 76)"/></g>
+</svg>
+</div>
+<p id="breathCue" aria-live="polite">點木魚，或按空白鍵</p>
+<div class="muyu-tools">
+<button id="autoBtn" class="btn" type="button" aria-pressed="false"><span aria-hidden="true">🔁</span><span>自動敲</span></button>
+<label>節奏<select id="bpm"><option value="40">很慢</option><option value="60">慢</option><option value="80">中</option><option value="110">快</option></select></label>
+<label>飄出的字<select id="meritWord"><option>功德 +1</option><option>平靜 +1</option><option>好運 +1</option><option>耐心 +1</option><option>煩惱 −1</option><option>壓力 −1</option></select></label>
+</div>
+<div class="stats"><div class="stat"><b id="muyuToday">0</b><small>今天敲了</small></div><div class="stat"><b id="muyuTotal">0</b><small>累計功德</small></div></div>
+</section>
+<section id="panel-slap" class="panel slap-panel" data-panel="slap" role="tabpanel" aria-label="打老闆" hidden>
+<div id="slapStage">
+<div class="boss-body" aria-hidden="true"><svg viewBox="0 0 300 200"><path d="M20 200C24 140 70 104 150 104C230 104 276 140 280 200Z" fill="#3E4A5C" stroke="#2A3240" stroke-width="4"/><path d="M118 104L150 150L182 104Z" fill="#fff"/><path d="M142 112L158 112L162 126L150 178L138 126Z" fill="#D9534F" stroke="#9E2F2B" stroke-width="2"/><path d="M118 104L134 150L150 132M182 104L166 150L150 132" fill="none" stroke="#2A3240" stroke-width="4" stroke-linejoin="round"/></svg><span id="nameTag">老闆</span></div>
+<div id="slapHead" role="button" tabindex="0" aria-label="搧巴掌（點臉的左邊或右邊）"><img id="slapFace" src="slap-boss.svg" alt="" draggable="false"><span id="slapRed"></span><span id="slapMarks"></span></div>
+<div id="slapBubble" aria-live="polite"><span id="slapSay"></span></div>
+<span id="slapTool" aria-hidden="true">🖐️</span>
+<div id="slapFx" aria-hidden="true"></div>
+</div>
+<div class="slap-bar">
+<div class="weapons" role="radiogroup" aria-label="選工具"><button type="button" role="radio" data-weapon="hand">🖐️ 巴掌</button><button type="button" role="radio" data-weapon="slipper">🩴 拖鞋</button><button type="button" role="radio" data-weapon="hammer">🔨 玩具槌</button></div>
+<span class="slap-count">今天打了 <b id="slapCount">0</b> 下</span>
+</div>
+<p class="hint">點臉的左邊打左臉、點右邊打右臉，連打五下會暈頭轉向。</p>
+</section>
+</div>
 <div class="side-col">
 <section class="panel pet-panel" aria-label="小動物">
 <div class="relax-bubble"><span id="relaxFace" aria-hidden="true">😊</span><span id="relaxSay" aria-live="polite"></span></div>
 <button id="relaxPet" type="button" aria-label="摸摸小動物"><img data-pose="heart" alt="" draggable="false"></button>
-<div class="stats"><div class="stat"><b id="roundCount">0 / 0</b><small>這一張</small></div><div class="stat"><b id="totalCount">0</b><small>今天總共戳破</small></div></div>
+<div class="stats" data-panel="bubble"><div class="stat"><b id="roundCount">0 / 0</b><small>這一張</small></div><div class="stat"><b id="totalCount">0</b><small>今天總共戳破</small></div></div>
 </section>
-<section class="panel worry-panel" aria-labelledby="worryTitle">
+<section class="panel worry-panel" data-panel="bubble" aria-labelledby="worryTitle">
 <h2 id="worryTitle">把煩惱包進泡泡</h2>
 <p>寫下讓你煩的事（12 字內），它會變成灰色泡泡，戳破它！煩惱不會被儲存。</p>
 <form id="worryForm"><input id="worryInput" maxlength="12" placeholder="例如：報告寫不完" aria-label="煩惱"><button class="btn primary" type="submit">包進去</button></form>
 <small id="worryCount"></small>
+</section>
+<section class="panel face-panel" data-panel="slap" aria-labelledby="faceTitle" hidden>
+<h2 id="faceTitle">換成你想打的人</h2>
+<p>上傳一張正面照片當頭像。照片只在你的瀏覽器裡處理，不會上傳到任何地方。</p>
+<label class="upload">📷 選擇照片<input id="slapFile" type="file" accept="image/*"></label>
+<label class="field">縮放（讓臉填滿圓圈）<input id="slapZoom" type="range" min="1" max="2.5" step="0.05" value="1.2"></label>
+<label class="field">名牌（選填）<input id="slapName" type="text" maxlength="8" placeholder="例如：王經理"></label>
+<label class="check"><input id="slapRemember" type="checkbox"> 記住在這台裝置</label>
+<button id="slapReset" class="btn small" type="button">換回預設老闆</button>
+<small id="slapNote"></small>
 </section>
 </div>
 </div>
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016a"></script><script src="messages.js?v=1016a"></script><script src="relax.js?v=1016a"></script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016b"></script><script src="messages.js?v=1016b"></script><script src="relax.js?v=1016b"></script><script src="muyu.js?v=1016b"></script><script src="slap.js?v=1016b"></script>
 <script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>
