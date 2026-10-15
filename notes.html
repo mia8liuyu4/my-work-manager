@@ -1,11 +1,145 @@
-<!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>我的筆記</title><style>
-*{box-sizing:border-box}body{margin:0;background:#F8F5E9;color:#594539;font-family:"Microsoft JhengHei",system-ui,sans-serif}button,input,textarea{font:inherit}button,a{cursor:pointer}button{padding:10px 14px;min-height:44px;border:1px solid #e7ddc7;border-radius:10px;background:#fffdf7;color:inherit}button:hover{background:#fff1dc}button.primary{background:#a65450;color:white;border:0}button:disabled{opacity:.5;cursor:default}a{color:#a65450;text-decoration:none}header{padding:16px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#fffdf7;border-bottom:1px solid #e7ddc7}header strong{font-size:20px}.spacer{flex:1}small,.muted{color:#806c5c;font-size:13px;line-height:1.8}.hidden{display:none!important}#login{max-width:440px;margin:70px auto;background:#fffdf7;padding:32px;border:1px solid #e7ddc7;border-radius:20px}label{display:block;margin:18px 0}input{padding:12px;width:100%;border:1px solid #e7ddc7;border-radius:10px;background:#fffdf7;color:inherit}label input{margin-top:8px}#workspace{display:grid;grid-template-columns:210px 260px minmax(0,1fr);min-height:calc(100vh - 100px)}aside{padding:20px;border-right:1px solid #e7ddc7}aside h2{font-size:15px;margin:0 0 16px}.list{display:flex;flex-direction:column;gap:8px;margin:16px 0}.list button{text-align:left;overflow-wrap:anywhere}.list .selected{background:#FFCA88;border-color:#e8b67b}.page-title{font-weight:700;display:block}.preview{font-size:12px;opacity:.7;display:block;margin-top:6px}#editor{background:#fffdf7;padding:30px;min-width:0}#title{font-size:26px;font-weight:700;border:0;border-radius:0;padding:12px 0;background:transparent}textarea{display:block;width:100%;min-height:55vh;resize:vertical;border:0;background:transparent;color:inherit;padding:18px 0;line-height:1.9;outline:none}.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.danger{color:#a65450}#message{padding:10px 24px;min-height:40px;color:#9b423c;white-space:pre-wrap}#conflict{background:#fff1cd;padding:18px;border-radius:12px;margin:16px 0}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #DE7272;outline-offset:3px}@media(max-width:850px){#workspace{grid-template-columns:180px 1fr}#editor{grid-column:1/-1;border-top:1px solid #e7ddc7}}@media(max-width:520px){header{padding:14px}#workspace{display:block}aside{border-right:0;border-bottom:1px solid #e7ddc7;padding:16px}.list{max-height:180px;overflow:auto}#editor{padding:20px}#login{margin:30px 16px}#account{max-width:100%;overflow-wrap:anywhere}}
-
-/* 使用者指定筆記色盤 */
-:root{--sand:#D7C097;--cream:#E7DEAF;--leaf:#73AF6F;--teal:#007E6E}
-body{background:#F5F3E7;color:#314B42}header{background:#E7DEAF;border-color:#D7C097}a{color:#006C5E}#login{background:#FFFEF7;border-color:#D7C097}button{background:#FFFEF7;border-color:#D7C097;color:#314B42}button:hover{background:#E7DEAF}button.primary{background:#007E6E;color:white}button.primary:hover{background:#00685B}aside{background:#F0EBD6;border-color:#D7C097}aside:nth-child(2){background:#F8F5E8}#editor{background:#FFFEF7;border-color:#D7C097}.list .selected{background:#73AF6F;border-color:#639D60;color:#17371D}input{background:#FFFEF7;border-color:#D7C097;color:#314B42}textarea{color:#314B42}small,.muted{color:#5D7060}#message{color:#805131}.danger{color:#8A463D}#conflict{background:#E7DEAF;color:#4E5032}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:#007E6E}
-</style><link rel="stylesheet" href="auth-gate.css"><link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"></head><body>
-<header><a href="index.html" id="home">← 首頁</a><strong>我的筆記</strong><span class="spacer"></span><small id="account"></small><button id="logout" class="hidden">登出</button></header><div id="message" role="status" aria-live="polite"></div>
-<section id="login"><h1>留住每一個想法</h1><p class="muted">使用自己的帳號登入，電腦與手機共用筆記。</p><form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required></label><label>密碼<input id="password" type="password" autocomplete="current-password" required></label><button class="primary" id="loginButton">登入筆記</button></form><p class="muted">第一版提供文字筆記。分類、標題與內文儲存在你的 Supabase。</p></section>
-<div id="workspace" class="hidden"><aside><h2>筆記分類</h2><button id="addSection">＋ 新增分類</button><div id="sections" class="list"></div><button id="renameSection">重新命名分類</button></aside><aside><h2>分類中的頁面</h2><input id="search" placeholder="搜尋此分類的筆記" aria-label="搜尋筆記"><div class="actions"><button id="addPage">＋ 新增筆記</button><button id="refresh">同步</button></div><div id="pages" class="list"></div></aside><section id="editor"><p id="empty" class="muted">選擇或新增一篇筆記，開始記錄。</p><div id="fields" class="hidden"><input id="title" maxlength="200" aria-label="筆記標題"><small id="saveStatus" role="status" aria-live="polite"></small><div id="conflict" class="hidden"><strong>有其他裝置修改了這篇筆記，或筆記已被刪除。</strong><p>你的文字仍保留在編輯區。可先下載，再載入雲端版本；或將目前內容另存新頁。</p><div class="actions"><button id="cloud">載入雲端版本</button><button id="copy">另存新頁</button></div></div><textarea id="content" aria-label="筆記內文" placeholder="寫下會議紀錄、研究想法或生活靈感…"></textarea><div class="actions"><button id="save" class="primary">立即儲存</button><button id="download">下載這篇文字</button><button id="deletePage" class="danger">刪除筆記</button></div><p class="muted">停止輸入約 1 秒自動儲存。其他裝置的更新每 15 秒檢查一次；離線時請保留此頁並下載文字備份。</p></div></section></div>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="notes.js"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript></body></html>
+<!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
+<link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="auth-gate.css">
+<link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>我的筆記｜我的日常</title><style>
+.notes-head .search{position:relative;flex:1 1 220px;max-width:340px}
+.search input{width:100%;min-height:42px;padding:9px 16px 9px 40px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.search .i{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
+.account{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);max-width:100%}
+#account{overflow-wrap:anywhere}
+#message{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--danger-soft);color:var(--danger);white-space:pre-wrap;font-size:14px}
+#message:empty{display:none}
+#login{max-width:440px;margin:40px auto;padding:30px}
+#login h2{margin:0 0 6px;font-size:22px}
+#login label{display:block;margin:16px 0;font-size:14px}
+#login input{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+#login .btn{width:100%}
+#workspace{display:grid;grid-template-columns:210px 300px minmax(0,1fr);gap:18px;align-items:start}
+.cat-panel,.pages-panel{padding:18px}
+.cat-panel{position:sticky;top:18px;display:flex;flex-direction:column}
+.list{display:flex;flex-direction:column;gap:4px;margin:0 0 12px}
+#sections button{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:9px 12px;border:1px solid transparent;border-radius:12px;background:none;text-align:left;overflow-wrap:anywhere}
+#sections button::before{content:"";width:10px;height:10px;border-radius:4px;flex-shrink:0;background:var(--accent)}
+#sections button:nth-child(4n+2)::before{background:var(--mint)}
+#sections button:nth-child(4n+3)::before{background:var(--butter)}
+#sections button:nth-child(4n+4)::before{background:var(--muted)}
+#sections button:hover{background:var(--surface2)}
+#sections button.selected{background:var(--accent-soft);color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 30%,transparent);font-weight:700}
+.cat-actions{display:flex;flex-direction:column;gap:8px}
+.cat-actions .btn{width:100%}
+.cat-foot{margin-top:18px;text-align:center}
+.cat-foot img{width:118px;display:block;margin:0 auto}
+.cat-foot p{margin:4px 0 0;font-size:14px;line-height:1.7;color:var(--muted)}
+#pages{gap:10px;max-height:calc(100vh - 210px);overflow:auto;padding:2px}
+#pages button{display:grid;grid-template-columns:46px minmax(0,1fr);column-gap:12px;row-gap:3px;align-items:start;width:100%;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);text-align:left;transition:border-color .15s,transform .15s}
+#pages button:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-1px)}
+#pages button::before{content:"✿";grid-row:1/span 3;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:20px;background:var(--mint-soft);color:var(--mint-text)}
+#pages button:nth-child(4n+2)::before{content:"✎";background:var(--accent-soft);color:var(--accent-text)}
+#pages button:nth-child(4n+3)::before{content:"☁";background:var(--butter-soft);color:var(--butter-text)}
+#pages button:nth-child(4n+4)::before{content:"♡";background:var(--lilac-soft);color:var(--accent-text)}
+#pages button.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 55%,var(--surface))}
+.page-title{display:block;font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.page-date{display:block;font-size:11px;color:var(--muted)}
+.preview{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.6;color:var(--muted);margin-top:2px}
+#editor{padding:26px 30px;min-height:calc(100vh - 140px);min-width:0}
+#empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:50vh;text-align:center;color:var(--muted)}
+#empty img{width:150px}
+#empty p{margin:0;font-size:15px}
+#title{display:block;width:100%;font-size:26px;font-weight:700;border:0;border-bottom:1.5px dashed var(--line);border-radius:0;padding:6px 0 12px;background:transparent;outline-offset:6px}
+#saveStatus{display:inline-block;margin-top:8px;font-size:12px;color:var(--muted)}
+#content{display:block;width:100%;min-height:52vh;resize:vertical;border:0;outline:none;margin-top:14px;padding:0;font-size:16px;line-height:32px;background:repeating-linear-gradient(to bottom,transparent 0 31px,color-mix(in srgb,var(--line) 75%,transparent) 31px 32px);background-attachment:local}
+[data-theme^=minimal] #content{background:none;line-height:1.8}
+#content:focus-visible{outline:none}
+#conflict{margin:14px 0;padding:16px;border-radius:14px;background:var(--butter-soft)}
+#conflict p{margin:8px 0;font-size:14px;line-height:1.7}
+.editor-actions{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px}
+.editor-hint{font-size:12px;line-height:1.7;color:var(--muted);margin:0}
+[data-theme^=minimal] #pages button{grid-template-columns:minmax(0,1fr)}
+[data-theme^=minimal] #pages button::before{display:none}
+[data-theme^=minimal] .side-foot,[data-theme^=minimal] .cat-foot{display:none}
+@media(max-width:1200px){#workspace{grid-template-columns:190px 250px minmax(0,1fr)}}
+@media(max-width:1060px){#workspace{grid-template-columns:200px minmax(0,1fr)}#editor{grid-column:1/-1;min-height:0}.cat-panel{position:static}}
+#workspace>*{min-width:0;max-width:100%}
+@media(max-width:640px){
+ .page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}
+ .page-head h1{font-size:21px}
+ .notes-head .search{order:5;max-width:none;flex-basis:100%}
+ .account{order:6}
+ #workspace{display:flex;flex-direction:column;gap:12px}
+ .cat-panel,.pages-panel{padding:14px}
+ #sections{flex-direction:row;overflow-x:auto;gap:6px}
+ #sections button{width:auto;white-space:nowrap;border-color:var(--line)}
+ .cat-actions{flex-direction:row}.cat-foot{display:none}
+ #pages{max-height:300px}
+ #editor{padding:20px}
+ #title{font-size:21px}
+}
+</style></head><body class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3.5"/></symbol>
+<symbol id="i-food" viewBox="0 0 24 24"><path d="M6 3v7a2.5 2.5 0 0 0 5 0V3M8.5 3v18M17.5 21V3c-2.2 1-3.5 3.6-3.5 7 0 2.2.9 3.5 3.5 3.5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="m14.5 5-7 7 7 7"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 20.5v-4h3v4"/></symbol>
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5v10.5h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+<symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+</defs></svg>
+<div class="shell">
+<aside class="app-side" aria-label="側邊欄">
+<a class="side-brand" href="index.html"><img src="bunny.svg" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
+<nav class="side-links" aria-label="主要導覽">
+<a href="index.html" id="home"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
+<a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
+<a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
+<a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
+<a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
+</nav>
+<div class="side-foot deco"><img src="bunny.svg" alt=""><p class="hand">相信自己，<br>你已經做得很好了！</p></div>
+</aside>
+<main class="app-main">
+<header class="page-head notes-head">
+<span class="page-icon"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg></span>
+<div><h1>筆記</h1><p class="sub">記錄每一個靈感與想法</p></div>
+<span class="spacer"></span>
+<label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input id="search" type="search" placeholder="搜尋此分類的筆記…" aria-label="搜尋筆記"></label>
+<button id="addPage" class="btn primary pill" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>新增筆記</button>
+<div data-theme-switch></div>
+<div class="account"><small id="account"></small><button id="logout" class="btn small hidden" type="button">登出</button></div>
+</header>
+<div id="message" role="status" aria-live="polite"></div>
+<section id="login" class="panel"><h2>留住每一個想法</h2><p class="muted">使用自己的帳號登入，電腦與手機共用筆記。</p><form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required></label><label>密碼<input id="password" type="password" autocomplete="current-password" required></label><button class="btn primary" id="loginButton">登入筆記</button></form></section>
+<div id="workspace" class="hidden">
+<aside class="panel cat-panel" aria-label="筆記分類">
+<h2 class="panel-title">筆記分類</h2>
+<div id="sections" class="list"></div>
+<div class="cat-actions"><button id="addSection" class="btn" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>新增分類</button><button id="renameSection" class="btn ghost small" type="button">重新命名分類</button></div>
+<div class="cat-foot deco"><img src="bunny-note.svg" alt=""><p class="hand">小小的筆記，<br>都是未來的大想法 ✨</p></div>
+</aside>
+<section class="panel pages-panel" aria-label="分類中的筆記">
+<h2 class="panel-title">這個分類的筆記<button id="refresh" class="btn small ghost" type="button"><svg class="i" aria-hidden="true"><use href="#i-sync"/></svg>同步</button></h2>
+<div id="pages" class="list"></div>
+</section>
+<section id="editor" class="panel" aria-label="筆記編輯區">
+<div id="empty"><img class="deco" src="bunny-note.svg" alt=""><p>選擇或新增一篇筆記，開始記錄。</p></div>
+<div id="fields" class="hidden">
+<input id="title" maxlength="200" aria-label="筆記標題" placeholder="筆記標題">
+<small id="saveStatus" role="status" aria-live="polite"></small>
+<div id="conflict" class="hidden"><strong>有其他裝置修改了這篇筆記，或筆記已被刪除。</strong><p>你的文字仍保留在編輯區。可先下載，再載入雲端版本；或將目前內容另存新頁。</p><div class="editor-actions"><button id="cloud" class="btn" type="button">載入雲端版本</button><button id="copy" class="btn" type="button">另存新頁</button></div></div>
+<textarea id="content" aria-label="筆記內文" placeholder="寫下會議紀錄、研究想法或生活靈感…"></textarea>
+<div class="editor-actions"><button id="save" class="btn primary" type="button">立即儲存</button><button id="download" class="btn" type="button">下載這篇文字</button><button id="deletePage" class="btn danger" type="button">刪除筆記</button></div>
+<p class="editor-hint">停止輸入約 1 秒自動儲存。其他裝置的更新每 15 秒檢查一次；離線時請保留此頁並下載文字備份。</p>
+</div>
+</section>
+</div>
+</main>
+</div>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="notes.js"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+</body></html>
