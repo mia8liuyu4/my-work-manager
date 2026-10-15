@@ -1,0 +1,145 @@
+<!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="theme.js?v=1016a"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
+<link rel="stylesheet" href="theme.css?v=1016a"><link rel="stylesheet" href="auth-gate.css?v=1016a">
+<link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>舒壓小遊戲｜我的日常</title><style>
+.relax-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;align-items:start}
+.sheet-panel{padding:22px}
+.sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.sheet-top h2{margin:0;font-size:16px}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tools .btn{min-height:38px;font-size:13px}
+.tools .btn[aria-pressed=false]{color:var(--muted)}
+.tools .btn .i{width:18px;height:18px}
+#newSheet.glow{background:var(--accent);color:var(--accent-ink);border-color:transparent;animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 25%,transparent)}}
+.progress{height:8px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:16px}
+#roundBar{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--mint),var(--accent));transition:width .2s}
+#sheet{--cols:8;position:relative;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:8px;padding:16px;border-radius:calc(var(--radius) - 6px);background:linear-gradient(135deg,color-mix(in srgb,var(--accent-soft) 70%,var(--surface)),color-mix(in srgb,var(--mint-soft) 80%,var(--surface)));touch-action:none;user-select:none;-webkit-user-select:none}
+#sheet.done{animation:sheetdone .9s ease}
+@keyframes sheetdone{30%{transform:scale(1.015)}60%{transform:scale(.995)}}
+.bubble{position:relative;aspect-ratio:1;width:100%;padding:0;border:0;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 34% 30%,#fff 0 12%,color-mix(in srgb,#fff 70%,var(--accent)) 13% 30%,color-mix(in srgb,#fff 45%,var(--accent)) 70%,color-mix(in srgb,#fff 30%,var(--accent)) 100%);box-shadow:inset -3px -4px 8px color-mix(in srgb,var(--accent) 25%,transparent),0 3px 6px #00000014;transition:transform .12s;animation:wobble 3.6s ease-in-out var(--d) infinite;-webkit-tap-highlight-color:transparent;overflow:hidden}
+.bubble:nth-child(3n){background:radial-gradient(circle at 34% 30%,#fff 0 12%,color-mix(in srgb,#fff 70%,var(--mint)) 13% 30%,color-mix(in srgb,#fff 45%,var(--mint)) 70%,color-mix(in srgb,#fff 30%,var(--mint)) 100%)}
+.bubble:nth-child(5n+2){background:radial-gradient(circle at 34% 30%,#fff 0 12%,color-mix(in srgb,#fff 70%,var(--butter)) 13% 30%,color-mix(in srgb,#fff 45%,var(--butter)) 70%,color-mix(in srgb,#fff 30%,var(--butter)) 100%)}
+.bubble:hover:not(.popped){transform:scale(1.06)}
+@keyframes wobble{0%,100%{transform:scale(1)}50%{transform:scale(1.03,.97)}}
+.bubble.popped{animation:popped .25s ease-out forwards;cursor:default;background:color-mix(in srgb,var(--surface) 70%,transparent)!important;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--line) 90%,transparent)}
+.bubble.popped::before,.bubble.popped::after{content:"";position:absolute;left:28%;right:28%;top:46%;height:1.5px;background:var(--line);transform:rotate(25deg)}
+.bubble.popped::after{transform:rotate(-35deg);left:34%;right:22%;top:54%}
+@keyframes popped{0%{transform:scale(1.15)}60%{transform:scale(.82)}100%{transform:scale(.88)}}
+.bubble.worry{background:radial-gradient(circle at 34% 30%,#fff 0 10%,#C9CED8 11% 40%,#A9B0BE 100%)!important}
+.bubble.worry span{position:absolute;inset:8%;display:grid;place-items:center;font-size:clamp(9px,1.2vw,12px);line-height:1.15;font-weight:700;color:#4B5563;overflow:hidden;word-break:break-all;text-align:center}
+.bubble.worry.fresh{animation:fresh .5s cubic-bezier(.3,1.6,.6,1)}
+@keyframes fresh{from{transform:scale(.3)}to{transform:scale(1)}}
+.bubble.worry.popped{background:color-mix(in srgb,var(--surface) 70%,transparent)!important}.bubble.worry.popped span{opacity:.45;text-decoration:line-through}
+.pop-bit{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--accent);pointer-events:none;animation:bit .5s ease-out forwards}
+.pop-bit:nth-of-type(2n){background:var(--butter)}
+@keyframes bit{from{opacity:1;transform:translate(-50%,-50%)}to{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(.4)}}
+.hint{margin:12px 0 0;font-size:13px;color:var(--muted);line-height:1.7}
+.side-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:18px}
+.pet-panel{padding:18px;text-align:center}
+.relax-bubble{display:flex;align-items:center;gap:8px;min-height:52px;padding:10px 14px;border-radius:16px;background:var(--accent-soft);text-align:left;font-family:var(--hand);font-size:15px;line-height:1.5;position:relative}
+.relax-bubble::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);border:9px solid transparent;border-top-color:var(--accent-soft);border-bottom:0}
+#relaxFace{font-size:22px;flex-shrink:0}
+#relaxFace.pop{animation:fp .35s cubic-bezier(.3,1.6,.6,1)}
+@keyframes fp{from{transform:scale(.3)}to{transform:scale(1)}}
+#relaxPet{display:block;margin:14px auto 0;padding:0;border:0;background:none;cursor:pointer}
+#relaxPet img{display:block;width:auto;max-width:170px;max-height:150px;margin:0 auto;transform-origin:50% 100%}
+#relaxPet.bob img{animation:bob .5s cubic-bezier(.3,1.5,.6,1)}
+@keyframes bob{40%{transform:translateY(-10px) scale(1.03,.97)}}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.stat{padding:10px;border-radius:14px;background:var(--surface2)}
+.stat b{display:block;font-size:20px}
+.stat small{font-size:12px;color:var(--muted)}
+.worry-panel{padding:18px}
+.worry-panel h2{margin:0 0 4px;font-size:15px}
+.worry-panel p{margin:0 0 10px;font-size:12px;color:var(--muted);line-height:1.6}
+#worryForm{display:flex;gap:8px}
+#worryInput{flex:1;min-width:0;min-height:40px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+#worryCount{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
+[data-theme^=minimal] .bubble,[data-theme^=minimal] .bubble:nth-child(n){background:radial-gradient(circle at 34% 30%,#fff 0 12%,var(--surface2) 13% 60%,color-mix(in srgb,var(--line) 80%,var(--surface)) 100%)}
+[data-theme=minimal-dark] .bubble,[data-theme=minimal-dark] .bubble:nth-child(n){background:radial-gradient(circle at 34% 30%,#5a5a62 0 12%,#2a2a30 13% 60%,#1f1f23 100%)}
+[data-theme^=minimal] #sheet{background:var(--surface2)}
+@media(max-width:1060px){.relax-grid{grid-template-columns:1fr}.side-col{position:static;display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:640px){
+ .page-head{flex-wrap:nowrap}.page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}.page-head h1{font-size:21px}.page-head .sub{font-size:12px}
+ .side-col{grid-template-columns:1fr}
+ .sheet-panel{padding:14px}#sheet{gap:6px;padding:10px}
+ .pet-panel{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;text-align:left}
+ #relaxPet{grid-row:1/3;margin:0}#relaxPet img{max-width:110px;max-height:100px}
+ .relax-bubble::after{left:-9px;top:50%;bottom:auto;transform:translateY(-50%);border:9px solid transparent;border-right-color:var(--accent-soft);border-left:0}
+ .stats{margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){.bubble{animation:none}}
+</style></head><body class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3.5"/></symbol>
+<symbol id="i-food" viewBox="0 0 24 24"><path d="M6 3v7a2.5 2.5 0 0 0 5 0V3M8.5 3v18M17.5 21V3c-2.2 1-3.5 3.6-3.5 7 0 2.2.9 3.5 3.5 3.5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="m14.5 5-7 7 7 7"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 20.5v-4h3v4"/></symbol>
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5v10.5h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+<symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+<symbol id="i-bubble" viewBox="0 0 24 24"><circle cx="9" cy="10" r="5.5"/><circle cx="16.5" cy="15.5" r="3.5"/><circle cx="17" cy="6" r="2"/><path d="M6.8 8.2a2.6 2.6 0 0 1 2-1.4"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
+</defs></svg>
+<div class="shell">
+<aside class="app-side" aria-label="側邊欄">
+<a class="side-brand" href="index.html"><img data-pose="face" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
+<nav class="side-links" aria-label="主要導覽">
+<a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
+<a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
+<a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
+<a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
+<a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
+<a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
+</nav>
+<div class="side-foot deco"><img data-pose="note" alt=""><p class="hand" data-msg="side">慢慢來，<br>會更好喔！</p></div>
+</aside>
+<main class="app-main">
+<header class="page-head">
+<a class="back" href="index.html" aria-label="回首頁"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg></a>
+<span class="page-icon"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg></span>
+<div><h1>舒壓小遊戲</h1><p class="sub">戳戳泡泡，把壓力一起戳破</p></div>
+<span class="spacer"></span>
+<div data-theme-switch></div>
+</header>
+<div class="relax-grid">
+<section class="panel sheet-panel" aria-label="氣泡紙">
+<div class="sheet-top"><h2>戳泡泡</h2>
+<div class="tools">
+<button id="soundBtn" class="btn" type="button" aria-pressed="true"><svg class="i" aria-hidden="true"><use href="#i-sound"/></svg><span>聲音 開</span></button>
+<button id="buzzBtn" class="btn" type="button" aria-pressed="true"><span aria-hidden="true">📳</span><span>震動 開</span></button>
+<button id="newSheet" class="btn" type="button"><svg class="i" aria-hidden="true"><use href="#i-refresh"/></svg><span>換一張</span></button>
+</div></div>
+<div class="progress" aria-hidden="true"><div id="roundBar"></div></div>
+<div id="sheet"></div>
+<p class="hint">點一下戳一顆，按住滑過去可以一次戳一整排。灰色的是你的煩惱泡泡，用力把它戳破吧！</p>
+</section>
+<div class="side-col">
+<section class="panel pet-panel" aria-label="小動物">
+<div class="relax-bubble"><span id="relaxFace" aria-hidden="true">😊</span><span id="relaxSay" aria-live="polite"></span></div>
+<button id="relaxPet" type="button" aria-label="摸摸小動物"><img data-pose="heart" alt="" draggable="false"></button>
+<div class="stats"><div class="stat"><b id="roundCount">0 / 0</b><small>這一張</small></div><div class="stat"><b id="totalCount">0</b><small>今天總共戳破</small></div></div>
+</section>
+<section class="panel worry-panel" aria-labelledby="worryTitle">
+<h2 id="worryTitle">把煩惱包進泡泡</h2>
+<p>寫下讓你煩的事（12 字內），它會變成灰色泡泡，戳破它！煩惱不會被儲存。</p>
+<form id="worryForm"><input id="worryInput" maxlength="12" placeholder="例如：報告寫不完" aria-label="煩惱"><button class="btn primary" type="submit">包進去</button></form>
+<small id="worryCount"></small>
+</section>
+</div>
+</div>
+</main>
+</div>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016a"></script><script src="messages.js?v=1016a"></script><script src="relax.js?v=1016a"></script>
+<script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+</body></html>
