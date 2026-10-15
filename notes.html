@@ -30,7 +30,7 @@
 .cat-actions{display:flex;flex-direction:column;gap:8px}
 .cat-actions .btn{width:100%}
 .cat-foot{margin-top:18px;text-align:center}
-.cat-foot img{width:118px;display:block;margin:0 auto}
+.cat-foot img{width:auto;max-width:130px;max-height:120px;display:block;margin:0 auto}
 .cat-foot p{margin:4px 0 0;font-size:14px;line-height:1.7;color:var(--muted)}
 #pages{gap:10px;max-height:calc(100vh - 210px);overflow:auto;padding:2px}
 #pages button{display:grid;grid-template-columns:46px minmax(0,1fr);column-gap:12px;row-gap:3px;align-items:start;width:100%;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);text-align:left;transition:border-color .15s,transform .15s}
@@ -45,7 +45,7 @@
 .preview{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.6;color:var(--muted);margin-top:2px}
 #editor{padding:26px 30px;min-height:calc(100vh - 140px);min-width:0}
 #empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:50vh;text-align:center;color:var(--muted)}
-#empty img{width:150px}
+#empty img{width:auto;max-width:180px;max-height:170px}
 #empty p{margin:0;font-size:15px}
 #title{display:block;width:100%;font-size:26px;font-weight:700;border:0;border-bottom:1.5px dashed var(--line);border-radius:0;padding:6px 0 12px;background:transparent;outline-offset:6px}
 #saveStatus{display:inline-block;margin-top:8px;font-size:12px;color:var(--muted)}
@@ -93,7 +93,7 @@
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
-<a class="side-brand" href="index.html"><img src="bunny.svg" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
+<a class="side-brand" href="index.html"><img data-pose="face" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
 <nav class="side-links" aria-label="主要導覽">
 <a href="index.html" id="home"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
 <a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
@@ -101,7 +101,7 @@
 <a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
 </nav>
-<div class="side-foot deco"><img src="bunny.svg" alt=""><p class="hand">相信自己，<br>你已經做得很好了！</p></div>
+<div class="side-foot deco"><img data-pose="star" alt=""><p class="hand" data-msg="side">相信自己，<br>你已經做得很好了！</p></div>
 </aside>
 <main class="app-main">
 <header class="page-head notes-head">
@@ -120,14 +120,14 @@
 <h2 class="panel-title">筆記分類</h2>
 <div id="sections" class="list"></div>
 <div class="cat-actions"><button id="addSection" class="btn" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>新增分類</button><button id="renameSection" class="btn ghost small" type="button">重新命名分類</button></div>
-<div class="cat-foot deco"><img src="bunny-note.svg" alt=""><p class="hand">小小的筆記，<br>都是未來的大想法 ✨</p></div>
+<div class="cat-foot deco"><img data-pose="note" alt=""><p class="hand">小小的筆記，<br>都是未來的大想法 ✨</p></div>
 </aside>
 <section class="panel pages-panel" aria-label="分類中的筆記">
 <h2 class="panel-title">這個分類的筆記<button id="refresh" class="btn small ghost" type="button"><svg class="i" aria-hidden="true"><use href="#i-sync"/></svg>同步</button></h2>
 <div id="pages" class="list"></div>
 </section>
 <section id="editor" class="panel" aria-label="筆記編輯區">
-<div id="empty"><img class="deco" src="bunny-note.svg" alt=""><p>選擇或新增一篇筆記，開始記錄。</p></div>
+<div id="empty"><img class="deco" data-pose="note" alt=""><p>選擇或新增一篇筆記，開始記錄。</p></div>
 <div id="fields" class="hidden">
 <input id="title" maxlength="200" aria-label="筆記標題" placeholder="筆記標題">
 <small id="saveStatus" role="status" aria-live="polite"></small>
@@ -141,5 +141,5 @@
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="notes.js"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="messages.js"></script><script src="notes.js"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="auth-gate.css">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>今天吃什麼｜我的日常</title><style>
 .draw-hero{display:flex;align-items:flex-end;justify-content:center;gap:28px;min-height:190px;padding:14px 40px 0;margin-bottom:20px}
-.draw-hero img{width:210px;margin-bottom:-12px;position:relative}
+.draw-hero img{width:auto;max-width:260px;max-height:180px;margin-bottom:0;align-self:flex-end;position:relative}
 .draw-hero .slogan{align-self:center;margin:0;font-size:24px;line-height:1.7;color:var(--accent-text);transform:rotate(-3deg)}
 .draw-hero .rainbow{right:-40px;bottom:-170px}
 .draw-hero .cloud.c1{left:-70px;bottom:-14px}
@@ -66,7 +66,7 @@
 .notice{margin-bottom:20px;padding:20px 22px;background:var(--butter-soft)}
 .notice h2{margin:0 0 6px;font-size:17px}.notice .row{display:flex;gap:8px;margin-top:12px}
 .eat-banner{display:flex;align-items:center;gap:18px;margin-top:20px;padding:10px 28px 0;min-height:110px}
-.eat-banner img{width:120px;margin-bottom:-10px}
+.eat-banner img{width:auto;max-width:130px;max-height:110px;margin-bottom:0;align-self:flex-end}
 .eat-banner p{margin:0;font-size:19px;line-height:1.7;color:var(--accent-text)}
 .eat-banner .cloud{right:-60px;bottom:-30px}
 .foot-note{margin:16px 0 0;text-align:center;font-size:12px;color:var(--muted)}
@@ -94,7 +94,7 @@ dialog .row{display:flex;gap:8px}
 @media(max-width:640px){
  .page-head{flex-wrap:nowrap}.page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}.page-head h1{font-size:21px}.page-head .sub{font-size:12px}
  .draw-card .s3,.draw-card .s4{display:none}
- .draw-hero{min-height:150px;padding:10px 16px 0;gap:10px}.draw-hero img{width:130px}.draw-hero .slogan{font-size:17px}.draw-hero .rainbow{display:none}
+ .draw-hero{min-height:150px;padding:10px 16px 0;gap:10px}.draw-hero img{max-width:150px;max-height:130px}.draw-hero .slogan{font-size:17px}.draw-hero .rainbow{display:none}
  .draw-card{padding:22px 18px}#draw{width:170px;height:170px}
  .list-card,.opts-card{padding:18px}
  .eat-banner{padding:8px 16px 0}.eat-banner img{width:90px}.eat-banner p{font-size:15px}
@@ -117,7 +117,7 @@ dialog .row{display:flex;gap:8px}
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
-<a class="side-brand" href="index.html"><img src="bunny.svg" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
+<a class="side-brand" href="index.html"><img data-pose="face" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
 <nav class="side-links" aria-label="主要導覽">
 <a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
 <a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
@@ -125,7 +125,7 @@ dialog .row{display:flex;gap:8px}
 <a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
 </nav>
-<div class="side-foot deco"><img src="bunny-fork.svg" alt=""><p class="hand">好好吃飯，<br>就是對自己的溫柔 ♡</p></div>
+<div class="side-foot deco"><img data-pose="heart" alt=""><p class="hand" data-msg="side">好好吃飯，<br>就是對自己的溫柔 ♡</p></div>
 </aside>
 <main class="app-main">
 <header class="page-head">
@@ -139,7 +139,7 @@ dialog .row{display:flex;gap:8px}
 <section class="banner draw-hero deco" aria-hidden="true">
 <span class="cloud c1"></span><span class="cloud c2"></span><span class="rainbow"></span>
 <span class="twinkle t1">✦</span><span class="twinkle t2">✧</span><span class="twinkle t3">✦</span>
-<img src="bunny-chef.svg" alt="">
+<img data-pose="chef" alt="">
 <p class="slogan hand">好吃的東西<br>會讓心情變好！♡</p>
 </section>
 
@@ -174,14 +174,14 @@ dialog .row{display:flex;gap:8px}
 
 <section class="panel backup"><details><summary>資料備份與還原</summary><p class="muted">資料僅保存在目前瀏覽器中。換裝置前請先匯出；還原備份會取代目前公司與家裡的清單。</p><div class="row"><button id="export" class="btn" type="button">匯出備份</button><button id="import" class="btn" type="button">匯入備份</button><input type="file" id="file" accept=".json,application/json" hidden></div></details></section>
 
-<section class="banner eat-banner deco" aria-hidden="true"><span class="cloud"></span><img src="bunny-fork.svg" alt=""><p class="hand">好好吃飯，<br>就是對自己最溫柔的照顧 ♡</p></section>
+<section class="banner eat-banner deco" aria-hidden="true"><span class="cloud"></span><img data-pose="fork" alt=""><p class="hand">好好吃飯，<br>就是對自己最溫柔的照顧 ♡</p></section>
 <p class="foot-note">公司與家裡的清單分開儲存。清除瀏覽器資料可能會刪除清單，請定期備份。</p>
 
 <dialog id="editor" aria-labelledby="editorTitle"><div class="dialog-top"><h2 id="editorTitle">新增餐廳</h2><button type="button" id="closeDialog" aria-label="關閉">✕</button></div><form id="form"><label class="field">餐廳名稱<input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當"></label><label class="field">特色／備註<input id="info" type="text" maxlength="500" placeholder="步行時間、推薦餐點…"></label><fieldset><legend>固定公休日 <span class="muted">未勾選表示無固定公休</span></legend><div id="days" class="days"></div></fieldset><p id="formError" role="alert" class="danger"></p><div class="row"><button type="submit" class="btn primary">儲存餐廳</button><button type="button" id="cancel" class="btn">取消</button></div></form></dialog>
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="messages.js"></script><script>
 
 'use strict';
 

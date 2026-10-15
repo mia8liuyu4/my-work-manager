@@ -80,8 +80,8 @@ body.app{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
 .side-links a:hover{background:var(--surface2)}
 .side-links a[aria-current=page]{background:var(--accent-soft);color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 35%,transparent);font-weight:700}
 .side-foot{margin-top:auto;text-align:center}
-.side-foot img{width:120px;display:block;margin:0 auto 6px}
-.side-foot p{margin:0;font-size:14px;line-height:1.7;color:var(--muted)}
+.side-foot img{width:auto;max-width:140px;max-height:130px;display:block;margin:0 auto 6px}
+.side-foot p{margin:0;font-size:14px;line-height:1.7;color:var(--muted);white-space:pre-line}
 
 .app-main{min-width:0;padding:22px 32px 48px}
 .page-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
@@ -173,3 +173,163 @@ html[data-theme^=minimal] .hero{min-height:0;padding:28px;border:1px solid var(-
 html[data-theme^=minimal] .greeting{border-radius:0;padding:0;background:none}
 html[data-theme^=minimal] .side-nav a{font-size:15px}
 .header-right .theme-switch{order:5}
+
+/* ========== 小動物選擇 ========== */
+.theme-pop{max-height:min(80vh,640px);overflow:auto}
+.mascot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 4px}
+.mascot-option{white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:1px solid transparent;border-radius:12px;background:none;color:var(--ink);font:inherit;font-size:11px;cursor:pointer}
+.mascot-option img{width:42px;height:40px;object-fit:contain}
+.mascot-option:hover{background:var(--surface2)}
+.mascot-option[aria-checked=true]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+
+/* ========== 今天的心情＋小動物互動區（首頁） ========== */
+.mood-card{position:relative;display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:26px;margin:0 0 28px;padding:24px 26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--ink)}
+.mood-card button{font:inherit;color:inherit;cursor:pointer}
+.mood-card :is(button,a,input):focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* 互動區 */
+.pet-zone{display:flex;flex-direction:column;align-items:center;min-width:0}
+.pet-stage{--lean:0deg;position:relative;width:100%;height:270px;border-radius:calc(var(--radius) - 6px);background:var(--hero);overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+[data-theme^=minimal] .pet-stage{background:var(--surface2)}
+.pet-bubble{position:absolute;left:12px;right:12px;top:12px;z-index:6;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:16px;background:var(--surface);box-shadow:0 3px 10px #0000000f;font-family:var(--hand);font-size:15px;line-height:1.5;min-height:44px}
+.pet-bubble::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);border:9px solid transparent;border-top-color:var(--surface);border-bottom:0}
+.pet-face{font-size:24px;line-height:1;flex-shrink:0}
+.pet-face.pop{animation:facepop .35s cubic-bezier(.3,1.6,.6,1)}
+@keyframes facepop{from{transform:scale(.3)}to{transform:scale(1)}}
+.pet-body{position:absolute;left:50%;bottom:16px;z-index:2;width:190px;height:170px;padding:0;margin-left:-95px;border:0;background:none;-webkit-tap-highlight-color:transparent}
+.pet-body img{width:100%;height:100%;object-fit:contain;object-position:center bottom;transform-origin:50% 100%;transform:rotate(var(--lean));transition:transform .3s;pointer-events:none;animation:breathe 3.2s ease-in-out infinite}
+.pet-shadow{position:absolute;left:50%;bottom:12px;width:150px;height:16px;margin-left:-75px;border-radius:50%;background:#00000014;z-index:1;animation:shadow 3.2s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:rotate(var(--lean)) scale(1,1)}50%{transform:rotate(var(--lean)) scale(1.015,.985)}}
+@keyframes shadow{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.04)}}
+/* 各表情的動作 */
+[data-expr=smile] .pet-body.go img{animation:sway 1.1s ease-in-out 2}
+[data-expr=pat] .pet-body.go img{animation:nuzzle .8s ease-in-out 3}
+[data-expr=poke] .pet-body.go img{animation:squash .5s cubic-bezier(.3,1.5,.5,1)}
+[data-expr=tickle] .pet-body.go img{animation:jitter .12s linear 14}
+[data-expr=love] .pet-body.go img{animation:lovehop .7s ease-in-out 4}
+[data-expr=laugh] .pet-body.go img{animation:hop .45s cubic-bezier(.3,1.4,.6,1) 5}
+[data-expr=cry] .pet-body.go img{animation:sob .9s ease-in-out 4;filter:saturate(.75)}
+[data-expr=stress] .pet-body.go img{animation:crushed 2.6s ease-in-out forwards}
+[data-expr=relief] .pet-body.go img{animation:spring .9s cubic-bezier(.3,1.6,.5,1)}
+[data-expr=sleepy] .pet-body.go img{animation:doze 2s ease-in-out 2;filter:brightness(.96)}
+[data-expr=shy] .pet-body.go img{animation:shy 1.2s ease-in-out 2}
+[data-expr=joke] .pet-body.go img{animation:sway 1.4s ease-in-out 3}
+[data-expr=idle] .pet-body.go img{animation:look 2.4s ease-in-out}
+@keyframes sway{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+@keyframes nuzzle{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(-6deg) scale(1.03,.97)}}
+@keyframes squash{0%{transform:scale(1)}30%{transform:scale(1.14,.82)}60%{transform:scale(.95,1.06)}100%{transform:scale(1)}}
+@keyframes jitter{0%{transform:translateX(0) rotate(0)}25%{transform:translateX(-4px) rotate(-3deg)}75%{transform:translateX(4px) rotate(3deg)}100%{transform:translateX(0)}}
+@keyframes lovehop{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-10px) scale(1.04)}}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}10%{transform:scale(1.08,.9)}50%{transform:translateY(-22px) scale(.96,1.05)}}
+@keyframes sob{0%,100%{transform:translateY(3px) scale(.98,.97)}50%{transform:translateY(5px) scale(1,.95) rotate(-1deg)}}
+@keyframes crushed{0%{transform:scale(1)}20%{transform:scale(1.18,.7)}30%,85%{transform:scale(1.15,.74) translateX(0)}35%,45%,55%,65%,75%{transform:scale(1.15,.74) translateX(-3px)}40%,50%,60%,70%,80%{transform:scale(1.15,.74) translateX(3px)}100%{transform:scale(1.15,.74)}}
+@keyframes spring{0%{transform:scale(1.15,.74)}50%{transform:scale(.92,1.12) translateY(-14px)}100%{transform:scale(1)}}
+@keyframes doze{0%,100%{transform:rotate(0) translateY(0)}50%{transform:rotate(6deg) translateY(3px)}}
+@keyframes shy{0%,100%{transform:rotate(0)}50%{transform:rotate(-8deg) scale(.97)}}
+@keyframes look{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}60%{transform:rotate(6deg)}}
+
+/* 特效 */
+.pet-fx{position:absolute;inset:0;z-index:4;pointer-events:none}
+.fx{position:absolute;transform:translate(-50%,-50%);line-height:1;font-weight:700;pointer-events:none}
+.fx.note{color:var(--accent-text);font-size:20px;animation:rise 1.6s ease-out forwards}
+.fx.heart-s{color:#F08A8A;font-size:18px;animation:rise 1.6s ease-out forwards}
+.fx.heart{color:#F07C84;font-size:22px;animation:floatup 2.2s ease-out forwards}
+.fx.heart:nth-child(2n){color:#F6A8B0;font-size:16px}
+.fx.big-heart{color:#F48A90;font-size:120px;opacity:.28;z-index:-1;animation:pulse .65s ease-in-out 4}
+.fx.blush{width:34px;height:18px;border-radius:50%;background:#F7A1A1;opacity:0;filter:blur(3px);animation:blush 2.4s ease forwards}
+.fx.blush.big{width:44px;height:22px}
+.fx.hand{font-size:34px;animation:patting 1.6s ease-in-out forwards}
+.fx.impact{color:#F2B84B;font-size:40px;animation:impact .7s ease-out forwards}
+.fx.bang{color:var(--danger);font-size:34px;animation:bang 1.2s cubic-bezier(.3,1.8,.5,1) forwards}
+.fx.giggle{color:var(--accent-text);font-size:18px;animation:giggle 1.3s ease-out forwards}
+.fx.lines{color:var(--muted);font-size:26px;animation:shake .15s linear 12}
+.fx.haha{color:#E77D5B;font-size:26px;font-family:var(--hand);animation:bang 1.5s cubic-bezier(.3,1.8,.5,1) forwards}
+.fx.spark{color:#F2C14E;font-size:20px;animation:twinkle 1.4s ease-out forwards}
+.fx.rain-cloud{color:#9AA7B6;font-size:56px;animation:cloud 3.6s ease forwards}
+.fx.tear{width:9px;height:13px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#7EC4F2;box-shadow:inset -2px -2px 0 #5AAEE6;animation:tear 1s ease-in forwards}
+.fx.drop{width:3px;height:12px;border-radius:2px;background:#9ACBEB;animation:drop 1.1s linear forwards}
+.fx.mountain{width:130px;z-index:5;transform:translate(-50%,-100%);animation:mountain 2.7s ease-in-out forwards}
+.fx.mountain svg{display:block;width:100%}
+.fx.mountain.away{animation:fling 1.2s ease-in forwards}
+.fx.sweat{width:10px;height:14px;border-radius:50% 50% 50% 50%/65% 65% 35% 35%;background:#9AD4F5;animation:sweat 1.1s ease-in forwards}
+.fx.puff{font-size:28px;animation:rise 1.4s ease-out forwards}
+.fx.zzz{color:var(--muted);font-size:22px;font-family:var(--hand);animation:zzz 2s ease-out forwards}
+.fx.shy-mark{color:#E77D8A;font-size:18px;letter-spacing:-2px;animation:rise 2.2s ease-out forwards}
+@keyframes rise{from{opacity:0;transform:translate(-50%,-30%)}20%{opacity:1}to{opacity:0;transform:translate(-50%,-160%)}}
+@keyframes floatup{from{opacity:0;transform:translate(-50%,0) scale(.5)}15%{opacity:1}to{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-180px) scale(1.2)}}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(.9)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+@keyframes blush{0%{opacity:0}15%,80%{opacity:.75}100%{opacity:0}}
+@keyframes patting{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1}25%,45%,65%{transform:translate(-50%,-30%) rotate(-10deg)}35%,55%,75%{transform:translate(-50%,-60%) rotate(8deg)}100%{opacity:0;transform:translate(-50%,-80%)}}
+@keyframes impact{from{opacity:1;transform:translate(-50%,-50%) scale(.3) rotate(0)}to{opacity:0;transform:translate(-50%,-50%) scale(1.6) rotate(45deg)}}
+@keyframes bang{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}25%{opacity:1;transform:translate(-50%,-60%) scale(1.2)}70%{opacity:1;transform:translate(-50%,-70%) scale(1)}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
+@keyframes giggle{from{opacity:0;transform:translate(-50%,-50%) scale(.5)}25%{opacity:1;transform:translate(-50%,-80%) scale(1.1) rotate(-10deg)}to{opacity:0;transform:translate(-50%,-150%) rotate(10deg)}}
+@keyframes shake{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-50%) translateX(3px)}}
+@keyframes twinkle{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(90deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(.6) rotate(180deg)}}
+@keyframes cloud{0%{opacity:0;transform:translate(-50%,-80%)}15%,85%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-50%)}}
+@keyframes tear{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,60px) scale(.8)}}
+@keyframes drop{0%{opacity:0;transform:translate(-50%,0)}20%{opacity:.9}100%{opacity:0;transform:translate(-50%,70px)}}
+@keyframes mountain{0%{transform:translate(-50%,-260%)}22%{transform:translate(-50%,-62%)}28%{transform:translate(-50%,-70%)}85%,100%{opacity:1;transform:translate(-50%,-66%)}}
+@keyframes fling{0%{transform:translate(-50%,-66%) rotate(0)}100%{opacity:0;transform:translate(140%,-300%) rotate(60deg)}}
+@keyframes sweat{0%{opacity:0;transform:translate(-50%,-50%)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,40px)}}
+@keyframes zzz{0%{opacity:0;transform:translate(-50%,0) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(-20%,-60px) scale(1.3)}}
+.pet-count{margin:8px 0 6px;font-size:12px;color:var(--muted);min-height:18px;text-align:center}
+.pet-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.pet-actions button{min-height:36px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);font-size:13px;transition:transform .12s,background .12s}
+.pet-actions button:hover{background:var(--accent-soft);transform:translateY(-1px)}
+.pet-actions button:active{transform:scale(.95)}
+
+/* 心情 */
+.mood-main{min-width:0;display:flex;flex-direction:column}
+.mood-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mood-card h2{margin:0;font-size:18px}
+.mood-sub{margin:4px 0 0;font-size:13px;color:var(--muted)}
+.mood-week{display:flex;gap:6px}
+.mood-day{display:flex;flex-direction:column;align-items:center;gap:2px;width:34px;padding:5px 0;border-radius:10px;background:var(--surface2)}
+.mood-day b{font-size:16px;line-height:1.2;font-weight:400;color:var(--muted)}
+.mood-day small{font-size:10px;color:var(--muted)}
+.mood-day.is-today{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.mood-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:16px 0 0}
+.mood-btn{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:74px;padding:10px 4px;border:1.5px solid var(--line);border-radius:18px;background:var(--surface2);font-size:14px;transition:transform .15s,border-color .15s,background .15s}
+.mood-btn:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.mood-emoji{font-size:28px;line-height:1.1}
+.mood-btn[aria-checked=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700}
+.mood-reply{position:relative;margin-top:16px;padding:16px 18px;border-radius:18px;background:var(--accent-soft)}
+.mood-reply[hidden]{display:none}
+#moodText{margin:0;font-size:16px;line-height:1.8;font-family:var(--hand)}
+#moodText.pop{animation:facepop .3s ease}
+.mood-action{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+.mood-act{display:inline-flex;align-items:center;min-height:40px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:14px;text-decoration:none}
+.mood-act:hover{background:var(--surface2)}
+.mood-act.primary{background:var(--accent);border-color:transparent;color:var(--accent-ink);font-weight:700}
+.mood-act.primary:hover{background:var(--accent-hover)}
+.mood-care{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:var(--surface);font-size:13px;line-height:1.7;color:var(--muted)}
+.mood-care[hidden]{display:none}
+.breath{position:relative;display:grid;place-items:center;width:110px;height:110px;margin:4px auto;border-radius:50%;background:radial-gradient(circle,var(--surface) 0 45%,color-mix(in srgb,var(--accent) 30%,var(--surface)) 46% 100%);transform:scale(.72);transition:transform 4s ease-in-out}
+.breath.in{transform:scale(1.05)}
+.breath-label{font-size:14px;font-weight:700;color:var(--accent-text)}
+.worry{position:relative;display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.worry input{flex:1;min-width:160px;min-height:40px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.worry-fly{position:absolute;left:14px;top:8px;pointer-events:none;color:var(--muted);animation:fly 1.2s ease-in forwards}
+@keyframes fly{to{transform:translate(260px,-90px) rotate(30deg) scale(.4);opacity:0}}
+.mood-fx-layer{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.mood-fx{position:absolute;bottom:20px;font-size:20px;color:var(--accent);animation:float 2s ease-out forwards}
+.mood-fx:nth-child(3n){color:var(--butter)}.mood-fx:nth-child(3n+1){color:var(--mint)}
+@keyframes float{from{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}to{opacity:0;transform:translate(var(--dx),-150px) scale(1.2)}}
+.mood-cheer{display:flex;align-items:center;gap:10px;margin:14px 0 0;padding:12px 16px;border-radius:14px;background:var(--mint-soft);font-size:14px;line-height:1.6;font-family:var(--hand)}
+.mood-cheer>span:first-child{color:var(--mint-text)}
+#cheerText{flex:1}
+.cheer-more,.greet-more{flex-shrink:0;min-height:30px;padding:3px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
+.greet-more{margin-left:4px;vertical-align:middle}
+.cheer-more:hover,.greet-more:hover{color:var(--ink)}
+.mood-praise{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding:12px 16px;border-radius:14px;background:var(--butter-soft);font-size:14px;line-height:1.6}
+.mood-praise[hidden]{display:none}
+.praise-star{font-size:20px;color:var(--butter-text)}
+@media(max-width:1050px){.mood-card{grid-template-columns:1fr}.pet-zone{max-width:420px;width:100%;margin:0 auto}}
+@media(max-width:700px){
+ .mood-card{padding:16px;gap:18px}
+ .pet-stage{height:250px}
+ .mood-options{gap:6px}.mood-btn{min-height:66px;font-size:12px;border-radius:14px}.mood-emoji{font-size:24px}
+ .mood-week{width:100%;justify-content:space-between}.mood-day{width:auto;flex:1}
+ .mood-reply{padding:14px 16px}#moodText{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){.mood-card *,.mood-card *::before{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}

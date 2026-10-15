@@ -4,13 +4,41 @@
   'use strict';
   var KEY = 'daily-theme';
   var THEMES = [
-    { id: 'cute', name: '療癒可愛', desc: '奶油米白、蜜桃粉與小兔子', colors: ['#FCF8F2', '#EF8D86', '#8FBF9F', '#F2C46D'] },
+    { id: 'cute', name: '療癒可愛', desc: '奶油米白、蜜桃粉與小動物', colors: ['#FCF8F2', '#EF8D86', '#8FBF9F', '#F2C46D'] },
     { id: 'forest', name: '森林手帳', desc: '沙色紙張與森林綠', colors: ['#F5F3E7', '#007E6E', '#73AF6F', '#D7C097'] },
     { id: 'minimal-warm', name: '精簡暖白', desc: '留白多、保留一點珊瑚色', colors: ['#FFFFFF', '#D9776E', '#EAE3DA', '#3B2F28'] },
     { id: 'minimal', name: '精簡白', desc: '黑白灰，沒有插圖', colors: ['#FFFFFF', '#18181B', '#E4E4E7', '#71717A'] },
     { id: 'minimal-dark', name: '精簡深色', desc: '深色背景，晚上不刺眼', colors: ['#0F0F11', '#ECECEE', '#2C2C31', '#9B9BA4'] }
   ];
   var BG = { cute: '#FCF8F2', forest: '#F5F3E7', 'minimal-warm': '#FAF8F5', minimal: '#F6F6F7', 'minimal-dark': '#0F0F11' };
+
+  var MKEY = 'daily-mascot';
+  var MASCOTS = [
+    { id: 'bunny', name: '兔兔', label: '兔子' },
+    { id: 'elephant', name: '小象', label: '大象' },
+    { id: 'puppy', name: '狗狗', label: '小狗' },
+    { id: 'cat', name: '喵喵', label: '貓咪' },
+    { id: 'tiger', name: '虎虎', label: '老虎' }
+  ];
+  function validMascot(id) { return MASCOTS.some(function (m) { return m.id === id; }); }
+  var mascot = null;
+  try { mascot = localStorage.getItem(MKEY); } catch (e) {}
+  if (!validMascot(mascot)) mascot = 'bunny';
+  document.documentElement.setAttribute('data-mascot', mascot);
+  function paintMascots(root) {
+    (root || document).querySelectorAll('img[data-pose]').forEach(function (img) {
+      img.src = 'mascots/' + mascot + '-' + img.dataset.pose + '.webp';
+    });
+  }
+  function setMascot(id) {
+    if (!validMascot(id)) return;
+    mascot = id;
+    document.documentElement.setAttribute('data-mascot', id);
+    try { localStorage.setItem(MKEY, id); } catch (e) {}
+    paintMascots();
+    document.querySelectorAll('.mascot-option').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.id === id)); });
+    window.dispatchEvent(new CustomEvent('daily-mascot', { detail: id }));
+  }
 
   function valid(id) { return THEMES.some(function (t) { return t.id === id; }); }
   function read() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
@@ -71,9 +99,33 @@
       o.onclick = function () { apply(t.id); };
       pop.append(o);
     });
+    var mt = document.createElement('p');
+    mt.className = 'theme-pop-title';
+    mt.textContent = '陪伴的小動物';
+    var mg = document.createElement('div');
+    mg.className = 'mascot-grid';
+    mg.setAttribute('role', 'radiogroup');
+    mg.setAttribute('aria-label', '選擇陪伴的小動物');
+    MASCOTS.forEach(function (m) {
+      var o = document.createElement('button');
+      o.type = 'button';
+      o.className = 'mascot-option';
+      o.dataset.id = m.id;
+      o.setAttribute('role', 'radio');
+      o.setAttribute('aria-checked', String(m.id === mascot));
+      var img = document.createElement('img');
+      img.src = 'mascots/' + m.id + '-face.webp';
+      img.alt = '';
+      var t = document.createElement('span');
+      t.textContent = m.label;
+      o.append(img, t);
+      o.onclick = function () { setMascot(m.id); };
+      mg.append(o);
+    });
+    pop.append(mt, mg);
     var note = document.createElement('p');
     note.className = 'theme-pop-note';
-    note.textContent = '只改外觀，不影響資料。每台裝置可以選不同風格。';
+    note.textContent = '只改外觀，不影響資料。每台裝置可以各自選擇。';
     pop.append(note);
     function close() { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
     btn.onclick = function (e) {
@@ -89,7 +141,11 @@
     slot.replaceWith(wrap);
   }
 
-  window.dailyTheme = { themes: THEMES, get: function () { return current; }, set: apply };
-  function init() { syncMeta(); document.querySelectorAll('[data-theme-switch]').forEach(build); }
+  window.dailyTheme = {
+    themes: THEMES, get: function () { return current; }, set: apply,
+    mascots: MASCOTS, mascot: function () { return MASCOTS.filter(function (m) { return m.id === mascot; })[0]; },
+    setMascot: setMascot, paint: paintMascots
+  };
+  function init() { syncMeta(); paintMascots(); document.querySelectorAll('[data-theme-switch]').forEach(build); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
