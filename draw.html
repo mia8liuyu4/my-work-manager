@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016b"></script>
+<script src="theme.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016b"><link rel="stylesheet" href="auth-gate.css?v=1016b">
+<link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="auth-gate.css">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>今天吃什麼｜我的日常</title><style>
 .draw-hero{display:flex;align-items:flex-end;justify-content:center;gap:28px;min-height:190px;padding:14px 40px 0;margin-bottom:20px}
 .draw-hero img{width:auto;max-width:260px;max-height:180px;margin-bottom:0;align-self:flex-end;position:relative}
@@ -114,9 +114,6 @@ dialog .row{display:flex;gap:8px}
 <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5v10.5h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
 <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
-<symbol id="i-bubble" viewBox="0 0 24 24"><circle cx="9" cy="10" r="5.5"/><circle cx="16.5" cy="15.5" r="3.5"/><circle cx="17" cy="6" r="2"/><path d="M6.8 8.2a2.6 2.6 0 0 1 2-1.4"/></symbol>
-<symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
-<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
@@ -125,7 +122,6 @@ dialog .row{display:flex;gap:8px}
 <a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
 <a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
 <a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
-<a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
 <a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
 </nav>
@@ -184,8 +180,8 @@ dialog .row{display:flex;gap:8px}
 <dialog id="editor" aria-labelledby="editorTitle"><div class="dialog-top"><h2 id="editorTitle">新增餐廳</h2><button type="button" id="closeDialog" aria-label="關閉">✕</button></div><form id="form"><label class="field">餐廳名稱<input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當"></label><label class="field">特色／備註<input id="info" type="text" maxlength="500" placeholder="步行時間、推薦餐點…"></label><fieldset><legend>固定公休日 <span class="muted">未勾選表示無固定公休</span></legend><div id="days" class="days"></div></fieldset><p id="formError" role="alert" class="danger"></p><div class="row"><button type="submit" class="btn primary">儲存餐廳</button><button type="button" id="cancel" class="btn">取消</button></div></form></dialog>
 </main>
 </div>
-<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016b"></script><script src="messages.js?v=1016b"></script><script>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script src="messages.js"></script><script>
 
 'use strict';
 

@@ -102,7 +102,7 @@
     } else if (mood === 'calm') {
       box.append(action('定一個今天的小目標', () => { const t = $('taskTitle'); if (t) { t.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => t.focus(), 400); } }, true));
     } else if (mood === 'tired') {
-      box.append(action('跟' + pet() + '一起深呼吸 30 秒', () => breathe(() => { say(fill('做得很好！有沒有輕鬆一點？{pet}覺得你已經很努力了。')); actions('tired'); }), true), link('敲木魚靜一靜 🪵', 'relax.html#muyu'));
+      box.append(action('跟' + pet() + '一起深呼吸 30 秒', () => breathe(() => { say(fill('做得很好！有沒有輕鬆一點？{pet}覺得你已經很努力了。')); actions('tired'); }), true));
     } else if (mood === 'sad') {
       box.append(action('抱抱 ♡', () => { burst(['♡', '♥'], 10); say(fill('給你一個大大的擁抱。{pet}會一直在這裡。')); window.dailyPet?.play('love', { text: '抱緊緊～' }); }, true), link('把心情寫下來', 'notes.html'));
     } else if (mood === 'annoyed') {
@@ -121,7 +121,7 @@
         say(fill('丟掉了！{pet}幫你把它丟得遠遠的。還有的話可以再丟。'));
         window.dailyPet?.play('relief', { text: '丟掉囉！' });
       };
-      box.append(form, link('去打老闆出氣 👋', 'relax.html#slap'), link('戳泡泡 🫧', 'relax.html#bubble'));
+      box.append(form);
     }
   }
 
