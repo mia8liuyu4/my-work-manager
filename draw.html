@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-locked>
 
 <head>
 
@@ -16,7 +16,7 @@
 :root{--ink:#594539;--muted:#806c5c;--mint:#FFCA88;--pink:#E3AFC9;--yellow:#FFF6A9}body{background:#F8F5E9}.card{background:#fffdf7;border-color:#e7ddc7}#content>.card:first-child{background:#fff1dc;border-color:#ecd8bc}.tabs{background:#EFECD7}.tabs button[aria-selected=true]{background:#fffdf7}button{border-color:#e7ddc7;color:#594539}button.primary{background:#a65450}button:hover:not(:disabled){background:#f6e5d6}.draw.primary{background:#DE7272;color:#fff}.draw.primary:hover:not(:disabled){background:#bc5757}.result:not(:empty){background:#FFF6A9;color:#66512b}.days label{background:#EFECD7}.days label:has(input:checked){background:#FFCA88;color:#654321}.days input{accent-color:#a65450}dialog{background:#fffdf7;color:#594539}.dialog-top button{background:#EFECD7}#status{background:#785444}.undo{color:#785444}.notice{background:#fff6ce}input[type=text]{background:#fffdf7;border-color:#e7ddc7}
 </style>
 
-</head>
+<link rel="stylesheet" href="auth-gate.css"><link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"></head>
 
 <body>
 
@@ -143,7 +143,7 @@
 
 
 
-<script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js"></script><script>
 
 'use strict';
 
@@ -185,6 +185,6 @@ render();
 
 </script>
 
-</body>
+<script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript></body>
 
 </html>
