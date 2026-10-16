@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016h"></script>
+<script src="theme.js?v=1016i"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016h"><link rel="stylesheet" href="auth-gate.css?v=1016h">
+<link rel="stylesheet" href="theme.css?v=1016i"><link rel="stylesheet" href="auth-gate.css?v=1016i">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>舒壓小遊戲｜我的日常</title><style>
 .relax-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;align-items:start}
 .sheet-panel{padding:22px}
@@ -181,6 +181,7 @@
 <symbol id="i-slipper" viewBox="0 0 24 24"><path d="M12 2.5c4 0 5.6 3.6 5.2 8-.3 3.3-.9 4.6-.8 7.3.1 2.6-1.9 3.7-4.4 3.7s-4.5-1.1-4.4-3.7c.1-2.7-.5-4-.8-7.3-.4-4.4 1.2-8 5.2-8Z"/><path d="M12 7 8.2 12M12 7l3.8 5"/></symbol>
 <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r="1"/><circle cx="12" cy="14.5" r="1"/><circle cx="15.5" cy="14.5" r="1"/></symbol>
 <symbol id="i-yarn" viewBox="0 0 24 24"><circle cx="11" cy="12" r="7.5"/><path d="M5 8.5c3.5 0 9 2.5 12 8M4.5 13c4 0 8 2 10 6.3M8.5 4.8c2.6 2 5 6.5 5.8 10.5M17.5 17.5c1.5 1.5 3 1.7 4 1"/></symbol>
+<symbol id="i-brief" viewBox="0 0 24 24"><rect x="3.5" y="7" width="17" height="12.5" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3.5 12.5h17"/></symbol>
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
@@ -188,6 +189,7 @@
 <nav class="side-links" aria-label="主要導覽">
 <a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
 <a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
+<a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作區</a>
 <a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
 <a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
 <a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>月份回顧</a>
@@ -288,7 +290,7 @@
 </div>
 </main>
 </div>
-<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016h"></script><script src="messages.js?v=1016h"></script><script src="relax.js?v=1016h"></script><script src="muyu.js?v=1016h"></script><script src="slap.js?v=1016h"></script>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016i"></script><script src="messages.js?v=1016i"></script><script src="relax.js?v=1016i"></script><script src="muyu.js?v=1016i"></script><script src="slap.js?v=1016i"></script>
 <script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>

@@ -1,0 +1,589 @@
+<!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="theme.js?v=1016i"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
+<link rel="stylesheet" href="theme.css?v=1016i"><link rel="stylesheet" href="auth-gate.css?v=1016i">
+<link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>工作區｜我的日常</title><style>
+.kt-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.kt-tabs button{min-height:42px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;color:var(--muted)}
+.kt-tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
+#syncState{font-size:12px;color:var(--muted);margin:-8px 0 12px}#syncState.ok{color:#16A34A}#syncState.warn{color:#B45309}
+.wgrid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:18px;align-items:start}
+#wside{display:flex;flex-direction:column;gap:14px;position:sticky;top:14px;max-height:calc(100vh - 28px);overflow:auto}
+#wmain{display:flex;flex-direction:column;gap:16px;min-width:0}
+.box,.card{padding:16px}
+.box-h,.card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.box-h h2,.card-h h2,.card>h2{margin:0;font-size:15px}.card>h2{margin-bottom:10px}.box-h h3{margin:12px 0 0;font-size:14px}.box-h small{color:var(--muted);font-weight:400}
+.seg{display:inline-flex;gap:3px;padding:3px;border-radius:12px;background:var(--surface2)}
+.seg button{min-height:32px;padding:4px 12px;border:0;border-radius:9px;background:transparent;font-size:12px;color:var(--muted);white-space:nowrap}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 3px #0000001a}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--surface2);font-size:11px;font-weight:700;white-space:nowrap}
+.lbl{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
+.lbl input,.lbl select,.lbl textarea,.addrow input,.addrow select,.addtask input,.addtask select,.wt input,.wt select{display:block;width:100%;margin-top:3px;min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;box-sizing:border-box}
+.lbl textarea{resize:vertical;line-height:1.6}
+.lbl input,.lbl select{min-width:0}.two>*{min-width:0}
+.addrow.wrap{flex-wrap:wrap}.addrow.wrap input[name=t]{flex:1 1 100%}.addrow.wrap input[type=date]{flex:1}
+.trow{flex-wrap:wrap}.trow .tt{min-width:50%}
+.gm.wk{font-weight:400;color:var(--muted)}
+.pinfo>summary{cursor:pointer;font-weight:700;font-size:14px;min-height:32px;display:flex;align-items:center}.pinfo[open]>summary{margin-bottom:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.link{border:0;background:none;padding:0;color:var(--accent-text);font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer}
+.muted{color:var(--muted)}.small{font-size:12px}.warn{color:#B45309}.nowrap{white-space:nowrap}
+.wp-list{display:flex;flex-direction:column;gap:6px}
+.wp{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);text-align:left}
+.wp.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 60%,var(--surface))}
+.wp-t{flex:1;min-width:0;display:flex;flex-direction:column}.wp-t strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wp-t small{font-size:11px;color:var(--muted)}
+.wdot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.colors{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}.cbtn{width:22px;height:22px;padding:0;border:2px solid transparent;border-radius:50%}.cbtn.on{border-color:var(--ink)}
+.checks{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.checks li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:var(--surface2);font-size:13px}
+.checks.big li{padding:9px 10px;font-size:14px}
+.checks li>span:not(.wdot){flex:1;min-width:0;overflow-wrap:anywhere}.checks input,.tlist input,.wt input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex-shrink:0}
+.done{text-decoration:line-through;opacity:.55}
+.x{width:24px;height:24px;padding:0;border:0;border-radius:50%;background:none;color:var(--muted)}.x:hover{background:var(--danger-soft);color:var(--danger)}
+.addrow{display:flex;gap:6px;margin:6px 0 4px}.addrow input,.addrow select{margin:0}.addrow input[type=date]{width:140px;flex-shrink:0}.addrow select{width:auto;max-width:130px}
+.side-actions{margin-top:12px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.pcard{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-top:5px solid var(--pc);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow);text-align:left;color:var(--ink);transition:transform .15s}
+.pcard:hover{transform:translateY(-2px)}
+.pc-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.pc-top strong{font-size:15px}
+.pc-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.pc-goals{font-size:12px}
+.bar{height:8px;border-radius:999px;background:var(--surface2);overflow:hidden}.bar i{display:block;height:100%;border-radius:inherit;background:var(--pc,var(--accent))}
+.ov3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.tlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.trow{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;background:var(--surface2);font-size:13px}
+.tt{flex:1;min-width:0;overflow-wrap:anywhere}
+.pr{padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700}.p-high{background:#FADADD;color:#A4524C}.p-mid{background:#FDEFC8;color:#8A6A1F}.p-low{background:#E3ECF8;color:#3D6296}
+/* 甘特圖 */
+.gwrap{--namew:210px;overflow:auto;border:1px solid var(--line);border-radius:14px;max-height:70vh}
+.gin{min-width:calc(var(--namew) + var(--w));position:relative}
+.ghead,.grow{display:flex}
+.ghead{position:sticky;top:0;z-index:3;background:var(--surface)}
+.ghead+.ghead{top:24px;border-bottom:1px solid var(--line)}
+.gname{position:sticky;left:0;z-index:2;flex:0 0 var(--namew);width:var(--namew);display:flex;flex-direction:column;justify-content:center;padding:4px 10px;background:var(--surface);border-right:1px solid var(--line);box-sizing:border-box;min-width:0}
+.ghead .gname{z-index:4}
+.gtrack{position:relative;flex:0 0 var(--w);width:var(--w);height:34px}
+.gh1,.gh2{height:24px}
+.gm{position:absolute;top:4px;font-size:11px;font-weight:700;padding-left:4px;border-left:1px solid var(--line);white-space:nowrap}
+.gd{position:absolute;top:4px;font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+.gd.we{color:#C08080}.gd.td{color:var(--accent-text);font-weight:700}
+.gbody{position:relative}
+.grow{border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.grow:hover .gname,.grow:hover{background:var(--surface2)}
+.gproj{background:color-mix(in srgb,var(--surface2) 70%,transparent)}.gproj .gname{background:var(--surface2);flex-direction:row;align-items:center;gap:6px}
+.gproj .gname strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gname .gtitle{padding:0;border:0;background:none;text-align:left;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.gname small{font-size:10px}
+.gbar{position:absolute;top:6px;height:22px;border-radius:7px;background:var(--pc);opacity:.85;cursor:grab;display:flex;align-items:center;overflow:hidden;touch-action:none;user-select:none}
+.gbar:active{cursor:grabbing}
+.gbar.st-todo{opacity:.55}.gbar.st-done{opacity:.3}.gbar.late{box-shadow:inset 0 0 0 2px #D9534F}
+.gl{padding:0 8px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px #0005;pointer-events:none}
+.gh{position:absolute;right:0;top:0;bottom:0;width:10px;cursor:ew-resize;background:linear-gradient(90deg,transparent,#0002)}
+.gspan{position:absolute;top:14px;height:6px;border-radius:999px;background:var(--pc);opacity:.35}
+.gms{position:absolute;top:5px;transform:translateX(-50%);color:#B45309;font-size:16px;line-height:1;white-space:nowrap}
+.gms em{font-style:normal;font-size:10px;color:var(--muted);margin-left:2px}.gms.ok{color:#16A34A}
+.gnone{position:absolute;left:8px;top:9px;font-size:11px;color:var(--muted);position:sticky}
+.gtoday{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);opacity:.7;pointer-events:none;z-index:1}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tools.end{justify-content:flex-end;margin-top:12px}.spacer{flex:1}
+.mini{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.mini.check input{width:16px;height:16px;accent-color:var(--accent)}
+/* 任務 */
+.addtask{display:grid;grid-template-columns:minmax(0,1fr) 140px 140px 110px auto;gap:8px;align-items:center}
+.addtask input,.addtask select{margin:0}
+.tbl-wrap{overflow-x:auto}
+table.wt{width:100%;border-collapse:collapse;font-size:13px}
+.wt th{text-align:left;font-size:12px;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.wt td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.wt td select,.wt td input[type=date]{margin:0;min-height:32px;padding:4px 8px;font-size:12px;width:auto}
+.wt tr.done .tlink{text-decoration:line-through;opacity:.55}.wt tr.late .tlink{color:#B45309}
+.tlink{padding:0;border:0;background:none;text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.icon{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:none;font-size:14px}.icon:hover{background:var(--surface2)}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.board .col{min-height:200px;padding:10px;border-radius:14px;background:var(--surface2);display:flex;flex-direction:column;gap:8px;transition:box-shadow .15s}
+.board .col.over{box-shadow:inset 0 0 0 2px var(--accent)}
+.board h3{margin:0 0 4px;font-size:13px}.board h3 small{color:var(--muted);font-weight:400}
+.kcard{padding:10px;border-radius:12px;background:var(--surface);border:1px solid var(--line);cursor:grab}
+.kcard.late{border-color:#E8A07A}.kcard.dragging{opacity:.5}
+.kt{display:block;width:100%;padding:0;border:0;background:none;text-align:left;font:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer}
+.km{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11px;color:var(--muted)}
+.kmove{display:flex;justify-content:space-between;margin-top:6px}.kmove button{width:30px;height:26px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--surface2)}
+dialog{width:min(480px,calc(100% - 24px));padding:22px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);box-shadow:0 24px 80px #0000003a}
+dialog::backdrop{background:#2a1f1a66;backdrop-filter:blur(3px)}dialog h2{margin:0 0 12px;font-size:17px}
+/* 每週 */
+.weeknav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.weeknav h2{margin:0;font-size:17px;display:flex;gap:8px;align-items:center}
+.wprog{display:flex;align-items:center;gap:8px;min-width:200px}.wprog .bar{flex:1}.wprog small{font-size:12px;color:var(--muted)}
+.wk2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:1200px){.ov3{grid-template-columns:1fr 1fr}.addtask{grid-template-columns:1fr 1fr}.addtask input[name=t]{grid-column:1/-1}}
+@media(max-width:980px){.wgrid{grid-template-columns:1fr}#wside{position:static;max-height:none}.wk2,.ov3{grid-template-columns:1fr}}
+@media(max-width:640px){.page-head .theme-btn span{display:none}.kt-tabs button{flex:1;padding:8px 6px;font-size:13px}.box,.card{padding:12px}.gwrap{--namew:120px}.board{grid-template-columns:1fr}.addtask{grid-template-columns:1fr 1fr}.addtask button{grid-column:1/-1}.wt th:nth-child(4),.wt td:nth-child(4){display:none}.two{grid-template-columns:1fr}}
+</style></head><body class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3.5"/></symbol>
+<symbol id="i-food" viewBox="0 0 24 24"><path d="M6 3v7a2.5 2.5 0 0 0 5 0V3M8.5 3v18M17.5 21V3c-2.2 1-3.5 3.6-3.5 7 0 2.2.9 3.5 3.5 3.5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="m14.5 5-7 7 7 7"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 20.5v-4h3v4"/></symbol>
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5v10.5h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+<symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+<symbol id="i-bubble" viewBox="0 0 24 24"><circle cx="9" cy="10" r="5.5"/><circle cx="16.5" cy="15.5" r="3.5"/><circle cx="17" cy="6" r="2"/><path d="M6.8 8.2a2.6 2.6 0 0 1 2-1.4"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"/></symbol>
+<symbol id="i-muyu" viewBox="0 0 24 24"><path d="M3 15.5c0-4.6 4-8 9-8s9 3.4 9 8c0 2.4-3.6 3.5-9 3.5s-9-1.1-9-3.5Z"/><path d="M4.8 15c4.3 1.6 10.1 1.6 14.4 0"/><path d="M18.5 2.5 14.6 7"/><circle cx="13.6" cy="8" r="1.6"/></symbol>
+<symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 10.5V5a1.5 1.5 0 0 1 3 0v5.5M14 10.5V6.5a1.5 1.5 0 0 1 3 0v6c0 4.5-2.5 8-6.5 8-2.6 0-4.2-1.4-5.5-3.6L3.8 13.6a1.4 1.4 0 0 1 2.4-1.4L8 14.5"/></symbol>
+<symbol id="i-slipper" viewBox="0 0 24 24"><path d="M12 2.5c4 0 5.6 3.6 5.2 8-.3 3.3-.9 4.6-.8 7.3.1 2.6-1.9 3.7-4.4 3.7s-4.5-1.1-4.4-3.7c.1-2.7-.5-4-.8-7.3-.4-4.4 1.2-8 5.2-8Z"/><path d="M12 7 8.2 12M12 7l3.8 5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r="1"/><circle cx="12" cy="14.5" r="1"/><circle cx="15.5" cy="14.5" r="1"/></symbol>
+<symbol id="i-yarn" viewBox="0 0 24 24"><circle cx="11" cy="12" r="7.5"/><path d="M5 8.5c3.5 0 9 2.5 12 8M4.5 13c4 0 8 2 10 6.3M8.5 4.8c2.6 2 5 6.5 5.8 10.5M17.5 17.5c1.5 1.5 3 1.7 4 1"/></symbol>
+<symbol id="i-brief" viewBox="0 0 24 24"><rect x="3.5" y="7" width="17" height="12.5" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3.5 12.5h17"/></symbol>
+</defs></svg>
+<div class="shell">
+<aside class="app-side" aria-label="側邊欄">
+<a class="side-brand" href="index.html"><img data-pose="face" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
+<nav class="side-links" aria-label="主要導覽">
+<a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
+<a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
+<a href="work.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作區</a>
+<a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
+<a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
+<a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>月份回顧</a>
+<a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作區</a>
+<a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
+<a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
+</nav>
+<div class="side-foot deco"><img data-pose="note" alt=""><p class="hand" data-msg="side">一件一件來，<br>你一定可以的。</p></div>
+</aside>
+<main class="app-main">
+<header class="page-head">
+<a class="back" href="index.html" aria-label="回首頁"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg></a>
+<span class="page-icon"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg></span>
+<div><h1>工作區</h1><p class="sub">專案、目標、甘特圖、任務與每週清單</p></div>
+<span class="spacer"></span>
+<div data-theme-switch></div>
+</header>
+<p id="syncState" aria-live="polite"></p>
+<nav class="kt-tabs" aria-label="功能"><button type="button" data-tab="overview">總覽</button><button type="button" data-tab="gantt">甘特圖</button><button type="button" data-tab="tasks">任務</button><button type="button" data-tab="week">每週清單</button></nav>
+<div class="wgrid"><aside id="wside" aria-label="專案"></aside><div id="wmain"></div></div>
+</main>
+</div>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016i"></script><script src="messages.js?v=1016i"></script>
+<script>
+// 工作區：專案、目標、里程碑、甘特圖、任務、每週清單（雲端同步：work_items）
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const uid = () => Math.random().toString(36).slice(2, 9);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const LOCAL = 'daily_work_items_v1', SYNC_KEY = 'daily_work_sync_v1', TABLE = 'work_items';
+  const DAY = 864e5;
+  const key = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const parse = k => new Date(k + 'T00:00:00');
+  const addDays = (k, n) => key(new Date(parse(k).getTime() + n * DAY));
+  const diffDays = (a, b) => Math.round((parse(b) - parse(a)) / DAY);
+  const today = () => key(new Date());
+  const monday = k => { const d = parse(k); const w = (d.getDay() + 6) % 7; return addDays(k, -w); };
+  const md = k => { if (!k) return '—'; const d = parse(k); return `${d.getMonth() + 1}/${d.getDate()}`; };
+  const COLORS = ['#EF8D86', '#7DBF8E', '#7EB2E6', '#F2C14E', '#B79AD6', '#E39B5E', '#5FB3B3', '#9AA5B1'];
+  const STATUS = { plan: '規劃中', doing: '進行中', hold: '暫停', done: '已完成' };
+  const TSTATUS = { todo: '待辦', doing: '進行中', done: '完成' };
+  const PRIO = { high: '高', mid: '中', low: '低' };
+
+  /* ---------------- 資料 ---------------- */
+  function sample() {
+    const t = today(), m = monday(t);
+    const p = {
+      id: uid(), type: 'project', name: '季報與研究進度', color: COLORS[0], status: 'doing', start: addDays(m, -7), end: addDays(m, 28),
+      desc: '整理第三季研究成果，產出季報與簡報。',
+      goals: [{ id: uid(), text: '完成季報初稿並交給主管', done: false }, { id: uid(), text: '脂質產量數據整理成 3 張圖', done: false }],
+      milestones: [{ id: uid(), name: '初稿交出', date: addDays(m, 9), done: false }, { id: uid(), name: '正式報告', date: addDays(m, 25), done: false }],
+      tasks: [
+        { id: uid(), title: '整理實驗數據', status: 'done', priority: 'high', start: addDays(m, -7), due: addDays(m, -1), notes: '' },
+        { id: uid(), title: '畫產量趨勢圖', status: 'doing', priority: 'high', start: m, due: addDays(m, 4), notes: '' },
+        { id: uid(), title: '撰寫季報初稿', status: 'todo', priority: 'mid', start: addDays(m, 3), due: addDays(m, 9), notes: '' },
+        { id: uid(), title: '製作簡報', status: 'todo', priority: 'mid', start: addDays(m, 12), due: addDays(m, 22), notes: '' }
+      ], _ts: Date.now()
+    };
+    return [p];
+  }
+  let all;
+  try { all = JSON.parse(localStorage.getItem(LOCAL) || 'null'); } catch { all = null; }
+  if (!Array.isArray(all)) all = sample();
+  const projects = () => all.filter(x => x.type === 'project');
+  const weekRec = k => all.find(x => x.type === 'week' && x.id === 'week-' + k);
+  let ui = { infoOpen: !matchMedia('(max-width: 980px)').matches, tab: 'overview', pid: projects()[0]?.id || null, ganttAll: false, scale: 'week', taskView: 'list', week: monday(today()), showDone: true };
+  const cur = () => projects().find(p => p.id === ui.pid) || projects()[0] || null;
+
+  /* ---------------- 雲端同步 ---------------- */
+  const sync = { client: null, uid: null, ready: false, busy: false, timer: null, dirty: new Set(), deleted: new Set(), lastPull: null, missing: false, failed: false };
+  try { const s0 = JSON.parse(localStorage.getItem(SYNC_KEY) || '{}'); sync.dirty = new Set(s0.dirty || []); sync.deleted = new Set(s0.deleted || []); sync.lastPull = s0.lastPull || null; } catch {}
+  const keepSync = () => { try { localStorage.setItem(SYNC_KEY, JSON.stringify({ dirty: [...sync.dirty], deleted: [...sync.deleted], lastPull: sync.lastPull })); } catch {} };
+  const hhmm = () => new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+  function status(t, k = '') { const el = $('syncState'); if (el) { el.textContent = t; el.className = k; } }
+  function saveLocal() { try { localStorage.setItem(LOCAL, JSON.stringify(all)); } catch { status('瀏覽器空間不足', 'warn'); } }
+  function dirty(rec) { if (!rec) return; rec._ts = Date.now(); sync.dirty.add(rec.id); sync.deleted.delete(rec.id); keepSync(); saveLocal(); schedule(); }
+  function schedule() {
+    if (!sync.ready) { status(sync.missing ? '尚未建立雲端資料表，目前只存在這台裝置（請執行 work.sql）' : '已暫存在這台裝置', sync.missing ? 'warn' : ''); return; }
+    status('有變更，準備同步…'); clearTimeout(sync.timer); sync.timer = setTimeout(push, 1200);
+  }
+  async function push() {
+    if (!sync.ready) return;
+    if (sync.busy) { clearTimeout(sync.timer); sync.timer = setTimeout(push, 800); return; }
+    const snap = new Map([...sync.dirty].map(id => [id, (all.find(x => x.id === id) || {})._ts]));
+    const dels = [...sync.deleted];
+    const rows = [...snap.keys()].map(id => all.find(x => x.id === id)).filter(Boolean).map(r => ({ user_id: sync.uid, id: r.id, data: r, deleted: false }));
+    dels.forEach(id => rows.push({ user_id: sync.uid, id, data: {}, deleted: true }));
+    if (!rows.length) { sync.dirty.clear(); keepSync(); return; }
+    sync.busy = true; status('同步中…');
+    try {
+      const { error } = await sync.client.from(TABLE).upsert(rows, { onConflict: 'user_id,id' });
+      if (error) throw error;
+      snap.forEach((ts, id) => { const r = all.find(x => x.id === id); if (!r || r._ts === ts) sync.dirty.delete(id); });
+      dels.forEach(id => sync.deleted.delete(id)); keepSync();
+      status('已同步到雲端 · ' + hhmm(), 'ok'); sync.failed = false;
+    } catch (e) {
+      sync.failed = true;
+      if (/work_items|schema cache/i.test(e.message || '')) { sync.ready = false; sync.missing = true; status('尚未建立雲端資料表，目前只存在這台裝置（請執行 work.sql）', 'warn'); }
+      else status('暫時無法連線，變更已存在這台裝置，稍後自動重試', 'warn');
+    } finally {
+      sync.busy = false;
+      if (sync.ready && (sync.dirty.size || sync.deleted.size)) { clearTimeout(sync.timer); sync.timer = setTimeout(push, sync.failed ? 15000 : 1200); }
+    }
+  }
+  function merge(rows) {
+    let changed = false;
+    for (const r of rows) {
+      if (!sync.lastPull || r.updated_at > sync.lastPull) sync.lastPull = r.updated_at;
+      const i = all.findIndex(x => x.id === r.id);
+      if (r.deleted) { if (i >= 0 && !sync.dirty.has(r.id)) { all.splice(i, 1); changed = true; } continue; }
+      if (sync.deleted.has(r.id) || !r.data || !r.data.type) continue;
+      if (i < 0) { all.push(r.data); changed = true; }
+      else if ((r.data._ts || 0) > (all[i]._ts || 0)) { all[i] = r.data; sync.dirty.delete(r.id); changed = true; }
+    }
+    if (!cur() && projects().length) ui.pid = projects()[0].id;
+    keepSync();
+    if (changed) { saveLocal(); safeRender(); }
+  }
+  async function pull(full) {
+    let q = sync.client.from(TABLE).select('id,data,deleted,updated_at');
+    if (!full && sync.lastPull) q = q.gt('updated_at', sync.lastPull);
+    const { data, error } = await q.order('updated_at', { ascending: true });
+    if (error) throw error; return data || [];
+  }
+  async function startSync() {
+    sync.client = window.dailyClient;
+    if (!sync.client) { status('已暫存在這台裝置（沒有連上雲端）'); return; }
+    try { const { data: u } = await sync.client.auth.getUser(); sync.uid = u.user.id; } catch { status('已暫存在這台裝置（還沒登入）'); return; }
+    status('正在從雲端讀取…');
+    try {
+      const rows = await pull(true);
+      sync.ready = true; sync.missing = false;
+      const cloud = new Set(rows.map(r => r.id));
+      merge(rows);
+      all.forEach(r => { if (!cloud.has(r.id)) { r._ts = r._ts || Date.now(); sync.dirty.add(r.id); } });
+      keepSync();
+      if (sync.dirty.size || sync.deleted.size) await push(); else status('已同步到雲端 · ' + hhmm(), 'ok');
+      setInterval(async () => { if (document.hidden || !sync.ready || sync.busy) return; try { merge(await pull(false)); } catch {} }, 20000);
+    } catch (e) {
+      if (/work_items|schema cache/i.test(e.message || '')) { sync.missing = true; status('尚未建立雲端資料表，目前只存在這台裝置（請執行 work.sql）', 'warn'); }
+      else { status('暫時無法連線，先用這台裝置的資料', 'warn'); setTimeout(startSync, 30000); }
+    }
+  }
+  document.addEventListener('visibilitychange', () => { if (!sync.ready) return; if (document.hidden) { if (sync.dirty.size || sync.deleted.size) push(); } else pull(false).then(merge).catch(() => {}); });
+  function safeRender() { const a = document.activeElement; if (a && a.closest && a.closest('#wmain input,#wmain textarea,#wmain select,#wside input,#wside textarea')) { ui.pending = true; return; } render(); }
+  document.addEventListener('focusout', () => setTimeout(() => { if (ui.pending) { ui.pending = false; safeRender(); } }, 60));
+
+  /* ---------------- 計算 ---------------- */
+  const progress = p => { const t = p.tasks.length; return t ? Math.round(p.tasks.filter(x => x.status === 'done').length / t * 100) : 0; };
+  const overdue = (t, d = today()) => t.status !== 'done' && t.due && t.due < d;
+  const inWeek = (t, w) => { const end = addDays(w, 6); const s = t.start || t.due, e = t.due || t.start; return s && e && s <= end && e >= w; };
+  function daysLeft(p) { if (!p.end) return ''; const n = diffDays(today(), p.end); return n > 0 ? `還有 ${n} 天` : n === 0 ? '今天截止' : `已超過 ${-n} 天`; }
+
+  /* ---------------- 側邊欄 ---------------- */
+  function renderSide() {
+    const P = cur();
+    const list = projects().map(p => `<button type="button" class="wp ${P && p.id === P.id ? 'on' : ''}" data-act="pick" data-id="${p.id}"><span class="wdot" style="background:${esc(p.color)}"></span><span class="wp-t"><strong>${esc(p.name)}</strong><small>${STATUS[p.status]} · ${progress(p)}% · ${esc(daysLeft(p))}</small></span></button>`).join('') || '<p class="muted small">還沒有專案</p>';
+    let info = '';
+    if (P) {
+      info = `<details class="panel box pinfo" ${ui.infoOpen ? 'open' : ''}><summary data-act="infoToggle">專案設定、目標與里程碑</summary>
+        <label class="lbl">專案名稱<input data-f="name" value="${esc(P.name)}"></label>
+        <div class="two"><label class="lbl">開始<input type="date" data-f="start" value="${esc(P.start || '')}"></label><label class="lbl">結束<input type="date" data-f="end" value="${esc(P.end || '')}"></label></div>
+        <div class="two"><label class="lbl">狀態<select data-f="status">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${P.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+        <div class="lbl">顏色<div class="colors">${COLORS.map(c => `<button type="button" class="cbtn ${P.color === c ? 'on' : ''}" style="background:${c}" data-act="color" data-c="${c}" aria-label="顏色 ${c}"></button>`).join('')}</div></div></div>
+        <label class="lbl">說明<textarea data-f="desc" rows="2" placeholder="這個專案要做什麼？">${esc(P.desc || '')}</textarea></label>
+        <div class="box-h"><h3>🎯 專案目標</h3></div>
+        <ul class="checks">${P.goals.map(g => `<li><input type="checkbox" data-act="goalDone" data-id="${g.id}" ${g.done ? 'checked' : ''} aria-label="完成"><span class="${g.done ? 'done' : ''}">${esc(g.text)}</span><button type="button" class="x" data-act="goalDel" data-id="${g.id}" aria-label="刪除">×</button></li>`).join('')}</ul>
+        <form class="addrow" data-form="goal"><input name="t" placeholder="新增目標，例如：月底前交出初稿" maxlength="120"><button class="btn small">＋</button></form>
+        <div class="box-h"><h3>◆ 里程碑</h3></div>
+        <ul class="checks">${[...P.milestones].sort((a, b) => (a.date || '').localeCompare(b.date || '')).map(m => `<li><input type="checkbox" data-act="msDone" data-id="${m.id}" ${m.done ? 'checked' : ''} aria-label="完成"><span class="${m.done ? 'done' : ''}">${esc(m.name)} <small class="muted">${md(m.date)}</small></span><button type="button" class="x" data-act="msDel" data-id="${m.id}" aria-label="刪除">×</button></li>`).join('')}</ul>
+        <form class="addrow wrap" data-form="ms"><input name="t" placeholder="里程碑名稱" maxlength="60"><input name="d" type="date" required><button class="btn small">＋</button></form>
+        <div class="side-actions"><button type="button" class="btn small danger" data-act="delProject">刪除專案</button></div>
+      </details>`;
+    }
+    $('wside').innerHTML = `<section class="panel box"><div class="box-h"><h2>專案 <small>(${projects().length})</small></h2><button type="button" class="link" data-act="newProject">＋ 新專案</button></div><div class="wp-list">${list}</div></section>${info}`;
+  }
+
+  /* ---------------- 總覽 ---------------- */
+  function renderOverview() {
+    const t = today(), w = monday(t), ps = projects();
+    const cards = ps.map(p => {
+      const od = p.tasks.filter(x => overdue(x)).length, next = p.milestones.filter(m => !m.done && m.date >= t).sort((a, b) => a.date.localeCompare(b.date))[0];
+      return `<button type="button" class="pcard" data-act="openProject" data-id="${p.id}" style="--pc:${esc(p.color)}"><div class="pc-top"><strong>${esc(p.name)}</strong><span class="chip">${STATUS[p.status]}</span></div>
+        <div class="bar"><i style="width:${progress(p)}%"></i></div><div class="pc-meta"><span>${progress(p)}% · ${p.tasks.filter(x => x.status === 'done').length}/${p.tasks.length} 任務</span><span>${esc(daysLeft(p))}</span></div>
+        <div class="pc-meta">${next ? `<span>◆ ${esc(next.name)} ${md(next.date)}</span>` : '<span class="muted">沒有即將到來的里程碑</span>'}${od ? `<span class="warn">⚠ ${od} 項逾期</span>` : ''}</div>
+        ${p.goals.length ? `<div class="pc-goals">🎯 ${p.goals.filter(g => g.done).length}/${p.goals.length} 目標達成</div>` : ''}</button>`;
+    }).join('') || '<p class="muted">還沒有專案，按左上「＋ 新專案」開始。</p>';
+    const taskRow = (p, x) => `<li class="trow"><input type="checkbox" data-act="taskDone" data-p="${p.id}" data-id="${x.id}" ${x.status === 'done' ? 'checked' : ''} aria-label="完成"><span class="wdot" style="background:${esc(p.color)}"></span><span class="tt ${x.status === 'done' ? 'done' : ''}">${esc(x.title)}</span><span class="pr p-${x.priority}">${PRIO[x.priority]}</span><small class="muted">${md(x.due)}</small></li>`;
+    const weekT = ps.flatMap(p => p.tasks.filter(x => x.status !== 'done' && inWeek(x, w)).map(x => [p, x])).sort((a, b) => (a[1].due || '').localeCompare(b[1].due || ''));
+    const od = ps.flatMap(p => p.tasks.filter(x => overdue(x)).map(x => [p, x]));
+    const ms = ps.flatMap(p => p.milestones.filter(m => !m.done && m.date >= t && m.date <= addDays(t, 30)).map(m => [p, m])).sort((a, b) => a[1].date.localeCompare(b[1].date));
+    return `<div class="pgrid">${cards}</div>
+      <div class="ov3">
+        <section class="panel card"><h2>📅 本週要做（${weekT.length}）</h2><ul class="tlist">${weekT.map(([p, x]) => taskRow(p, x)).join('') || '<li class="muted small">這週沒有排定的任務</li>'}</ul></section>
+        <section class="panel card"><h2>⚠ 逾期（${od.length}）</h2><ul class="tlist">${od.map(([p, x]) => taskRow(p, x)).join('') || '<li class="muted small">沒有逾期，太棒了！</li>'}</ul></section>
+        <section class="panel card"><h2>◆ 30 天內的里程碑</h2><ul class="tlist">${ms.map(([p, m]) => `<li class="trow"><span class="wdot" style="background:${esc(p.color)}"></span><span class="tt">${esc(m.name)}</span><small class="muted">${esc(p.name)} · ${md(m.date)}（${diffDays(t, m.date) ? diffDays(t, m.date) + ' 天後' : '今天'}）</small></li>`).join('') || '<li class="muted small">近期沒有里程碑</li>'}</ul></section>
+      </div>`;
+  }
+
+  /* ---------------- 甘特圖 ---------------- */
+  function renderGantt() {
+    const ps = ui.ganttAll ? projects() : [cur()].filter(Boolean);
+    if (!ps.length) return '<p class="muted">還沒有專案。</p>';
+    const dates = ps.flatMap(p => [p.start, p.end, ...p.tasks.flatMap(x => [x.start, x.due]), ...p.milestones.map(m => m.date)]).filter(Boolean);
+    const t = today();
+    let from = monday(dates.reduce((a, b) => (a < b ? a : b), t)), to = dates.reduce((a, b) => (a > b ? a : b), t);
+    from = addDays(from, -7); to = addDays(to, 14);
+    const n = diffDays(from, to) + 1, dw = ui.scale === 'week' ? 30 : ui.scale === 'month' ? 12 : 5;
+    let head1 = '', head2 = '';
+    for (let i = 0; i < n; i++) {
+      const k = addDays(from, i), d = parse(k);
+      if (d.getDate() === 1 || i === 0) head1 += `<span class="gm" style="left:${i * dw}px">${d.getFullYear()}/${d.getMonth() + 1}</span>`;
+      else if (ui.scale === 'week' && d.getDay() === 1) head1 += `<span class="gm wk" style="left:${i * dw}px">${d.getMonth() + 1}月第${Math.ceil(d.getDate() / 7)}週</span>`;
+      if (ui.scale === 'week') head2 += `<span class="gd ${d.getDay() % 6 === 0 ? 'we' : ''} ${k === t ? 'td' : ''}" style="left:${i * dw}px;width:${dw}px">${d.getDate()}</span>`;
+      else if (d.getDay() === 1) head2 += `<span class="gd" style="left:${i * dw}px">${d.getMonth() + 1}/${d.getDate()}</span>`;
+    }
+    let rows = '';
+    const bar = (p, x) => {
+      const s = x.start || x.due, e = x.due || x.start;
+      if (!s) return `<span class="gnone">尚未排日期</span>`;
+      const left = diffDays(from, s) * dw, width = Math.max(1, diffDays(s, e) + 1) * dw;
+      return `<span class="gbar st-${x.status} ${overdue(x) ? 'late' : ''}" style="left:${left}px;width:${width}px;--pc:${esc(p.color)}" data-drag="move" data-p="${p.id}" data-id="${x.id}" title="${esc(x.title)}｜${md(s)} – ${md(e)}｜${TSTATUS[x.status]}"><span class="gl">${esc(x.title)}</span><span class="gh" data-drag="resize" data-p="${p.id}" data-id="${x.id}"></span></span>`;
+    };
+    for (const p of ps) {
+      const ps0 = p.start || p.tasks[0]?.start, pe = p.end;
+      rows += `<div class="grow gproj"><div class="gname"><span class="wdot" style="background:${esc(p.color)}"></span><strong>${esc(p.name)}</strong></div><div class="gtrack">${ps0 && pe ? `<span class="gspan" style="left:${diffDays(from, ps0) * dw}px;width:${(diffDays(ps0, pe) + 1) * dw}px;--pc:${esc(p.color)}"></span>` : ''}${p.milestones.map(m => m.date ? `<span class="gms ${m.done ? 'ok' : ''}" style="left:${diffDays(from, m.date) * dw + dw / 2}px" title="${esc(m.name)} ${md(m.date)}">◆<em>${esc(m.name)}</em></span>` : '').join('')}</div></div>`;
+      for (const x of [...p.tasks].sort((a, b) => (a.start || a.due || '9').localeCompare(b.start || b.due || '9'))) {
+        if (!ui.showDone && x.status === 'done') continue;
+        rows += `<div class="grow"><div class="gname"><button type="button" class="gtitle ${x.status === 'done' ? 'done' : ''}" data-act="editTask" data-p="${p.id}" data-id="${x.id}">${esc(x.title)}</button><small class="muted">${md(x.start)}–${md(x.due)}</small></div><div class="gtrack">${bar(p, x)}</div></div>`;
+      }
+    }
+    const todayX = diffDays(from, t) * dw + dw / 2;
+    return `<section class="panel card"><div class="card-h"><h2>甘特圖</h2><div class="tools">
+      <div class="seg">${[['week', '日'], ['month', '週'], ['quarter', '月']].map(([k, l]) => `<button type="button" data-act="scale" data-k="${k}" aria-pressed="${ui.scale === k}">${l}</button>`).join('')}</div>
+      <label class="mini check"><input type="checkbox" data-act="ganttAll" ${ui.ganttAll ? 'checked' : ''}> 顯示全部專案</label>
+      <label class="mini check"><input type="checkbox" data-act="showDone" ${ui.showDone ? 'checked' : ''}> 顯示已完成</label>
+      <button type="button" class="btn small" data-act="ganttToday">回到今天</button></div></div>
+      <p class="muted small">拖曳色條可以移動日期，拖右邊的小把手可以拉長縮短；點任務名稱可以編輯。</p>
+      <div class="gwrap" id="gwrap"><div class="gin" style="--w:${n * dw}px">
+        <div class="ghead"><div class="gname"></div><div class="gtrack gh1">${head1}</div></div>
+        <div class="ghead"><div class="gname"></div><div class="gtrack gh2">${head2}</div></div>
+        <div class="gbody">${rows}<span class="gtoday" style="left:calc(var(--namew) + ${todayX}px)"></span></div>
+      </div></div></section>` + taskDialog();
+  }
+
+  /* ---------------- 任務 ---------------- */
+  function renderTasks() {
+    const P = cur();
+    if (!P) return '<p class="muted">先在左邊建立一個專案。</p>';
+    const add = `<form class="panel card addtask" data-form="task"><input name="t" placeholder="新增任務，例如：撰寫方法章節" maxlength="120" required><input name="s" type="date" aria-label="開始" title="開始日"><input name="d" type="date" aria-label="截止" title="截止日"><select name="p" aria-label="優先">${Object.entries(PRIO).map(([k, v]) => `<option value="${k}" ${k === 'mid' ? 'selected' : ''}>${v}優先</option>`).join('')}</select><button class="btn primary">＋ 新增</button></form>`;
+    const sorted = [...P.tasks].sort((a, b) => (a.status === 'done') - (b.status === 'done') || (a.due || '9').localeCompare(b.due || '9'));
+    let body;
+    if (ui.taskView === 'board') {
+      body = `<div class="board">${Object.entries(TSTATUS).map(([k, v]) => `<div class="col" data-col="${k}"><h3>${v} <small>${P.tasks.filter(x => x.status === k).length}</small></h3>${sorted.filter(x => x.status === k).map(x => `<div class="kcard ${overdue(x) ? 'late' : ''}" draggable="true" data-kid="${x.id}"><button type="button" class="kt" data-act="editTask" data-p="${P.id}" data-id="${x.id}">${esc(x.title)}</button><div class="km"><span class="pr p-${x.priority}">${PRIO[x.priority]}</span><small>${md(x.start)}–${md(x.due)}</small></div><div class="kmove">${k !== 'todo' ? `<button type="button" data-act="moveTask" data-id="${x.id}" data-to="${k === 'done' ? 'doing' : 'todo'}" aria-label="往左">‹</button>` : '<span></span>'}${k !== 'done' ? `<button type="button" data-act="moveTask" data-id="${x.id}" data-to="${k === 'todo' ? 'doing' : 'done'}" aria-label="往右">›</button>` : ''}</div></div>`).join('') || '<p class="muted small">拖曳卡片到這裡</p>'}</div>`).join('')}</div>`;
+    } else {
+      body = `<div class="tbl-wrap"><table class="wt"><thead><tr><th></th><th>任務</th><th>狀態</th><th>優先</th><th>開始</th><th>截止</th><th></th></tr></thead><tbody>${sorted.map(x => `<tr class="${x.status === 'done' ? 'done' : ''} ${overdue(x) ? 'late' : ''}">
+        <td><input type="checkbox" data-act="taskDone" data-p="${P.id}" data-id="${x.id}" ${x.status === 'done' ? 'checked' : ''} aria-label="完成"></td>
+        <td><button type="button" class="tlink" data-act="editTask" data-p="${P.id}" data-id="${x.id}">${esc(x.title)}</button>${x.notes ? `<div class="muted small">${esc(x.notes)}</div>` : ''}</td>
+        <td><select data-tf="status" data-id="${x.id}" aria-label="狀態">${Object.entries(TSTATUS).map(([k, v]) => `<option value="${k}" ${x.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select></td>
+        <td><select data-tf="priority" data-id="${x.id}" aria-label="優先">${Object.entries(PRIO).map(([k, v]) => `<option value="${k}" ${x.priority === k ? 'selected' : ''}>${v}</option>`).join('')}</select></td>
+        <td><input type="date" data-tf="start" data-id="${x.id}" value="${esc(x.start || '')}" aria-label="開始"></td>
+        <td><input type="date" data-tf="due" data-id="${x.id}" value="${esc(x.due || '')}" aria-label="截止"></td>
+        <td class="nowrap"><button type="button" class="icon" data-act="toCal" data-p="${P.id}" data-id="${x.id}" title="加到我的行事曆">📅</button><button type="button" class="icon" data-act="delTask" data-id="${x.id}" title="刪除">🗑</button></td></tr>`).join('') || '<tr><td colspan="7" class="muted">還沒有任務</td></tr>'}</tbody></table></div>`;
+    }
+    return add + `<section class="panel card"><div class="card-h"><h2>${esc(P.name)} · 任務（${P.tasks.filter(x => x.status === 'done').length}/${P.tasks.length}）</h2><div class="seg">${[['list', '列表'], ['board', '看板']].map(([k, l]) => `<button type="button" data-act="taskView" data-k="${k}" aria-pressed="${ui.taskView === k}">${l}</button>`).join('')}</div></div><p id="taskMsg" class="muted small" aria-live="polite"></p>${body}</section>` + taskDialog();
+  }
+  function taskDialog() {
+    return `<dialog id="taskDlg"><form method="dialog" id="taskForm"><h2>編輯任務</h2>
+      <label class="lbl">任務<input name="title" required maxlength="120"></label>
+      <div class="two"><label class="lbl">開始<input type="date" name="start"></label><label class="lbl">截止<input type="date" name="due"></label></div>
+      <div class="two"><label class="lbl">狀態<select name="status">${Object.entries(TSTATUS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label><label class="lbl">優先<select name="priority">${Object.entries(PRIO).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label></div>
+      <label class="lbl">備註<textarea name="notes" rows="3"></textarea></label>
+      <div class="tools end"><button type="button" class="btn danger small" data-act="dlgDel">刪除</button><span class="spacer"></span><button type="button" class="btn" data-act="dlgCancel">取消</button><button type="submit" class="btn primary" value="ok">儲存</button></div></form></dialog>`;
+  }
+
+  /* ---------------- 每週清單 ---------------- */
+  function renderWeek() {
+    const w = ui.week, end = addDays(w, 6), rec = weekRec(w) || { items: [], review: '', next: '' };
+    const ps = projects();
+    const auto = ps.flatMap(p => p.tasks.filter(x => inWeek(x, w) || (overdue(x, w) && w <= monday(today()))).map(x => [p, x]));
+    const done = rec.items.filter(i => i.done).length + auto.filter(([, x]) => x.status === 'done').length, total = rec.items.length + auto.length;
+    const prev = weekRec(addDays(w, -7)), carry = prev ? prev.items.filter(i => !i.done && !rec.items.some(j => j.from === i.id)).length : 0;
+    const isThis = w === monday(today());
+    return `<section class="panel card"><div class="card-h"><div class="weeknav"><button type="button" class="btn small" data-act="weekPrev" aria-label="上一週">‹</button><h2>${md(w)} – ${md(end)} ${isThis ? '<span class="chip">本週</span>' : ''}</h2><button type="button" class="btn small" data-act="weekNext" aria-label="下一週">›</button>${isThis ? '' : '<button type="button" class="link" data-act="weekNow">回到本週</button>'}</div>
+      <div class="wprog"><div class="bar"><i style="width:${total ? done / total * 100 : 0}%"></i></div><small>${done}/${total} 完成</small></div></div></section>
+      <div class="wk2">
+        <section class="panel card"><h2>✍ 這週清單</h2>
+          <form class="addrow" data-form="witem"><input name="t" placeholder="新增這週要做的事" maxlength="120"><select name="p" aria-label="專案"><option value="">不屬於專案</option>${ps.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn small primary">＋</button></form>
+          ${carry ? `<button type="button" class="btn small" data-act="carry">⟲ 把上週沒完成的 ${carry} 項搬過來</button>` : ''}
+          <ul class="checks big">${rec.items.map(i => { const p = ps.find(x => x.id === i.projectId); return `<li><input type="checkbox" data-act="wDone" data-id="${i.id}" ${i.done ? 'checked' : ''} aria-label="完成">${p ? `<span class="wdot" style="background:${esc(p.color)}" title="${esc(p.name)}"></span>` : ''}<span class="${i.done ? 'done' : ''}">${esc(i.text)}</span><button type="button" class="x" data-act="wDel" data-id="${i.id}" aria-label="刪除">×</button></li>`; }).join('') || '<li class="muted small">還沒有項目</li>'}</ul>
+        </section>
+        <section class="panel card"><h2>📌 專案任務（這週進行／到期${isThis ? '／逾期' : ''}）</h2>
+          <ul class="tlist">${auto.map(([p, x]) => `<li class="trow"><input type="checkbox" data-act="taskDone" data-p="${p.id}" data-id="${x.id}" ${x.status === 'done' ? 'checked' : ''} aria-label="完成"><span class="wdot" style="background:${esc(p.color)}"></span><span class="tt ${x.status === 'done' ? 'done' : ''}">${esc(x.title)}</span>${overdue(x) ? '<span class="warn small">逾期</span>' : ''}<small class="muted">${md(x.due)}</small></li>`).join('') || '<li class="muted small">這週沒有排到的專案任務</li>'}</ul>
+        </section>
+      </div>
+      <section class="panel card"><div class="two"><label class="lbl">🌱 本週回顧（做得好的、學到的）<textarea data-wf="review" rows="3">${esc(rec.review || '')}</textarea></label><label class="lbl">➜ 下週重點<textarea data-wf="next" rows="3">${esc(rec.next || '')}</textarea></label></div></section>`;
+  }
+
+  function render() {
+    renderSide();
+    document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === ui.tab)));
+    const sx = $('gwrap')?.scrollLeft;
+    $('wmain').innerHTML = ui.tab === 'overview' ? renderOverview() : ui.tab === 'gantt' ? renderGantt() : ui.tab === 'tasks' ? renderTasks() : renderWeek();
+    if (ui.tab === 'gantt') { const g = $('gwrap'); if (g) { if (sx != null && !ui.jumpToday) g.scrollLeft = sx; else scrollToday(); ui.jumpToday = false; } }
+  }
+  function scrollToday() { const g = $('gwrap'), t = g?.querySelector('.gtoday'); if (g && t) g.scrollLeft = Math.max(0, t.offsetLeft - g.clientWidth / 2); }
+
+  /* ---------------- 動作 ---------------- */
+  const findTask = (pid, id) => { const p = projects().find(x => x.id === pid) || projects().find(x => x.tasks.some(t => t.id === id)); return [p, p?.tasks.find(t => t.id === id)]; };
+  function ensureWeek(w) { let r = weekRec(w); if (!r) { r = { id: 'week-' + w, type: 'week', week: w, items: [], review: '', next: '' }; all.push(r); } return r; }
+  let editing = null;
+  function openTask(pid, id) {
+    const [p, t] = findTask(pid, id); if (!t) return;
+    editing = [p.id, t.id];
+    const f = $('taskForm'); f.title.value = t.title; f.start.value = t.start || ''; f.due.value = t.due || ''; f.status.value = t.status; f.priority.value = t.priority; f.notes.value = t.notes || '';
+    $('taskDlg').showModal();
+  }
+  document.addEventListener('click', async e => {
+    const tab = e.target.closest('[data-tab]'); if (tab) { ui.tab = tab.dataset.tab; if (ui.tab === 'gantt') ui.jumpToday = true; render(); return; }
+    const el = e.target.closest('[data-act]'); if (!el) return;
+    const P = cur(), a = el.dataset.act;
+    switch (a) {
+      case 'infoToggle': ui.infoOpen = !el.parentElement.open; break;
+      case 'pick': ui.pid = el.dataset.id; if (ui.tab === 'overview') ui.tab = 'tasks'; render(); break;
+      case 'openProject': ui.pid = el.dataset.id; ui.tab = 'tasks'; render(); break;
+      case 'newProject': {
+        const t = today(), p = { id: uid(), type: 'project', name: `新專案 ${projects().length + 1}`, color: COLORS[projects().length % COLORS.length], status: 'plan', start: t, end: addDays(t, 30), desc: '', goals: [], milestones: [], tasks: [] };
+        all.push(p); ui.pid = p.id; ui.tab = 'tasks'; dirty(p); render();
+        setTimeout(() => { const n = document.querySelector('[data-f="name"]'); n?.focus(); n?.select(); }, 50); break;
+      }
+      case 'delProject': if (P && confirm(`刪除專案「${P.name}」和它的所有任務？所有裝置都會刪除。`)) { all = all.filter(x => x.id !== P.id); sync.dirty.delete(P.id); sync.deleted.add(P.id); keepSync(); saveLocal(); schedule(); ui.pid = projects()[0]?.id || null; render(); } break;
+      case 'color': P.color = el.dataset.c; dirty(P); render(); break;
+      case 'goalDone': { const g = P.goals.find(x => x.id === el.dataset.id); g.done = el.checked; dirty(P); render(); if (g.done) window.dailyPetCheer?.(); break; }
+      case 'goalDel': P.goals = P.goals.filter(x => x.id !== el.dataset.id); dirty(P); render(); break;
+      case 'msDone': P.milestones.find(x => x.id === el.dataset.id).done = el.checked; dirty(P); render(); break;
+      case 'msDel': P.milestones = P.milestones.filter(x => x.id !== el.dataset.id); dirty(P); render(); break;
+      case 'taskDone': { const [p, t] = findTask(el.dataset.p, el.dataset.id); if (!t) break; t.status = el.checked ? 'done' : (t.status === 'done' ? 'todo' : t.status); dirty(p); render(); break; }
+      case 'editTask': openTask(el.dataset.p, el.dataset.id); break;
+      case 'delTask': if (confirm('刪除這個任務？')) { P.tasks = P.tasks.filter(x => x.id !== el.dataset.id); dirty(P); render(); } break;
+      case 'moveTask': { const t = P.tasks.find(x => x.id === el.dataset.id); t.status = el.dataset.to; dirty(P); render(); break; }
+      case 'taskView': ui.taskView = el.dataset.k; render(); break;
+      case 'scale': ui.scale = el.dataset.k; ui.jumpToday = true; render(); break;
+      case 'ganttAll': ui.ganttAll = el.checked; render(); break;
+      case 'showDone': ui.showDone = el.checked; render(); break;
+      case 'ganttToday': scrollToday(); break;
+      case 'dlgCancel': $('taskDlg').close(); break;
+      case 'dlgDel': if (editing && confirm('刪除這個任務？')) { const [p] = findTask(...editing); p.tasks = p.tasks.filter(x => x.id !== editing[1]); dirty(p); $('taskDlg').close(); render(); } break;
+      case 'toCal': {
+        const [p, t] = findTask(el.dataset.p, el.dataset.id), msg = $('taskMsg');
+        if (!window.dailyClient) { msg.textContent = '沒有連上雲端，無法加到行事曆。'; break; }
+        try {
+          const r = await window.dailyClient.from('personal_tasks').insert({ title: `［${p.name}］${t.title}`.slice(0, 200), due_date: t.due || null, category: 'work' });
+          if (r.error) throw r.error;
+          msg.textContent = `已加到行事曆：${t.title}（${t.due ? md(t.due) : '未排程'}，公事）`;
+        } catch (err) { msg.textContent = /personal_tasks|category|schema/.test(err.message || '') ? '行事曆的資料表還沒建立或需要更新，請先執行 tasks.sql。' : '加入失敗：' + err.message; }
+        break;
+      }
+      case 'weekPrev': ui.week = addDays(ui.week, -7); render(); break;
+      case 'weekNext': ui.week = addDays(ui.week, 7); render(); break;
+      case 'weekNow': ui.week = monday(today()); render(); break;
+      case 'wDone': { const r = ensureWeek(ui.week); r.items.find(i => i.id === el.dataset.id).done = el.checked; dirty(r); render(); break; }
+      case 'wDel': { const r = ensureWeek(ui.week); r.items = r.items.filter(i => i.id !== el.dataset.id); dirty(r); render(); break; }
+      case 'carry': { const r = ensureWeek(ui.week), prev = weekRec(addDays(ui.week, -7)); prev.items.filter(i => !i.done && !r.items.some(j => j.from === i.id)).forEach(i => r.items.push({ id: uid(), text: i.text, done: false, projectId: i.projectId || '', from: i.id })); dirty(r); render(); break; }
+    }
+  });
+  document.addEventListener('submit', e => {
+    const f = e.target, kind = f.dataset.form, P = cur();
+    if (f.id === 'taskForm') {
+      e.preventDefault(); if (!editing) return;
+      const [p, t] = findTask(...editing);
+      Object.assign(t, { title: f.title.value.trim() || t.title, start: f.start.value, due: f.due.value, status: f.status.value, priority: f.priority.value, notes: f.notes.value.trim() });
+      if (t.start && t.due && t.due < t.start) t.due = t.start;
+      dirty(p); $('taskDlg').close(); render(); return;
+    }
+    if (!kind) return;
+    e.preventDefault();
+    const v = (f.t?.value || '').trim();
+    if (kind === 'goal' && v && P) { P.goals.push({ id: uid(), text: v, done: false }); dirty(P); }
+    if (kind === 'ms' && v && P && f.d.value) { P.milestones.push({ id: uid(), name: v, date: f.d.value, done: false }); dirty(P); }
+    if (kind === 'task' && v && P) { let s = f.s.value, d = f.d.value; if (s && d && d < s) d = s; P.tasks.push({ id: uid(), title: v, status: 'todo', priority: f.p.value, start: s || d || '', due: d || s || '', notes: '' }); dirty(P); }
+    if (kind === 'witem' && v) { const r = ensureWeek(ui.week); r.items.push({ id: uid(), text: v, done: false, projectId: f.p.value }); dirty(r); }
+    render();
+    const again = document.querySelector(`[data-form="${kind}"] input`); again?.focus();
+  });
+  document.addEventListener('input', e => {
+    const t = e.target, P = cur();
+    if (t.dataset.f && P && t.tagName !== 'SELECT' && t.type !== 'date') { P[t.dataset.f] = t.value; dirty(P); if (t.dataset.f === 'name') { const s = document.querySelector('.wp.on strong'); if (s) s.textContent = t.value; } }
+    if (t.dataset.wf) { const r = ensureWeek(ui.week); r[t.dataset.wf] = t.value; dirty(r); }
+  });
+  document.addEventListener('change', e => {
+    const t = e.target, P = cur();
+    if (t.dataset.f && P && (t.tagName === 'SELECT' || t.type === 'date')) { P[t.dataset.f] = t.value; if (P.start && P.end && P.end < P.start) P.end = P.start; dirty(P); render(); }
+    if (t.dataset.tf && P) { const x = P.tasks.find(y => y.id === t.dataset.id); x[t.dataset.tf] = t.value; if (x.start && x.due && x.due < x.start) { if (t.dataset.tf === 'start') x.due = x.start; else x.start = x.due; } dirty(P); render(); }
+  });
+
+  // 看板拖曳
+  document.addEventListener('dragstart', e => { const c = e.target.closest?.('[data-kid]'); if (c) { e.dataTransfer.setData('text/plain', c.dataset.kid); c.classList.add('dragging'); } });
+  document.addEventListener('dragover', e => { const col = e.target.closest?.('[data-col]'); if (col) { e.preventDefault(); col.classList.add('over'); } });
+  document.addEventListener('dragleave', e => { e.target.closest?.('[data-col]')?.classList.remove('over'); });
+  document.addEventListener('drop', e => { const col = e.target.closest?.('[data-col]'); if (!col) return; e.preventDefault(); const P = cur(), t = P?.tasks.find(x => x.id === e.dataTransfer.getData('text/plain')); if (t) { t.status = col.dataset.col; dirty(P); render(); } });
+
+  // 甘特圖拖曳：移動、拉長
+  let drag = null;
+  document.addEventListener('pointerdown', e => {
+    const h = e.target.closest('[data-drag]'); if (!h || e.button > 0) return;
+    const mode = e.target.closest('.gh') ? 'resize' : 'move', barEl = h.closest('.gbar'), [p, t] = findTask(barEl.dataset.p, barEl.dataset.id);
+    if (!t) return;
+    const dw = ui.scale === 'week' ? 30 : ui.scale === 'month' ? 12 : 5;
+    drag = { mode, el: barEl, p, t, x0: e.clientX, left0: barEl.offsetLeft, w0: barEl.offsetWidth, dw, moved: false };
+    barEl.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  document.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x0, days = Math.round(dx / drag.dw);
+    if (Math.abs(dx) > 3) drag.moved = true;
+    if (drag.mode === 'move') drag.el.style.left = drag.left0 + days * drag.dw + 'px';
+    else drag.el.style.width = Math.max(drag.dw, drag.w0 + days * drag.dw) + 'px';
+    drag.days = days;
+  });
+  document.addEventListener('pointerup', () => {
+    if (!drag) return;
+    const { t, p, mode, days, moved } = drag; drag = null;
+    if (!moved) { openTask(p.id, t.id); return; }
+    if (!days) { render(); return; }
+    if (mode === 'move') { if (t.start) t.start = addDays(t.start, days); if (t.due) t.due = addDays(t.due, days); }
+    else { const nd = addDays(t.due || t.start, days); t.due = nd < t.start ? t.start : nd; }
+    dirty(p); render();
+  });
+
+  render(); saveLocal();
+  if (document.documentElement.hasAttribute('data-locked')) window.addEventListener('daily-unlocked', () => setTimeout(startSync, 0), { once: true });
+  else setTimeout(startSync, 0);
+})();
+
+</script>
+<script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能使用。</noscript>
+</body></html>
