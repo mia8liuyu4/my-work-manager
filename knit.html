@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016i"></script>
+<script src="theme.js?v=1016j"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016i"><link rel="stylesheet" href="auth-gate.css?v=1016i">
+<link rel="stylesheet" href="theme.css?v=1016j"><link rel="stylesheet" href="auth-gate.css?v=1016j">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>手作區｜我的日常</title><style>
 .kt-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .kt-tabs button{min-height:42px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;color:var(--muted)}
@@ -105,6 +105,37 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 .paper table{width:100%;border-collapse:collapse}.paper th,.paper td{border:1px solid #ccc;padding:5px 7px;text-align:left;vertical-align:top}
 .paper th{background:#f3f3f3;font-size:12px}.paper .box{width:26px;text-align:center;font-size:15px}
 .paper .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:5px;border:1px solid #999}
+
+.shape-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.shape-card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px;border:1.5px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink)}
+.shape-card:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.shape-card.on{border-color:var(--accent);background:var(--accent-soft)}
+.shape-card .shape-svg{width:84px;height:84px}
+.shape-card strong{font-size:14px}.shape-card small{font-size:11px;color:var(--muted);text-align:center}
+.shape-split{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:16px;align-items:start;margin-top:12px}
+.shape-big{text-align:center}.shape-big .shape-svg{width:100%;max-width:280px;height:auto}
+.interp-split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.upbtn{cursor:pointer}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.thumb{flex:0 0 72px;height:72px;padding:0;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.thumb.on{border-color:var(--accent)}.thumb img{width:100%;height:100%;object-fit:cover}
+.viewer-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cname{flex:1;min-width:140px;min-height:34px;padding:5px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px}
+.zv{font-size:12px;color:var(--muted);min-width:42px;text-align:center}
+.viewer{position:relative;height:min(62vh,560px);overflow:hidden;border-radius:14px;border:1px solid var(--line);background:repeating-conic-gradient(var(--surface2) 0 25%,var(--surface) 0 50%) 0 0/20px 20px;cursor:grab;touch-action:none;user-select:none}
+.viewer:active{cursor:grabbing}
+.vstage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform-origin:center center}
+.vimg{position:relative;display:inline-block;max-width:100%}
+.vstage img{max-width:100%;max-height:calc(min(62vh,560px) - 16px);display:block;pointer-events:none;box-shadow:0 2px 12px #0002}
+@media(max-width:700px){.vstage img{max-height:calc(52vh - 16px)}}
+.vruler{position:absolute;left:-6px;right:-6px;height:22px;margin-top:-11px;background:color-mix(in srgb,#F48A90 26%,transparent);border-top:2px solid #E5737B;border-bottom:2px solid #E5737B;cursor:ns-resize}
+.dropzone{display:grid;place-items:center;min-height:200px;padding:20px;border:2px dashed var(--accent);border-radius:16px;background:var(--accent-soft);color:var(--accent-text);font-weight:700;text-align:center;cursor:pointer}
+.syms{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.symbtn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--ink)}
+.symbtn:hover{border-color:var(--accent)}
+.symbtn .sym{width:28px;height:28px}.symbtn b{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}.symbtn small{font-size:10px;color:var(--muted)}
+@media(max-width:1200px){.interp-split{grid-template-columns:1fr}}
+@media(max-width:700px){.shape-split{grid-template-columns:1fr}.shape-grid{grid-template-columns:repeat(4,1fr)}.shape-card .shape-svg{width:60px;height:60px}.shape-card small{display:none}.viewer{height:52vh}}
 @media print{
  body.app *{visibility:hidden}
  #printArea,#printArea *{visibility:visible}
@@ -146,12 +177,12 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 <nav class="side-links" aria-label="主要導覽">
 <a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
 <a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
+<a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作區</a>
 <a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
+<a href="knit.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作區</a>
 <a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
 <a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>月份回顧</a>
-<a href="knit.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作區</a>
-<a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
 </nav>
 <div class="side-foot deco"><img data-pose="note" alt=""><p class="hand" data-msg="side">一針一線，<br>慢慢就會完成。</p></div>
@@ -171,8 +202,8 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 <div class="kgrid"><aside id="side" aria-label="專案與部件"></aside><div id="main"></div></div>
 </main>
 </div>
-<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a><a href="knit.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016i"></script><script src="messages.js?v=1016i"></script>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="knit.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016j"></script><script src="messages.js?v=1016j"></script>
 <script>
 // 手作區（StitchNote）：鉤針・棒針文字織圖、針數自動驗算（資料存在這台裝置的瀏覽器）
 (() => {
@@ -409,24 +440,86 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   }
 
   /* ---------------- 形狀產生器 ---------------- */
-  function shapeRows(type, max, plain, closeTo) {
-    const rows = [row([single('X', 6)], '環起 6 短針')];
-    let n = 6;
-    while (n < max) {
-      const k = n / 6 - 1;
-      rows.push(row([k ? group(k === 0 ? [['V', 1]] : [['X', k], ['V', 1]], 6) : single('V', 6)], k ? '' : '每針加針'));
-      n += 6;
+  // 形狀：flat = 平面（圈數 rounds）；3D = 立體
+  const SHAPES = {
+    circle: { name: '圓片', desc: '杯墊、圓底', flat: true },
+    hexagon: { name: '六角形', desc: '六角花片、拼接', flat: true },
+    square: { name: '正方形', desc: '方塊花片、杯墊', flat: true },
+    triangle: { name: '三角形', desc: '三角巾、旗子', flat: true },
+    oval: { name: '橢圓', desc: '鞋底、包包底', flat: true },
+    sphere: { name: '球體', desc: '娃娃頭、球', flat: false },
+    tube: { name: '圓柱', desc: '身體、杯套、手臂', flat: false },
+    cone: { name: '圓錐', desc: '帽子、耳朵、紅蘿蔔', flat: false }
+  };
+  const flatSegs = segs => segs.flatMap(sg => sg.type === 'group' ? Array.from({ length: sg.repeat }, () => sg.items.map(a => single(a.code, a.count))).flat() : [single(sg.atom.code, sg.atom.count)]);
+  function shapeRows(sh) {
+    const { type, rounds = 6, plain = 4, close = 6, chain = 10, max = 36 } = sh;
+    const rows = [];
+    const sides = k => ({ square: 4, triangle: 3 })[type];
+    if (type === 'square' || type === 'triangle') {
+      const S = sides();
+      rows.push(row([single('X', S * 2)], `環起 ${S * 2} 短針`));
+      for (let k = 2; k <= rounds; k++) rows.push(row([group([['X', k - 1], ['W', 1], ['X', k - 2]].filter(x => x[1] > 0), S)], k === 2 ? '每個角鉤一針三短針' : ''));
+      return renumber(rows);
     }
-    for (let i = 0; i < plain; i++) rows.push(row([single('X', n)], i === 0 ? '不加不減' : ''));
+    if (type === 'oval') {
+      const n = Math.max(4, chain), side = n - 2;
+      rows.push(row([single('X', n - 2), single('W', 1), single('X', n - 3), single('V', 1)], `起 ${n} 鎖針，從倒數第 2 針開始繞兩側鉤`));
+      let e = 2;
+      for (let k = 2; k <= rounds; k++) {
+        const end = e === 2 ? [single('V', 1), single('W', 1)] : flatSegs(smart(e, e + 3, 'crochet', k % 2 === 0).segs);
+        const merge = list => { const out = []; for (const sg of list) { const l = out[out.length - 1]; if (l && l.atom.code === sg.atom.code) l.atom.count += sg.atom.count; else out.push(sg); } return out; };
+        rows.push(row(merge([single('X', side), ...end, single('X', side), ...end.map(sg => single(sg.atom.code, sg.atom.count))]), k === 2 ? '兩端各加 3 針' : ''));
+        e += 3;
+      }
+      return renumber(rows);
+    }
+    if (type === 'cone') {
+      rows.push(row([single('X', 6)], '環起 6 短針'));
+      let n = 6, k = 1;
+      while (n < max) { const r = smart(n, n + 3, 'crochet', k % 2 === 0); rows.push(row(r.segs, k === 1 ? '每 2 圈加 3 針' : '')); n += 3; k++; if (n < max) rows.push(row([single('X', n)])); }
+      for (let i = 0; i < plain; i++) rows.push(row([single('X', n)], i === 0 ? '不加不減' : ''));
+      return renumber(rows);
+    }
+    // 圓片、六角形、球體、圓柱：每圈加 6 針
+    const top = type === 'circle' || type === 'hexagon' ? rounds * 6 : max;
+    rows.push(row([single('X', 6)], '環起 6 短針'));
+    let n = 6, k = 1;
+    while (n < top) {
+      if (type === 'circle') rows.push(row(smart(n, n + 6, 'crochet', k % 2 === 0).segs, k === 1 ? '加針位置每圈交錯，圓片才會圓' : ''));
+      else { const q = n / 6 - 1; rows.push(row([q ? group([['X', q], ['V', 1]], 6) : single('V', 6)], q ? '' : '每針加針')); }
+      n += 6; k++;
+    }
+    if (type === 'sphere' || type === 'tube') for (let i = 0; i < plain; i++) rows.push(row([single('X', n)], i === 0 ? '不加不減' : ''));
     if (type === 'sphere') {
-      while (n > closeTo) {
-        const k = n / 6 - 2;
-        rows.push(row([k ? group([['X', k], ['A', 1]], 6) : single('A', 6)], n === 18 ? '記得塞棉' : ''));
+      while (n > close) {
+        const q = n / 6 - 2;
+        rows.push(row([q ? group([['X', q], ['A', 1]], 6) : single('A', 6)], n === 18 ? '記得塞棉' : ''));
         n -= 6;
       }
       rows[rows.length - 1].note = (rows[rows.length - 1].note ? rows[rows.length - 1].note + '；' : '') + '收口，穿線拉緊';
     }
     return renumber(rows);
+  }
+  // 形狀預覽：平面畫一圈一圈的外框，立體畫側面剪影
+  function shapePreview(type, rows, v) {
+    const pal = ['#F7C4B3', '#FDE6E0', '#DFF0E2', '#FDEFC8', '#E3ECF8', '#EFE7F4'];
+    const n = rows.length;
+    if (SHAPES[type].flat) {
+      const R = 120, step = R / n;
+      let svg = '<svg viewBox="-130 -130 260 260" class="shape-svg" role="img" aria-label="形狀預覽">';
+      for (let i = n - 1; i >= 0; i--) {
+        const r = step * (i + 1), fill = pal[i % pal.length];
+        if (type === 'circle') svg += `<circle r="${r}" fill="${fill}" stroke="#B68569" stroke-width=".8"/>`;
+        else if (type === 'oval') { const w = Math.max(r, R * .55 + r * .45); svg += `<rect x="${-w}" y="${-r * .62}" width="${2 * w}" height="${r * 1.24}" rx="${r * .62}" fill="${fill}" stroke="#B68569" stroke-width=".8"/>`; }
+        else { const S = { hexagon: 6, square: 4, triangle: 3 }[type], off = type === 'square' ? Math.PI / 4 : type === 'triangle' ? -Math.PI / 2 : 0, rr = type === 'triangle' ? r * 1.15 : r; svg += `<polygon points="${Array.from({ length: S }, (_, j) => { const a = off + j * 2 * Math.PI / S; return (Math.cos(a) * rr).toFixed(1) + ',' + (Math.sin(a) * rr + (type === 'triangle' ? r * .18 : 0)).toFixed(1); }).join(' ')}" fill="${fill}" stroke="#B68569" stroke-width=".8" stroke-linejoin="round"/>`; }
+      }
+      return svg + '</svg>';
+    }
+    const maxN = Math.max(...v.map(x => x.produced)), H = Math.min(10, 240 / n), W = 220;
+    let svg = `<svg viewBox="0 0 260 ${n * H + 10}" class="shape-svg tall" role="img" aria-label="側面剪影">`;
+    rows.forEach((r, i) => { const w = v[i].produced / maxN * W; svg += `<rect x="${130 - w / 2}" y="${5 + i * H}" width="${w}" height="${H - .8}" rx="${H / 2}" fill="${pal[i % 2 ? 1 : 0]}" stroke="#B68569" stroke-width=".6"><title>R${i + 1}：${v[i].produced} 針</title></rect>`; });
+    return svg + '</svg>';
   }
 
   /* ---------------- 雲端同步（Supabase：knit_projects） ---------------- */
@@ -654,26 +747,102 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   }
 
   function renderShapes() {
-    const s = ui.shape || { type: 'sphere', max: 36, plain: 5, close: 6 };
-    const rows = shapeRows(s.type, s.max, s.plain, s.close), L = CROCHET, v = validate({ rows }, L);
+    const sh = ui.shape || (ui.shape = { type: 'sphere', rounds: 6, plain: 5, close: 6, chain: 10, max: 36 });
+    const rows = shapeRows(sh), L = CROCHET, v = validate({ rows }, L), info = SHAPES[sh.type];
+    const last = v[v.length - 1]?.produced || 0, widest = Math.max(...v.map(x => x.produced));
+    const cm = info.flat ? `直徑約 ${(rows.length * 1.1).toFixed(1)} 公分` : `最寬圈 ${widest} 針，直徑約 ${(widest / 6 * 1.1).toFixed(1)} 公分、高約 ${(rows.length * 0.5).toFixed(1)} 公分`;
     const sizes = [12, 18, 24, 30, 36, 42, 48, 54, 60];
+    const card = ([k, d]) => `<button type="button" class="shape-card ${sh.type === k ? 'on' : ''}" data-act="shapePick" data-k="${k}">${shapePreview(k, shapeRows({ ...sh, type: k, rounds: 4, max: 24, plain: 3, chain: 8 }), validate({ rows: shapeRows({ ...sh, type: k, rounds: 4, max: 24, plain: 3, chain: 8 }) }, L))}<strong>${d.name}</strong><small>${d.desc}</small></button>`;
+    const opts = [];
+    if (['circle', 'hexagon', 'square', 'triangle', 'oval'].includes(sh.type)) opts.push(`<label class="mini">圈數<input type="number" id="shRounds" min="2" max="40" value="${sh.rounds}"></label>`);
+    if (sh.type === 'oval') opts.push(`<label class="mini">起針鎖針數<input type="number" id="shChain" min="4" max="80" value="${sh.chain}"></label>`);
+    if (['sphere', 'tube', 'cone'].includes(sh.type)) opts.push(`<label class="mini">最大針數<select id="shMax">${(sh.type === 'cone' ? [12, 15, 18, 21, 24, 27, 30, 36, 42] : sizes).map(n => `<option ${n === sh.max ? 'selected' : ''}>${n}</option>`).join('')}</select></label>`, `<label class="mini">${sh.type === 'cone' ? '加完後再織幾圈' : '不加不減圈數'}<input type="number" id="shPlain" min="0" max="80" value="${sh.plain}"></label>`);
+    if (sh.type === 'sphere') opts.push(`<label class="mini">收到幾針<select id="shClose">${[6, 12, 18].filter(n => n < sh.max).map(n => `<option ${n === sh.close ? 'selected' : ''}>${n}</option>`).join('')}</select></label>`);
     return `<section class="panel card"><div class="card-h"><h2>幾何形狀與球體加減針</h2></div>
-      <div class="calc-row"><label class="mini">形狀<select id="shType"><option value="sphere" ${s.type === 'sphere' ? 'selected' : ''}>球體（頭、球）</option><option value="circle" ${s.type === 'circle' ? 'selected' : ''}>圓片（杯墊、底）</option><option value="tube" ${s.type === 'tube' ? 'selected' : ''}>圓柱（身體、杯套）</option></select></label>
-      <label class="mini">最大針數<select id="shMax">${sizes.map(n => `<option ${n === s.max ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-      ${s.type !== 'circle' ? `<label class="mini">不加不減圈數<input type="number" id="shPlain" min="0" max="60" value="${s.plain}"></label>` : ''}
-      ${s.type === 'sphere' ? `<label class="mini">收到幾針<select id="shClose">${[6, 12, 18].filter(n => n < s.max).map(n => `<option ${n === s.close ? 'selected' : ''}>${n}</option>`).join('')}</select></label>` : ''}
-      <button type="button" class="btn small" data-act="shapeUpdate">更新預覽</button></div>
-      <p class="muted small">短針圈織，每圈平均加減 6 針。用 3mm 鉤針、牛奶棉時，${s.max} 針大約是直徑 ${Math.round(s.max / 6 * 1.1 * 10) / 10} 公分（實際依手勁不同）。</p>
-      <div class="tbl-wrap"><table class="rows"><thead><tr><th>圈</th><th>公式</th><th class="r">針數</th></tr></thead><tbody>${rows.map((r, k) => `<tr><td class="mono">R${k + 1}</td><td class="mono">${esc(formula(r, 'code', L, 'mr'))}${r.note ? ` <span class="muted small">${esc(r.note)}</span>` : ''}</td><td class="r mono">${v[k].produced}</td></tr>`).join('')}</tbody></table></div>
+      <div class="shape-grid">${Object.entries(SHAPES).map(card).join('')}</div></section>
+      <section class="panel card"><div class="card-h"><h2>${info.name}</h2><span class="muted small">${info.desc}</span></div>
+      <div class="calc-row">${opts.join('')}<button type="button" class="btn small" data-act="shapeUpdate">更新</button></div>
+      <div class="shape-split"><div class="shape-big">${shapePreview(sh.type, rows, v)}<p class="muted small">共 ${rows.length} 圈 · 最後 ${last} 針 · ${cm}（3mm 鉤針、牛奶棉估算）</p></div>
+      <div class="tbl-wrap"><table class="rows"><thead><tr><th>圈</th><th>公式</th><th class="r">針數</th></tr></thead><tbody>${rows.map((r, k) => `<tr><td class="mono">R${k + 1}</td><td class="mono">${esc(formula(r, 'code', L, 'mr'))}${r.note ? ` <span class="muted small">${esc(r.note)}</span>` : ''}</td><td class="r mono">${v[k].produced}</td></tr>`).join('')}</tbody></table></div></div>
       <div class="tools end"><button type="button" class="btn primary" data-act="shapeImport">加入目前專案成為新部件</button></div></section>`;
   }
-
+  // 圖解符號（日本 JIS 鉤針符號、棒針記號的簡化畫法），點一下插入代號
+  const G = (d, extra = '') => `<svg viewBox="0 0 24 24" class="sym" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</g>${extra}</svg>`;
+  const SYMS = {
+    crochet: [
+      ['CH', '鎖針', G('<ellipse cx="12" cy="12" rx="7" ry="4.5"/>')],
+      ['SL', '引拔針', G('', '<circle cx="12" cy="12" r="4" fill="currentColor"/>')],
+      ['X', '短針', G('<path d="M6 6l12 12M18 6L6 18"/>')],
+      ['T', '中長針', G('<path d="M6 5h12M12 5v15"/>')],
+      ['F', '長針', G('<path d="M6 4h12M12 4v17M9 14l6-3"/>')],
+      ['E', '長長針', G('<path d="M6 3h12M12 3v18M9 10l6-3M9 15l6-3"/>')],
+      ['V', '短針加針', G('<path d="M5 5l4 4M9 5L5 9M15 5l4 4M19 5l-4 4M7 9l5 11 5-11"/>')],
+      ['A', '短針減針', G('<path d="M5 15l4 4M9 15l-4 4M15 15l4 4M19 15l-4 4M7 15L12 4l5 11"/>')],
+      ['FV', '長針加針', G('<path d="M12 21L6 5M12 21l6-16M3 6h6M15 6h6M7 12l3-2M15 12l3-2"/>')],
+      ['FA', '長針減針', G('<path d="M12 3L6 20M12 3l6 17M8 3h8M6 13l3-2M15 11l3 2"/>')],
+      ['W', '一針三短針', G('<path d="M12 20V6M12 20L5 8M12 20l7-12M10 4l4 4M14 4l-4 4"/>')],
+      ['M', '短針三併', G('<path d="M12 4v14M12 4L5 16M12 4l7 12"/>')]
+    ],
+    knitting: [
+      ['K', '下針', G('<path d="M12 4v16"/>')],
+      ['P', '上針', G('<path d="M5 12h14"/>')],
+      ['YO', '掛針', G('<circle cx="12" cy="12" r="6"/>')],
+      ['K2tog', '左上二併', G('<path d="M6 20L18 4M12 12l6 8"/>')],
+      ['SSK', '右上二併', G('<path d="M18 20L6 4M12 12l-6 8"/>')],
+      ['S2KP', '中上三併', G('<path d="M12 4v16M5 20l7-8 7 8"/>')],
+      ['KTBL', '扭下針', G('<path d="M8 20c0-6 8-6 8-12a4 4 0 0 0-8 0c0 6 8 6 8 12"/>')],
+      ['SL', '滑針', G('<path d="M6 4l6 16 6-16"/>')],
+      ['M1L', '左扭加針', G('<path d="M12 20V8M12 8l-5 5M7 4h10"/>')],
+      ['M1R', '右扭加針', G('<path d="M12 20V8M12 8l5 5M7 4h10"/>')],
+      ['C4F', '左上交叉', G('<path d="M4 20L20 4M4 4l6 6M14 14l6 6"/>')],
+      ['C4B', '右上交叉', G('<path d="M20 20L4 4M20 4l-6 6M10 14l-6 6"/>')]
+    ]
+  };
+  async function shrinkImage(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => bad(Error('圖片讀不出來')); i.src = url; });
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      return { src: c.toDataURL('image/jpeg', 0.82), w: c.width, h: c.height };
+    } finally { URL.revokeObjectURL(url); }
+  }
+  async function addCharts(files) {
+    const P = proj(); P.charts = P.charts || [];
+    for (const f of files) {
+      if (!f.type.startsWith('image/')) continue;
+      try { const im = await shrinkImage(f); P.charts.push({ id: uid(), name: (f.name || '貼上的圖解').replace(/\.[^.]+$/, '').slice(0, 40) || '圖解', ...im, ruler: 0.15, rot: 0 }); ui.chartId = P.charts[P.charts.length - 1].id; }
+      catch (e) { alert(e.message); }
+    }
+    const size = JSON.stringify(P).length;
+    if (size > 6e6) alert('這個專案的圖解很多，同步會比較慢；建議把不需要的圖解刪掉。');
+    ui.view = { z: 1, x: 0, y: 0 }; touch(); render();
+  }
+  function chartViewer(P) {
+    const charts = P.charts || [];
+    const c = charts.find(x => x.id === ui.chartId) || charts[0];
+    if (c) ui.chartId = c.id;
+    const thumbs = charts.map(x => `<button type="button" class="thumb ${c && x.id === c.id ? 'on' : ''}" data-act="chartPick" data-id="${x.id}" title="${esc(x.name)}"><img src="${x.src}" alt="${esc(x.name)}"></button>`).join('');
+    const v = ui.view || (ui.view = { z: 1, x: 0, y: 0 });
+    const sym = (SYMS[craftOf(P)] || SYMS.crochet).map(([code, nm, svg]) => `<button type="button" class="symbtn" data-act="symInsert" data-code="${code}" title="插入 ${code}">${svg}<b>${code}</b><small>${nm}</small></button>`).join('');
+    return `<section class="panel card"><div class="card-h"><h2>圖解區</h2><div class="tools"><label class="btn small upbtn">＋ 上傳圖解<input type="file" id="chartFile" accept="image/*" multiple hidden></label></div></div>
+      <p class="muted small">上傳書上或網路上的符號圖解（照片、截圖都可以，也能直接 Ctrl+V 貼上）。圖解會跟著「${esc(P.title)}」一起存到雲端。</p>
+      ${charts.length ? `<div class="thumbs">${thumbs}</div>
+      <div class="viewer-bar"><input class="cname" data-chart="name" value="${esc(c.name)}" aria-label="圖解名稱">
+        <div class="tools"><button type="button" class="btn small" data-act="zoom" data-d="-1" aria-label="縮小">－</button><span class="zv">${Math.round(v.z * 100)}%</span><button type="button" class="btn small" data-act="zoom" data-d="1" aria-label="放大">＋</button><button type="button" class="btn small" data-act="zoomFit">符合</button><button type="button" class="btn small" data-act="rotate">↻ 旋轉</button><button type="button" class="btn small" data-act="ruler" data-d="-1">▲ 行尺</button><button type="button" class="btn small" data-act="ruler" data-d="1">▼ 行尺</button><button type="button" class="btn small danger" data-act="chartDel">刪除</button></div></div>
+      <div class="viewer" id="viewer"><div class="vstage" id="vstage" style="transform:translate(${v.x}px,${v.y}px) scale(${v.z}) rotate(${c.rot || 0}deg)"><div class="vimg"><img src="${c.src}" alt="${esc(c.name)}" draggable="false"><span class="vruler" id="vruler" style="top:${(c.ruler ?? .15) * 100}%"></span></div></div></div>
+      <p class="muted small">拖曳可以移動圖片，滾輪或按鈕縮放；粉紅色「行尺」標記你織到哪一行，會記住位置，換裝置也一樣。</p>` : `<label class="dropzone" id="dropzone">把圖解圖片拖到這裡，或點一下選擇檔案<input type="file" id="chartFile2" accept="image/*" multiple hidden></label>`}
+      </section>
+      <section class="panel card"><div class="card-h"><h2>符號對照</h2><span class="muted small">點符號就會把代號插入右邊的文字框</span></div><div class="syms">${sym}</div></section>`;
+  }
   function renderInterp() {
-    return `<section class="panel card"><div class="card-h"><h2>織圖判讀室</h2></div>
-      <p class="muted">把網路上或書上的文字織圖貼進來，一行一圈。支援 <code>R1: MR 6X</code>、<code>R3-5: 18X</code>（連續相同圈）、<code>Rnd 2: (sc, inc) x6</code>、<code>第4圈：(2短針, 加針)×6</code>、棒針 <code>Row 1: K2, P2</code>。</p>
-      <textarea id="interpText" rows="10" class="mono" placeholder="R1: MR 6X\nR2: 6V\nR3: (X, V)*6\nR4-6: 18X\nR7: (X, A)*6">${esc(ui.interpText || '')}</textarea>
-      <div class="tools"><label class="mini">類型<select id="interpCraft"><option value="crochet">鉤針</option><option value="knitting" ${ui.interpCraft === 'knitting' ? 'selected' : ''}>棒針</option></select></label><button type="button" class="btn" data-act="interpRun">解析</button></div>
-      <div id="interpOut">${ui.interpOut || ''}</div></section>`;
+    const P = proj();
+    return `<div class="interp-split"><div class="col">${chartViewer(P)}</div><div class="col"><section class="panel card"><div class="card-h"><h2>文字織圖</h2></div>
+      <p class="muted small">一行一圈，看著左邊的圖解把每圈寫下來，或直接貼上文字織圖。支援 <code>R1: MR 6X</code>、<code>R3-5: 18X</code>、<code>Rnd 2: (sc, inc) x6</code>、<code>第4圈：(2短針, 加針)×6</code>、棒針 <code>Row 1: K2, P2</code>。</p>
+      <textarea id="interpText" rows="12" class="mono" placeholder="R1: MR 6X\nR2: 6V\nR3: (X, V)*6\nR4-6: 18X\nR7: (X, A)*6">${esc(ui.interpText || '')}</textarea>
+      <div class="tools"><label class="mini">類型<select id="interpCraft"><option value="crochet">鉤針</option><option value="knitting" ${(ui.interpCraft || craftOf(P)) === 'knitting' ? 'selected' : ''}>棒針</option></select></label><button type="button" class="btn primary" data-act="interpRun">解析並驗算</button></div>
+      <div id="interpOut">${ui.interpOut || ''}</div></section></div></div>`;
   }
   function interpret(text, craft) {
     const L = craft === 'knitting' ? KNIT : CROCHET, rows = [], errs = [];
@@ -806,8 +975,17 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       case 'cMinus': ui.counter = Math.max(0, ui.counter - 1); render(); break;
       case 'cReset': ui.counter = 0; render(); break;
       case 'finishRow': pt.rows[ui.row].completed = true; if (ui.row < pt.rows.length - 1) ui.row++; ui.counter = 0; touch(); render(); break;
-      case 'shapeUpdate': ui.shape = { type: $('shType').value, max: +$('shMax').value, plain: +($('shPlain')?.value ?? 5), close: +($('shClose')?.value || 6) }; render(); break;
-      case 'shapeImport': { const s = ui.shape || { type: 'sphere', max: 36, plain: 5, close: 6 }; if (craftOf(P) === 'knitting') { alert('形狀產生器是鉤針用的，請先在左邊選一個鉤針專案。'); break; } const id = uid(); P.parts.push({ id, name: { sphere: '球體', circle: '圓片', tube: '圓柱' }[s.type] + ` ${s.max} 針`, quantity: 1, workStyle: 'round', foundationType: 'mr', notes: '', rows: shapeRows(s.type, s.max, s.plain, s.close) }); ui.partId = id; ui.row = 0; ui.tab = 'work'; touch(); render(); break; }
+      case 'shapePick': ui.shape = { ...(ui.shape || {}), type: el.dataset.k }; render(); break;
+      case 'shapeUpdate': { const sh = ui.shape, num = (id, d) => { const x = $(id); return x ? Math.max(0, +x.value || d) : sh[id.slice(2).toLowerCase()] ?? d; };
+        Object.assign(sh, { rounds: Math.max(2, num('shRounds', sh.rounds || 6)), chain: Math.max(4, num('shChain', sh.chain || 10)), max: num('shMax', sh.max || 36), plain: $('shPlain') ? Math.max(0, +$('shPlain').value) : sh.plain, close: num('shClose', sh.close || 6) }); render(); break; }
+      case 'shapeImport': { const sh = ui.shape || { type: 'sphere' }; if (craftOf(P) === 'knitting') { alert('形狀產生器是鉤針用的，請先在左邊選一個鉤針專案。'); break; } const id = uid(), rows = shapeRows(sh), v = validate({ rows }, CROCHET); P.parts.push({ id, name: `${SHAPES[sh.type].name} ${v[v.length - 1].produced} 針`, quantity: 1, workStyle: 'round', foundationType: sh.type === 'oval' ? 'oval' : 'mr', notes: '', rows }); ui.partId = id; ui.row = 0; ui.tab = 'work'; touch(); render(); break; }
+      case 'chartPick': ui.chartId = el.dataset.id; ui.view = { z: 1, x: 0, y: 0 }; render(); break;
+      case 'chartDel': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c && confirm(`刪除圖解「${c.name}」？`)) { P.charts = P.charts.filter(x => x.id !== c.id); ui.chartId = null; touch(); render(); } break; }
+      case 'zoom': { const v = ui.view; v.z = Math.min(6, Math.max(0.2, v.z * (+el.dataset.d > 0 ? 1.25 : 0.8))); applyView(); break; }
+      case 'zoomFit': ui.view = { z: 1, x: 0, y: 0 }; applyView(); break;
+      case 'rotate': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c) { c.rot = ((c.rot || 0) + 90) % 360; touch(); applyView(); } break; }
+      case 'ruler': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c) { c.ruler = Math.min(0.98, Math.max(0.02, (c.ruler ?? .15) + (+el.dataset.d) * 0.02)); touch(); const r = $('vruler'); if (r) r.style.top = c.ruler * 100 + '%'; } break; }
+      case 'symInsert': { const ta = $('interpText'); if (!ta) break; const s0 = ta.selectionStart ?? ta.value.length, before = ta.value.slice(0, s0), after = ta.value.slice(ta.selectionEnd ?? s0); const sep = before && !/[\s,(（:：]$/.test(before) ? ', ' : ''; const ins = sep + el.dataset.code; ta.value = before + ins + after; ta.focus(); ta.setSelectionRange(s0 + ins.length, s0 + ins.length); ui.interpText = ta.value; break; }
       case 'interpRun': {
         ui.interpText = $('interpText').value; ui.interpCraft = $('interpCraft').value;
         const res = interpret(ui.interpText, ui.interpCraft), Lx = ui.interpCraft === 'knitting' ? KNIT : CROCHET, v = validate({ rows: res.rows }, Lx);
@@ -862,6 +1040,39 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       alert('匯入完成！');
     } catch (err) { alert('匯入失敗：' + err.message); }
   };
+  function applyView() {
+    const st = $('vstage'), P = proj(), c = (P.charts || []).find(x => x.id === ui.chartId), v = ui.view;
+    if (!st || !c) return;
+    st.style.transform = `translate(${v.x}px,${v.y}px) scale(${v.z}) rotate(${c.rot || 0}deg)`;
+    const zv = document.querySelector('.zv'); if (zv) zv.textContent = Math.round(v.z * 100) + '%';
+  }
+  document.addEventListener('change', e => { if (e.target.id === 'chartFile' || e.target.id === 'chartFile2') { addCharts([...e.target.files]); e.target.value = ''; } });
+  document.addEventListener('input', e => { if (e.target.dataset.chart === 'name') { const c = (proj().charts || []).find(x => x.id === ui.chartId); if (c) { c.name = e.target.value; touch(); } } if (e.target.id === 'interpText') ui.interpText = e.target.value; });
+  document.addEventListener('paste', e => {
+    if (ui.tab !== 'interp') return;
+    const files = [...(e.clipboardData?.items || [])].filter(i => i.type.startsWith('image/')).map(i => i.getAsFile()).filter(Boolean);
+    if (files.length) { e.preventDefault(); addCharts(files); }
+  });
+  document.addEventListener('dragover', e => { if (ui.tab === 'interp' && e.target.closest('#dropzone,#viewer')) e.preventDefault(); });
+  document.addEventListener('drop', e => { if (ui.tab === 'interp' && e.target.closest('#dropzone,#viewer')) { e.preventDefault(); addCharts([...e.dataTransfer.files]); } });
+  // 圖解：拖曳移動、滾輪縮放、拖曳行尺
+  let pan = null;
+  document.addEventListener('pointerdown', e => {
+    const vw = e.target.closest('#viewer'); if (!vw) return;
+    const onRuler = e.target.id === 'vruler';
+    pan = { ruler: onRuler, x0: e.clientX, y0: e.clientY, vx: ui.view.x, vy: ui.view.y };
+    vw.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  document.addEventListener('pointermove', e => {
+    if (!pan) return;
+    if (pan.ruler) {
+      const img = $('vstage')?.querySelector('img'), c = (proj().charts || []).find(x => x.id === ui.chartId); if (!img || !c) return;
+      const r = img.getBoundingClientRect(); c.ruler = Math.min(0.98, Math.max(0.02, (e.clientY - r.top) / r.height)); $('vruler').style.top = c.ruler * 100 + '%';
+    } else { ui.view.x = pan.vx + e.clientX - pan.x0; ui.view.y = pan.vy + e.clientY - pan.y0; applyView(); }
+  });
+  document.addEventListener('pointerup', () => { if (pan?.ruler) touch(); pan = null; });
+  document.addEventListener('wheel', e => { if (!e.target.closest('#viewer')) return; e.preventDefault(); ui.view.z = Math.min(6, Math.max(0.2, ui.view.z * (e.deltaY < 0 ? 1.1 : 0.9))); applyView(); }, { passive: false });
+
   render(); save();
   if (document.documentElement.hasAttribute('data-locked')) window.addEventListener('daily-unlocked', () => setTimeout(startSync, 0), { once: true });
   else setTimeout(startSync, 0);
