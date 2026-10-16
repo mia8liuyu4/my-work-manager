@@ -1,0 +1,145 @@
+<!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="theme.js?v=1016g"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
+<link rel="stylesheet" href="theme.css?v=1016g"><link rel="stylesheet" href="auth-gate.css?v=1016g">
+<link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>月份回顧｜我的日常</title><style>
+.review-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+.cal-panel{padding:22px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.cal-top h2{margin:0;font-size:18px}
+.month-nav{display:flex;align-items:center;gap:6px}
+.month-nav button{min-width:36px;height:36px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:14px}
+#reviewMsg{margin:0 0 10px;font-size:13px;color:var(--muted)}#reviewMsg:empty{display:none}
+#calGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal-wd{text-align:center;font-size:12px;color:var(--muted);padding:4px 0}
+.cal-day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;aspect-ratio:1/1.05;min-height:64px;padding:6px 2px;border:1.5px solid transparent;border-radius:14px;background:var(--surface2);transition:transform .12s}
+.cal-day:hover{transform:translateY(-2px)}
+.cal-n{align-self:flex-start;padding-left:6px;font-size:12px;color:var(--muted)}
+.cal-mood{font-size:24px;line-height:1.1;min-height:26px}
+.cal-badges{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}
+.cal-badges i{font-style:normal;font-size:10px;padding:0 5px;border-radius:999px;background:var(--surface);line-height:16px}
+.b-task{color:#3D6296}.b-joy{color:var(--mint-text)}
+.cal-day.is-future{opacity:.45}
+.cal-day.is-today{border-color:var(--accent)}
+.cal-day.is-sel{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+.m-happy{background:#FDEFC8!important}.m-calm{background:#DFF0E2!important}.m-tired{background:#EDE4F5!important}.m-sad{background:#DCEBFA!important}.m-annoyed{background:#FADADD!important}
+[data-theme=minimal-dark] .m-happy{background:#3a3220!important}[data-theme=minimal-dark] .m-calm{background:#1f3326!important}[data-theme=minimal-dark] .m-tired{background:#2d2638!important}[data-theme=minimal-dark] .m-sad{background:#1e2a3a!important}[data-theme=minimal-dark] .m-annoyed{background:#3a2226!important}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:4px}.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+#dayDetail{margin-top:18px;padding:16px 18px;border-radius:16px;background:var(--surface2)}
+.dd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.dd-head strong{font-size:16px}.dd-mood{font-size:14px}
+.dd-sec h3{margin:12px 0 6px;font-size:13px;color:var(--muted)}
+.dd-sec ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.6}
+.dd-sec p{margin:0;font-size:13px}
+.dd-joy{font-family:var(--hand);font-size:15px}
+.tag{display:inline-block;padding:0 7px;border-radius:999px;font-size:11px;font-weight:700}
+.tag.work{background:#E3ECF8;color:#3D6296}.tag.personal{background:var(--accent-soft);color:var(--accent-text)}
+.side-col{display:flex;flex-direction:column;gap:16px}
+.sum-panel,.joy-panel{padding:18px}
+.sum-panel h2,.joy-panel h2{margin:0 0 12px;font-size:16px}
+.sum-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sum-cards div{padding:10px 12px;border-radius:14px;background:var(--surface2)}
+.sum-cards b{display:block;font-size:20px}.sum-cards small{font-size:12px;color:var(--muted)}
+.sum-cards a{color:inherit}
+#sumLine{margin:12px 0;padding:12px 14px;border-radius:14px;background:var(--accent-soft);font-family:var(--hand);font-size:15px;line-height:1.7}
+#moodBars{display:flex;flex-direction:column;gap:6px}
+.mb-row{display:grid;grid-template-columns:70px 1fr 40px;align-items:center;gap:8px;font-size:13px}
+.mb-row b{font-size:12px;text-align:right}
+.mb-bar{height:10px;border-radius:999px;background:var(--surface2);overflow:hidden}
+.mb-bar i{display:block;height:100%;border-radius:inherit;transition:width .4s}
+.mb-bar i.m-happy{background:#F2C14E!important}.mb-bar i.m-calm{background:#7DBF8E!important}.mb-bar i.m-tired{background:#B79AD6!important}.mb-bar i.m-sad{background:#7EB2E6!important}.mb-bar i.m-annoyed{background:#EF8D86!important}
+.pet-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:12px}
+#reviewPet{flex-shrink:0;padding:0;border:0;background:none;cursor:pointer}
+#reviewPet img{display:block;width:auto;max-width:90px;max-height:84px}
+#reviewPet.bob img{animation:bob .5s cubic-bezier(.3,1.5,.6,1)}
+@keyframes bob{40%{transform:translateY(-10px)}}
+#reviewSay{flex:1;margin:0 0 10px;padding:10px 12px;border-radius:14px;background:var(--surface2);font-family:var(--hand);font-size:14px;line-height:1.6}
+#joyRandom{width:100%;margin-bottom:12px}
+#joyRandom[hidden]{display:none}
+#joyWall{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:420px;overflow:auto;padding:2px}
+#joyWall>p{grid-column:1/-1;margin:0;font-size:13px}
+.joy-note{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:12px;font-family:var(--hand);font-size:14px;line-height:1.5;overflow-wrap:anywhere;transform:rotate(-1deg)}
+.joy-note small{font-family:var(--font);font-size:11px;color:var(--muted)}
+.joy-note.n0{background:#FDEFC8}.joy-note.n1{background:#DFF0E2;transform:rotate(1deg)}.joy-note.n2{background:#FADADD}.joy-note.n3{background:#E3ECF8;transform:rotate(.5deg)}
+[data-theme^=minimal] .joy-note{background:var(--surface2)!important;transform:none!important}
+@media(max-width:1060px){.review-grid{grid-template-columns:1fr}.side-col{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:640px){
+ .page-head{flex-wrap:nowrap}.page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}.page-head h1{font-size:21px}.page-head .sub{font-size:12px}
+ .side-col{grid-template-columns:1fr}.cal-panel{padding:12px}#calGrid{gap:4px}.cal-day{min-height:52px;border-radius:10px;padding:4px 1px}.cal-mood{font-size:19px;min-height:20px}.cal-n{font-size:11px;padding-left:3px}.cal-badges i{font-size:9px;padding:0 3px}
+}
+</style></head><body class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3.5"/></symbol>
+<symbol id="i-food" viewBox="0 0 24 24"><path d="M6 3v7a2.5 2.5 0 0 0 5 0V3M8.5 3v18M17.5 21V3c-2.2 1-3.5 3.6-3.5 7 0 2.2.9 3.5 3.5 3.5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="m14.5 5-7 7 7 7"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 20.5v-4h3v4"/></symbol>
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5v10.5h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+<symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+<symbol id="i-bubble" viewBox="0 0 24 24"><circle cx="9" cy="10" r="5.5"/><circle cx="16.5" cy="15.5" r="3.5"/><circle cx="17" cy="6" r="2"/><path d="M6.8 8.2a2.6 2.6 0 0 1 2-1.4"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"/></symbol>
+<symbol id="i-muyu" viewBox="0 0 24 24"><path d="M3 15.5c0-4.6 4-8 9-8s9 3.4 9 8c0 2.4-3.6 3.5-9 3.5s-9-1.1-9-3.5Z"/><path d="M4.8 15c4.3 1.6 10.1 1.6 14.4 0"/><path d="M18.5 2.5 14.6 7"/><circle cx="13.6" cy="8" r="1.6"/></symbol>
+<symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 10.5V5a1.5 1.5 0 0 1 3 0v5.5M14 10.5V6.5a1.5 1.5 0 0 1 3 0v6c0 4.5-2.5 8-6.5 8-2.6 0-4.2-1.4-5.5-3.6L3.8 13.6a1.4 1.4 0 0 1 2.4-1.4L8 14.5"/></symbol>
+<symbol id="i-slipper" viewBox="0 0 24 24"><path d="M12 2.5c4 0 5.6 3.6 5.2 8-.3 3.3-.9 4.6-.8 7.3.1 2.6-1.9 3.7-4.4 3.7s-4.5-1.1-4.4-3.7c.1-2.7-.5-4-.8-7.3-.4-4.4 1.2-8 5.2-8Z"/><path d="M12 7 8.2 12M12 7l3.8 5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r="1"/><circle cx="12" cy="14.5" r="1"/><circle cx="15.5" cy="14.5" r="1"/></symbol>
+</defs></svg>
+<div class="shell">
+<aside class="app-side" aria-label="側邊欄">
+<a class="side-brand" href="index.html"><img data-pose="face" alt=""><span><strong>我的日常</strong><small>工作・生活・小確幸</small></span></a>
+<nav class="side-links" aria-label="主要導覽">
+<a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a>
+<a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
+<a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
+<a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
+<a href="review.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>月份回顧</a>
+<a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
+<a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
+</nav>
+<div class="side-foot deco"><img data-pose="star" alt=""><p class="hand" data-msg="side">一步一步，<br>都在往前走。</p></div>
+</aside>
+<main class="app-main">
+<header class="page-head">
+<a class="back" href="index.html" aria-label="回首頁"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg></a>
+<span class="page-icon"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg></span>
+<div><h1>月份回顧</h1><p class="sub">心情月曆、完成的事和小確幸</p></div>
+<span class="spacer"></span>
+<div data-theme-switch></div>
+</header>
+<div class="review-grid">
+<section class="panel cal-panel" aria-labelledby="monthLabel">
+<div class="cal-top"><h2 id="monthLabel">—</h2><div class="month-nav"><button id="prevMonth" type="button" aria-label="上個月">‹</button><button id="thisMonth" type="button">本月</button><button id="nextMonth" type="button" aria-label="下個月">›</button></div></div>
+<p id="reviewMsg" aria-live="polite"></p>
+<div id="calGrid"></div>
+<div class="legend" aria-hidden="true"><span><i class="m-happy"></i>開心</span><span><i class="m-calm"></i>平靜</span><span><i class="m-tired"></i>好累</span><span><i class="m-sad"></i>難過</span><span><i class="m-annoyed"></i>煩躁</span><span>✓ 完成的待辦</span><span>✿ 小確幸</span></div>
+<div id="dayDetail" aria-live="polite"></div>
+</section>
+<div class="side-col">
+<section class="panel sum-panel" aria-labelledby="sumTitle">
+<h2 id="sumTitle">這個月</h2>
+<div class="sum-cards"><div><b id="sumDays">0</b><small>記錄心情的天數</small></div><div><b id="sumTasks">0</b><small>完成的待辦</small></div><div><b id="sumJoys">0</b><small>小確幸</small></div><div><a href="draw.html#mealCard"><b id="sumSpend">NT$ 0</b><small>本月花費</small></a></div></div>
+<p id="sumLine"></p>
+<div id="moodBars"></div>
+</section>
+<section class="panel joy-panel" aria-labelledby="joyWallTitle">
+<h2 id="joyWallTitle">這個月的小確幸</h2>
+<div class="pet-row"><button id="reviewPet" type="button" aria-label="隨機回味一件小確幸"><img data-pose="star" alt="" draggable="false"></button><p id="reviewSay" aria-live="polite"></p></div>
+<button id="joyRandom" class="btn" type="button" hidden>✿ 隨機回味一件</button>
+<div id="joyWall"></div>
+</section>
+</div>
+</div>
+</main>
+</div>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016g"></script><script src="messages.js?v=1016g"></script><script src="records.js?v=1016g"></script><script src="review.js?v=1016g"></script>
+<script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+</body></html>

@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016e"></script>
+<script src="theme.js?v=1016g"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016e"><link rel="stylesheet" href="auth-gate.css?v=1016e">
+<link rel="stylesheet" href="theme.css?v=1016g"><link rel="stylesheet" href="auth-gate.css?v=1016g">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>今天吃什麼｜我的日常</title><style>
 .draw-hero{display:flex;align-items:flex-end;justify-content:center;gap:28px;min-height:190px;padding:14px 40px 0;margin-bottom:20px}
 .draw-hero img{width:auto;max-width:260px;max-height:180px;margin-bottom:0;align-self:flex-end;position:relative}
@@ -90,6 +90,48 @@ legend .muted{font-size:12px}
 .days input{accent-color:var(--accent)}
 p.danger{color:var(--danger);margin:0 0 10px;font-size:14px}
 dialog .row{display:flex;gap:8px}
+
+.meal-card{margin-top:20px;padding:22px 24px}
+.meal-card.flash{animation:flash 1.2s ease}
+@keyframes flash{30%{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 40%,transparent)}}
+.meal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.meal-head h2{margin:0;font-size:16px}
+.month-nav{display:flex;align-items:center;gap:8px}
+.month-nav button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:18px;line-height:1}
+.month-nav strong{font-size:14px;min-width:96px;text-align:center}
+.meal-hint{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--butter-soft);font-size:13px}
+.meal-hint[hidden]{display:none}
+.meal-form{display:grid;grid-template-columns:auto minmax(0,2fr) minmax(0,1fr) minmax(0,1.2fr) auto;gap:8px}
+.meal-form select{min-height:42px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.slot-bars{display:flex;flex-direction:column;gap:6px;margin:-4px 0 16px}
+.sb-row{display:grid;grid-template-columns:72px 1fr 110px;align-items:center;gap:8px;font-size:13px}
+.sb-row b{text-align:right;font-size:13px}
+.sb-bar{height:10px;border-radius:999px;background:var(--surface2);overflow:hidden}.sb-bar i{display:block;height:100%;border-radius:inherit}
+.sb-row .s-breakfast,.sb-row .s-lunch,.sb-row .s-dinner,.sb-row .s-snack,.sb-row .s-other{padding:1px 8px;border-radius:999px;font-size:12px;text-align:center}
+.meal-form input{min-height:42px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);min-width:0}
+#mealMsg{margin:8px 0 0;font-size:13px;min-height:0}
+#mealMsg:empty{display:none}
+.meal-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.meal-stats>div{padding:12px;border-radius:14px;background:var(--surface2)}
+.meal-stats>div:first-child{background:var(--accent-soft)}
+.meal-stats b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-stats small{font-size:12px;color:var(--muted)}
+.meal-split{display:grid;grid-template-columns:1fr 2fr;gap:20px}
+.meal-split h3{margin:0 0 8px;font-size:14px}
+#mealTop{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+#mealTop small{color:var(--muted)}
+#mealList{list-style:none;margin:0;padding:0;max-height:280px;overflow:auto;display:flex;flex-direction:column;gap:4px}
+.meal-row{display:grid;grid-template-columns:44px auto minmax(0,1fr) auto 26px;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;background:var(--surface2);font-size:14px}
+.meal-day{color:var(--muted);font-size:12px}
+.meal-tag{display:grid;place-items:center;width:24px;height:22px;border-radius:999px;font-size:11px;font-weight:700}
+.meal-tag{width:auto!important;padding:0 7px}
+.s-breakfast{background:#FDEFC8;color:#8A6A1F}.s-lunch{background:#FADADD;color:#A4524C}.s-dinner{background:#E3ECF8;color:#3D6296}.s-snack{background:#DFF0E2;color:#3F7A4F}.s-other{background:#EDE4F5;color:#6B4F8A}
+.meal-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-amt{font-weight:700}
+.meal-del{width:26px;height:26px;padding:0;border:0;border-radius:50%;background:none;color:var(--muted);font-size:12px}
+.meal-del:hover{background:var(--danger-soft);color:var(--danger)}
+@media(max-width:900px){.meal-split{grid-template-columns:1fr}}
+@media(max-width:640px){.meal-form{grid-template-columns:1fr 1fr}.meal-form #mealName{grid-column:1/-1}.meal-form button{grid-column:1/-1}.meal-stats{grid-template-columns:1fr 1fr}.meal-stats>div:first-child{grid-column:1/-1}.meal-card{padding:18px}.sb-row{grid-template-columns:64px 1fr 96px}}
 @media(max-width:1060px){.draw-grid{grid-template-columns:1fr;grid-template-areas:"draw" "opts" "list"}}
 @media(max-width:640px){
  .page-head{flex-wrap:nowrap}.page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}.page-head h1{font-size:21px}.page-head .sub{font-size:12px}
@@ -118,6 +160,10 @@ dialog .row{display:flex;gap:8px}
 <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
 <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"/></symbol>
+<symbol id="i-muyu" viewBox="0 0 24 24"><path d="M3 15.5c0-4.6 4-8 9-8s9 3.4 9 8c0 2.4-3.6 3.5-9 3.5s-9-1.1-9-3.5Z"/><path d="M4.8 15c4.3 1.6 10.1 1.6 14.4 0"/><path d="M18.5 2.5 14.6 7"/><circle cx="13.6" cy="8" r="1.6"/></symbol>
+<symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 10.5V5a1.5 1.5 0 0 1 3 0v5.5M14 10.5V6.5a1.5 1.5 0 0 1 3 0v6c0 4.5-2.5 8-6.5 8-2.6 0-4.2-1.4-5.5-3.6L3.8 13.6a1.4 1.4 0 0 1 2.4-1.4L8 14.5"/></symbol>
+<symbol id="i-slipper" viewBox="0 0 24 24"><path d="M12 2.5c4 0 5.6 3.6 5.2 8-.3 3.3-.9 4.6-.8 7.3.1 2.6-1.9 3.7-4.4 3.7s-4.5-1.1-4.4-3.7c.1-2.7-.5-4-.8-7.3-.4-4.4 1.2-8 5.2-8Z"/><path d="M12 7 8.2 12M12 7l3.8 5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r="1"/><circle cx="12" cy="14.5" r="1"/><circle cx="15.5" cy="14.5" r="1"/></symbol>
 </defs></svg>
 <div class="shell">
 <aside class="app-side" aria-label="側邊欄">
@@ -127,6 +173,7 @@ dialog .row{display:flex;gap:8px}
 <a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>我的筆記</a>
 <a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>今天吃什麼</a>
 <a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓小遊戲</a>
+<a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>月份回顧</a>
 <a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦清單</a>
 <a href="index.html#tools"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>我的工具</a>
 </nav>
@@ -177,6 +224,14 @@ dialog .row{display:flex;gap:8px}
 </div>
 </div>
 
+<section id="mealCard" class="panel meal-card" aria-labelledby="mealTitle">
+<div class="meal-head"><h2 id="mealTitle">飲食與花費記帳</h2><div class="month-nav"><button id="mealPrev" type="button" aria-label="上個月">‹</button><strong id="mealMonth"></strong><button id="mealNext" type="button" aria-label="下個月">›</button></div></div>
+<p id="mealHint" class="meal-hint" hidden>抽到了！吃完在這裡填金額記一筆 ✎（首頁的「隨手記帳」也可以記）</p>
+<form id="mealForm" class="meal-form"><select id="mealSlot" aria-label="類別"><option value="breakfast">早餐</option><option value="lunch" selected>午餐</option><option value="dinner">晚餐</option><option value="snack">點心飲料</option><option value="other">其他花費</option></select><input id="mealName" list="mealNames" maxlength="60" placeholder="吃了哪一家" aria-label="餐廳" required><datalist id="mealNames"></datalist><input id="mealAmount" type="number" inputmode="numeric" min="0" step="1" placeholder="金額" aria-label="金額" required><input id="mealDay" type="date" aria-label="日期" required><button type="submit" class="btn primary">記一筆</button></form>
+<p id="mealMsg" class="muted" aria-live="polite"></p>
+<div class="meal-stats"><div><b id="mealTotal">NT$ 0</b><small>本月合計</small></div><div><b id="mealCount">0 筆</b><small>筆數</small></div><div><b id="mealAvg">—</b><small>平均每天</small></div></div><div id="slotBars" class="slot-bars"></div>
+<div class="meal-split"><div><h3>最常吃</h3><ol id="mealTop"></ol></div><div><h3>明細</h3><ul id="mealList"></ul></div></div>
+</section>
 <section class="panel backup"><details><summary>資料備份與還原</summary><p class="muted">資料僅保存在目前瀏覽器中。換裝置前請先匯出；還原備份會取代目前公司與家裡的清單。</p><div class="row"><button id="export" class="btn" type="button">匯出備份</button><button id="import" class="btn" type="button">匯入備份</button><input type="file" id="file" accept=".json,application/json" hidden></div></details></section>
 
 <section class="banner eat-banner deco" aria-hidden="true"><span class="cloud"></span><img data-pose="fork" alt=""><p class="hand">好好吃飯，<br>就是對自己最溫柔的照顧 ♡</p></section>
@@ -185,8 +240,8 @@ dialog .row{display:flex;gap:8px}
 <dialog id="editor" aria-labelledby="editorTitle"><div class="dialog-top"><h2 id="editorTitle">新增餐廳</h2><button type="button" id="closeDialog" aria-label="關閉">✕</button></div><form id="form"><label class="field">餐廳名稱<input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當"></label><label class="field">特色／備註<input id="info" type="text" maxlength="500" placeholder="步行時間、推薦餐點…"></label><fieldset><legend>固定公休日 <span class="muted">未勾選表示無固定公休</span></legend><div id="days" class="days"></div></fieldset><p id="formError" role="alert" class="danger"></p><div class="row"><button type="submit" class="btn primary">儲存餐廳</button><button type="button" id="cancel" class="btn">取消</button></div></form></dialog>
 </main>
 </div>
-<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016e"></script><script src="messages.js?v=1016e"></script><script>
+<nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a><a href="index.html#calendarSection"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>待辦</a></nav>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016g"></script><script src="messages.js?v=1016g"></script><script src="records.js?v=1016g"></script><script>
 
 'use strict';
 
@@ -226,6 +281,6 @@ $('import').onclick=()=>$('file').click();$('file').onchange=async()=>{const fil
 
 render();
 
-</script>
+</script><script src="draw-meal.js?v=1016g"></script>
 <script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>

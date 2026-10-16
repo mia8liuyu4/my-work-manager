@@ -154,6 +154,7 @@
     moods = prune({ ...moods, [today]: mood });
     try { localStorage.setItem(LOCAL, JSON.stringify(moods)); } catch {}
     renderWeek();
+    try { await window.dailyRecords?.setMood(today, mood); } catch {}
     if (!client || !user) return;
     try {
       const { data, error } = await client.auth.updateUser({ data: { moods } });
@@ -199,7 +200,9 @@
   async function start() {
     client = window.dailyClient || null;
     try { if (client) { const { data } = await client.auth.getUser(); user = data.user; } } catch {}
-    moods = prune({ ...readLocal(), ...(user?.user_metadata?.moods || {}) });
+    let rec = {};
+    try { const from = new Date(); from.setDate(from.getDate() - 40); (await window.dailyRecords.list('mood', window.dailyRecords.key(from))).forEach(r => { if (MOODS[r.title]) rec[r.day] = r.title; }); } catch {}
+    moods = prune({ ...readLocal(), ...(user?.user_metadata?.moods || {}), ...rec });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', greet); else greet();
     renderNames();
     renderWeek();
