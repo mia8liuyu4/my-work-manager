@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016j"></script>
+<script src="theme.js?v=1017a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016j"><link rel="stylesheet" href="auth-gate.css?v=1016j">
+<link rel="stylesheet" href="theme.css?v=1017a"><link rel="stylesheet" href="auth-gate.css?v=1017a">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>我的筆記｜我的日常</title><style>
 .notes-head .search{position:relative;flex:1 1 220px;max-width:340px}
 .search input{width:100%;min-height:42px;padding:9px 16px 9px 40px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
@@ -56,6 +56,30 @@
 #title{display:block;width:100%;font-size:26px;font-weight:700;border:0;border-bottom:1.5px dashed var(--line);border-radius:0;padding:6px 0 12px;background:transparent;outline-offset:6px}
 #saveStatus{display:inline-block;margin-top:8px;font-size:12px;color:var(--muted)}
 #content{display:block;width:100%;min-height:52vh;resize:vertical;border:0;outline:none;margin-top:14px;padding:0;font-size:16px;line-height:32px;background:repeating-linear-gradient(to bottom,transparent 0 31px,color-mix(in srgb,var(--line) 75%,transparent) 31px 32px);background-attachment:local}
+
+.fmt-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.fmt-bar{display:flex;gap:4px;flex-wrap:wrap}
+.fmt-top .seg{display:inline-flex;gap:3px;padding:3px;border-radius:12px;background:var(--surface2)}
+.fmt-top .seg button{min-height:32px;padding:4px 14px;border:0;border-radius:9px;background:transparent;font-size:13px;color:var(--muted)}
+.fmt-top .seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 3px #0000001a}
+.fmt-bar button{min-width:34px;min-height:32px;padding:3px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);font-size:13px;color:var(--ink)}
+.fmt-bar button:hover{border-color:var(--accent)}
+.fmt-bar mark{background:#FDEFA0;padding:0 2px}
+.note-view{min-height:52vh;margin-top:14px;font-size:16px;line-height:1.85;overflow-wrap:anywhere}
+.note-view h2{font-size:22px;margin:18px 0 6px}.note-view h3{font-size:18px;margin:14px 0 4px}.note-view h4{font-size:16px;margin:12px 0 4px}
+.note-view p{margin:2px 0}.note-view .gap{height:10px}
+.note-view ul,.note-view ol{margin:4px 0;padding-left:24px}
+.note-view ul.checks{list-style:none;padding-left:2px}
+.note-view .checks li label{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.note-view .checks input{width:18px;height:18px;margin-top:6px;accent-color:var(--accent);flex-shrink:0}
+.note-view .checks li.on span{text-decoration:line-through;color:var(--muted)}
+.note-view blockquote{margin:6px 0;padding:6px 14px;border-left:4px solid var(--accent);background:var(--surface2);border-radius:0 10px 10px 0}
+.note-view hr{border:0;border-top:1.5px dashed var(--line);margin:14px 0}
+.note-view code{padding:1px 6px;border-radius:6px;background:var(--surface2);font-size:.9em}
+.note-view mark{background:#FDEFA0;color:inherit;padding:0 3px;border-radius:4px}
+.note-view a{color:var(--accent-text)}
+.note-view .nimg{display:block;max-width:100%;max-height:420px;margin:8px 0;border-radius:12px;box-shadow:0 2px 10px #0002;cursor:zoom-in}
+.note-view .nimg.broken{min-height:40px;padding:10px;background:var(--surface2);color:var(--muted);font-size:13px;box-shadow:none}
 [data-theme^=minimal] #content{background:none;line-height:1.8}
 #content:focus-visible{outline:none}
 #conflict{margin:14px 0;padding:16px;border-radius:14px;background:var(--butter-soft)}
@@ -166,14 +190,17 @@
 <input id="title" maxlength="200" aria-label="筆記標題" placeholder="筆記標題">
 <small id="saveStatus" role="status" aria-live="polite"></small>
 <div id="conflict" class="hidden"><strong>有其他裝置修改了這篇筆記，或筆記已被刪除。</strong><p>你的文字仍保留在編輯區。可先下載，再載入雲端版本；或將目前內容另存新頁。</p><div class="editor-actions"><button id="cloud" class="btn" type="button">載入雲端版本</button><button id="copy" class="btn" type="button">另存新頁</button></div></div>
-<textarea id="content" aria-label="筆記內文" placeholder="寫下會議紀錄、研究想法或生活靈感…"></textarea>
+<div class="fmt-top"><div class="seg" role="group" aria-label="檢視方式"><button type="button" id="modePreview" aria-pressed="true">閱讀</button><button type="button" id="modeEdit" aria-pressed="false">編輯</button></div>
+<div id="fmtBar" class="fmt-bar" role="toolbar" aria-label="格式"><button type="button" data-fmt="h" title="標題">H</button><button type="button" data-fmt="b" title="粗體（Ctrl+B）"><b>B</b></button><button type="button" data-fmt="hl" title="螢光標記"><mark>重</mark></button><button type="button" data-fmt="check" title="核取清單">☐ 待辦</button><button type="button" data-fmt="ul" title="項目清單">• 清單</button><button type="button" data-fmt="ol" title="編號清單">1.</button><button type="button" data-fmt="quote" title="引言">❝</button><button type="button" data-fmt="hr" title="分隔線">—</button><button type="button" data-fmt="img" title="插入圖片（也可以直接貼上）">🖼 圖片</button><input type="file" id="imgFile" accept="image/*" multiple hidden></div></div>
+<textarea id="content" aria-label="筆記內文" placeholder="寫下會議紀錄、研究想法或生活靈感…&#10;# 標題　**粗體**　- [ ] 待辦　- 清單"></textarea>
+<div id="preview" class="note-view hidden" aria-live="off" title="點兩下可以編輯"></div>
 <div class="editor-actions"><button id="save" class="btn primary" type="button">立即儲存</button><button id="download" class="btn" type="button">下載這篇文字</button><button id="deletePage" class="btn danger" type="button">刪除筆記</button></div>
-<p class="editor-hint">可以直接從網頁、Word、Email 複製後貼上；PDF 或 Word 檔可以用上方「匯入檔案」或直接拖進來。停止輸入約 1 秒自動儲存。其他裝置的更新每 15 秒檢查一次；離線時請保留此頁並下載文字備份。</p>
+<p class="editor-hint">格式：<code># 標題</code>、<code>**粗體**</code>、<code>- [ ] 待辦</code>、<code>- 清單</code>，圖片可以直接貼上或拖進來。也可以從網頁、Word、Email 複製後貼上；PDF 或 Word 檔可以用上方「匯入檔案」或直接拖進來。停止輸入約 1 秒自動儲存。其他裝置的更新每 15 秒檢查一次；離線時請保留此頁並下載文字備份。</p>
 </div>
 </section>
 </div>
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016j"></script><script src="messages.js?v=1016j"></script><script src="notes.js?v=1016j"></script><script src="notes-import.js?v=1016j"></script><script src="notes-ui.js?v=1016j"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1017a"></script><script src="messages.js?v=1017a"></script><script src="notes.js?v=1017a"></script><script src="notes-import.js?v=1017a"></script><script src="notes-ui.js?v=1017a"></script><script src="notes-format.js?v=1017a"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>

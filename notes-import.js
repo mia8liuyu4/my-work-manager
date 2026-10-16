@@ -61,6 +61,7 @@
   }
 
   async function importFile(file) {
+    if ((file.type || '').startsWith('image/') && window.noteInsertImage) { await window.noteInsertImage(file); return; }
     if (!sectionId) { message('請先在左邊選擇或新增一個分類，再匯入檔案。'); return; }
     if (!await flush()) return;
     const ext = (file.name.split('.').pop() || '').toLowerCase();

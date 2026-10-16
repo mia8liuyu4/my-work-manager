@@ -11,6 +11,18 @@
   const FACES = { smile: '😊', pat: '🥰', poke: '😳', tickle: '🤭', love: '😍', laugh: '😆', cry: '😢', stress: '😵', relief: '😌', sleepy: '😪', shy: '☺️', joke: '😏', idle: '🙂' };
   const DUR = { smile: 2200, pat: 2400, poke: 1300, tickle: 2200, love: 2800, laugh: 2600, cry: 3600, stress: 2600, relief: 2600, sleepy: 4200, shy: 2400, joke: 4200, idle: 2400 };
   let back = null, lastAct = Date.now(), timers = [];
+  // 真的換臉：mascots/expressions.json 列出每隻動物有哪些表情圖（mascots/動物-x-表情.webp）
+  const FACE_IMG = { smile: 'smile', pat: 'shy', poke: 'surprised', tickle: 'laugh', love: 'love', laugh: 'laugh', cry: 'cry', stress: 'stress', relief: 'smile', sleepy: 'sleepy', shy: 'shy', joke: 'smile' };
+  let exprList = {};
+  const mascotId = () => window.dailyTheme?.mascot()?.id || 'bunny';
+  const baseSrc = () => `mascots/${mascotId()}-${img.dataset.pose || 'heart'}.webp`;
+  function preload() { (exprList[mascotId()] || []).forEach(e => { const i = new Image(); i.src = `mascots/${mascotId()}-x-${e}.webp`; }); }
+  fetch('mascots/expressions.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : {})).then(j => { exprList = j || {}; preload(); }).catch(() => {});
+  function setFace(expr) {
+    const k = FACE_IMG[expr], has = k && (exprList[mascotId()] || []).includes(k);
+    const want = has ? `mascots/${mascotId()}-x-${k}.webp` : baseSrc();
+    if (!img.src.endsWith(want)) img.src = want;
+  }
 
   // ---- 今日互動次數（存在這台裝置） ----
   const today = new Date().toISOString().slice(0, 10);
@@ -103,6 +115,7 @@
     if (!opts.keepFx) clearFx();
     lastAct = Date.now();
     stage.dataset.expr = expr;
+    setFace(expr === 'stress' ? 'stress' : expr);
     body.classList.remove('go'); void body.offsetWidth; body.classList.add('go');
     face.textContent = FACES[expr] || '🙂';
     face.classList.remove('pop'); void face.offsetWidth; face.classList.add('pop');
@@ -112,7 +125,7 @@
     if (expr === 'joke') { back = setTimeout(() => play('laugh', { text: '哈哈哈，好冷喔！' }), DUR.joke); return; }
     back = setTimeout(rest, opts.hold || DUR[expr] || 2400);
   }
-  function rest() { stage.dataset.expr = 'rest'; face.textContent = '🙂'; }
+  function rest() { stage.dataset.expr = 'rest'; face.textContent = '🙂'; setFace(null); }
   window.dailyPet = { play };
 
   // ---- 手勢：點、連點、雙擊、長按 ----
@@ -152,6 +165,6 @@
   }, 9000);
 
   paintCount();
-  window.addEventListener('daily-mascot', () => play('smile', { text: '換我陪你囉！' }));
+  window.addEventListener('daily-mascot', () => { preload(); play('smile', { text: '換我陪你囉！' }); });
   later(() => play('smile'), 600);
 })();

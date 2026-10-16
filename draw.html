@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1016j"></script>
+<script src="theme.js?v=1017a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1016j"><link rel="stylesheet" href="auth-gate.css?v=1016j">
+<link rel="stylesheet" href="theme.css?v=1017a"><link rel="stylesheet" href="auth-gate.css?v=1017a">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>今天吃什麼｜我的日常</title><style>
 .draw-hero{display:flex;align-items:flex-end;justify-content:center;gap:28px;min-height:190px;padding:14px 40px 0;margin-bottom:20px}
 .draw-hero img{width:auto;max-width:260px;max-height:180px;margin-bottom:0;align-self:flex-end;position:relative}
@@ -222,7 +222,7 @@ dialog .row{display:flex;gap:8px}
 <p class="hint">點擊按鈕，讓幸運決定今天吃什麼吧！<br>系統會依當天日期自動排除公休餐廳。</p>
 </section>
 <section class="panel list-card">
-<div class="list-head"><h2 id="listTitle">公司餐廳</h2></div>
+<div class="list-head"><h2 id="listTitle">公司餐廳</h2><span id="rsSync" class="muted small" aria-live="polite"></span></div>
 <div id="list"></div>
 </section>
 </div>
@@ -236,16 +236,16 @@ dialog .row{display:flex;gap:8px}
 <div class="meal-stats"><div><b id="mealTotal">NT$ 0</b><small>本月合計</small></div><div><b id="mealCount">0 筆</b><small>筆數</small></div><div><b id="mealAvg">—</b><small>平均每天</small></div></div><div id="slotBars" class="slot-bars"></div>
 <div class="meal-split"><div><h3>最常吃</h3><ol id="mealTop"></ol></div><div><h3>明細</h3><ul id="mealList"></ul></div></div>
 </section>
-<section class="panel backup"><details><summary>資料備份與還原</summary><p class="muted">資料僅保存在目前瀏覽器中。換裝置前請先匯出；還原備份會取代目前公司與家裡的清單。</p><div class="row"><button id="export" class="btn" type="button">匯出備份</button><button id="import" class="btn" type="button">匯入備份</button><input type="file" id="file" accept=".json,application/json" hidden></div></details></section>
+<section class="panel backup"><details><summary>資料備份與還原</summary><p class="muted">餐廳清單會自動同步到雲端，手機電腦共用。也可以匯出一份備份檔；還原備份會取代目前公司與家裡的清單。</p><div class="row"><button id="export" class="btn" type="button">匯出備份</button><button id="import" class="btn" type="button">匯入備份</button><input type="file" id="file" accept=".json,application/json" hidden></div></details></section>
 
 <section class="banner eat-banner deco" aria-hidden="true"><span class="cloud"></span><img data-pose="fork" alt=""><p class="hand">好好吃飯，<br>就是對自己最溫柔的照顧 ♡</p></section>
-<p class="foot-note">公司與家裡的清單分開儲存。清除瀏覽器資料可能會刪除清單，請定期備份。</p>
+<p class="foot-note">公司與家裡的清單分開儲存，並同步到雲端。</p>
 
 <dialog id="editor" aria-labelledby="editorTitle"><div class="dialog-top"><h2 id="editorTitle">新增餐廳</h2><button type="button" id="closeDialog" aria-label="關閉">✕</button></div><form id="form"><label class="field">餐廳名稱<input id="name" type="text" maxlength="100" required placeholder="例如：巷口便當"></label><label class="field">特色／備註<input id="info" type="text" maxlength="500" placeholder="步行時間、推薦餐點…"></label><fieldset><legend>固定公休日 <span class="muted">未勾選表示無固定公休</span></legend><div id="days" class="days"></div></fieldset><p id="formError" role="alert" class="danger"></p><div class="row"><button type="submit" class="btn primary">儲存餐廳</button><button type="button" id="cancel" class="btn">取消</button></div></form></dialog>
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1016j"></script><script src="messages.js?v=1016j"></script><script src="records.js?v=1016j"></script><script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1017a"></script><script src="messages.js?v=1017a"></script><script src="records.js?v=1017a"></script><script>
 
 'use strict';
 
@@ -261,7 +261,7 @@ try{const saved=localStorage.getItem(KEY);if(saved){const parsed=JSON.parse(save
 
 let toastTimer,drawTimer,drawGeneration=0;function message(text){clearTimeout(toastTimer);$('status').textContent=text;if(text)toastTimer=setTimeout(()=>$('status').replaceChildren(),5500)}
 
-function commit(next){if(!storageOK){message('目前無法安全儲存，請先匯出備份並檢查瀏覽器。');return false}try{localStorage.setItem(KEY,JSON.stringify(next));data=next;return true}catch(e){message('儲存失敗：空間不足或瀏覽器限制，請先匯出備份。');return false}}
+function commit(next){if(!storageOK){message('目前無法安全儲存，請先匯出備份並檢查瀏覽器。');return false}try{localStorage.setItem(KEY,JSON.stringify(next));data=next;window.dispatchEvent(new CustomEvent('restaurants-changed'));return true}catch(e){message('儲存失敗：空間不足或瀏覽器限制，請先匯出備份。');return false}}
 
 function today(){return days[new Date().getDay()]}
 
@@ -284,7 +284,8 @@ function migrate(place){const next={...data,[place]:[...data[place],...legacy],l
 $('import').onclick=()=>$('file').click();$('file').onchange=async()=>{const file=$('file').files[0];if(!file)return;try{if(file.size>5000000)throw Error('備份檔過大');const parsed=JSON.parse(await file.text());if(parsed.version!==2)throw Error('請使用新版匯出的備份檔');const next={version:2,company:validateList(parsed.company),home:validateList(parsed.home),legacyImported:true};if(confirm(`將取代目前清單：公司 ${next.company.length} 家、家裡 ${next.home.length} 家。建議先匯出目前資料，確定還原？`)){if(commit(next)){closeEditor();$('result').textContent='';render();message('備份還原完成。')}}}catch(e){message('匯入失敗：'+e.message)}finally{$('file').value=''}};
 
 render();
-
-</script><script src="draw-meal.js?v=1016j"></script>
+// 給雲端同步用（draw-sync.js）
+window.__restaurants={get:()=>data,set:d=>{const next={version:2,company:validateList(d.company||[]),home:validateList(d.home||[]),legacyImported:true};try{localStorage.setItem(KEY,JSON.stringify(next))}catch(e){}data=next;render()}};
+</script><script src="draw-meal.js?v=1017a"></script><script src="draw-sync.js?v=1017a"></script>
 <script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>
