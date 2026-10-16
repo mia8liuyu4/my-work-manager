@@ -15,3 +15,10 @@ html[data-locked] body>*:not(#privacyGate):not(script){display:none!important}
 #gateMessage{color:var(--danger,#a24c40);white-space:pre-wrap}
 #siteLock{position:fixed;right:16px;bottom:100px;z-index:35;border-radius:24px;border:1px solid var(--line,#ead9cb);padding:10px 15px;background:var(--surface,#fffdf9);color:var(--muted,#8e6855);font:inherit;font-size:13px;box-shadow:0 3px 12px #00000014;cursor:pointer}
 #gateNickname[hidden],#gateLogin[hidden]{display:none!important}
+/* 檢查登入狀態時先不顯示登入卡片，避免換頁時閃一下 */
+#privacyGate.checking .gate-card{opacity:0;pointer-events:none}
+#privacyGate .gate-card{transition:opacity .25s}
+.gate-remember{display:flex!important;align-items:center;gap:8px;flex-wrap:wrap}
+.gate-remember input{display:inline-block!important;width:18px!important;height:18px;margin:0!important;padding:0!important;accent-color:var(--accent,#bb7968)}
+.gate-remember small{color:var(--muted,#8a776d);font-size:12px}
+#privacyGate.checking{background:transparent}

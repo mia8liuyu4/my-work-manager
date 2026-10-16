@@ -469,3 +469,8 @@ html[data-theme^=minimal] .side-nav a{font-size:15px}
 .wx-loc{padding:3px 8px;font-weight:400}
 .pet-stage .pet-bubble{z-index:8}
 @media(prefers-reduced-motion:reduce){.wx-layer *{animation:none!important}.wx-umbrella{animation:none}}
+
+/* ========== 換頁淡入淡出（支援的瀏覽器才會有效果） ========== */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.22s}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
