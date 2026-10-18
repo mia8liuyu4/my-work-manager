@@ -1,4 +1,4 @@
-// 月份回顧：心情月曆、完成的待辦、小確幸、外食花費
+// 月份回顧：心情月曆、完成的待辦（行事曆＋工作區）、小確幸、外食花費
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -12,7 +12,7 @@
 
   async function load() {
     const y = month.getFullYear(), m = month.getMonth();
-    const from = key(new Date(y, m, 1)), to = key(new Date(y, m + 1, 0));
+    const from = key(new Date(y, m, 1)), to = key(new Date(y, m + 1, 0)), ym = from.slice(0, 7);
     $('monthLabel').textContent = `${y} 年 ${m + 1} 月`;
     $('reviewMsg').textContent = '讀取中…';
     const client = window.dailyClient;
@@ -22,26 +22,48 @@
     let recs = [], msg = '';
     try { recs = await R().list(['mood', 'joy', 'meal'], from, to); } catch (e) { msg = R().friendly(e); }
     recs.filter(r => r.kind === 'mood' && MOODS[r.title]).forEach(r => { moods[r.day] = r.title; });
+
+    // 完成的事 ①：行事曆（personal_tasks）
     let tasks = [];
     try {
       const start = new Date(y, m, 1), end = new Date(y, m + 1, 1);
       const r = await client.from('personal_tasks').select('id,title,completed_at,category').gte('completed_at', start.toISOString()).lt('completed_at', end.toISOString());
-      if (r.error) throw r.error; tasks = r.data;
+      if (r.error) throw r.error;
+      tasks = r.data.map(t => ({ title: t.title, category: t.category, day: key(new Date(t.completed_at)) }));
     } catch {}
+    // 完成的事 ②：工作區（work_items 裡專案的任務）
+    try {
+      const w = await client.from('work_items').select('data').eq('deleted', false);
+      if (w.error) throw w.error;
+      const seen = new Set(tasks.map(t => t.title)); // 工作區任務若已「加到行事曆」，避免重複計算
+      (w.data || []).forEach(row => {
+        const p = row.data;
+        if (!p || p.type !== 'project' || !Array.isArray(p.tasks)) return;
+        p.tasks.forEach(t => {
+          if (t.status !== 'done') return;
+          // 有記錄完成時間就用它；舊資料沒有，就退而用截止日／開始日
+          const day = t.doneAt ? key(new Date(t.doneAt)) : (t.due || t.start || '');
+          if (!day.startsWith(ym)) return;
+          const title = `［${p.name}］${t.title}`;
+          if (seen.has(title.slice(0, 200))) return;
+          tasks.push({ title, category: 'work', day });
+        });
+      });
+    } catch {}
+
     data = { moods, joys: recs.filter(r => r.kind === 'joy'), meals: recs.filter(r => r.kind === 'meal'), tasks };
     $('reviewMsg').textContent = msg;
     const tk = key(new Date());
-    if (!selected || !selected.startsWith(from.slice(0, 7))) selected = tk.startsWith(from.slice(0, 7)) ? tk : from;
+    if (!selected || !selected.startsWith(ym)) selected = tk.startsWith(ym) ? tk : from;
     render();
   }
 
-  const dayOf = iso => key(new Date(iso));
   function perDay(k) {
     return {
       mood: data.moods[k],
       joys: data.joys.filter(j => j.day === k),
       meals: data.meals.filter(x => x.day === k),
-      tasks: data.tasks.filter(t => dayOf(t.completed_at) === k)
+      tasks: data.tasks.filter(t => t.day === k)
     };
   }
 

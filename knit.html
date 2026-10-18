@@ -32,6 +32,10 @@
 .chip button{border:0;background:none;padding:0 2px;color:var(--muted);font-size:12px}
 .lbl{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
 .lbl input,.head select,.calc-row select,.mini input,.mini select,.fbox input,.rnote,.pnote,#interpText,.tools select{display:block;width:100%;margin-top:3px;min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px}
+.lbl select{display:block;width:100%;margin-top:3px;min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px}
+.vring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.vring #vring{pointer-events:stroke;cursor:grab}
+.vring #vcenter{pointer-events:all;cursor:move}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .link{border:0;background:none;padding:0;color:var(--accent-text);font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer}
 .side-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
@@ -231,7 +235,15 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     FA: { zh: '長針減針', us: 'dc2tog', c: 2, p: 1, kind: 'dec', desc: '2 針長針併 1 針（−1）' },
     E: { zh: '長長針', us: 'tr', c: 1, p: 1, kind: 'base', desc: '掛線 2 次的長長針' },
     CH: { zh: '鎖針', us: 'ch', c: 0, p: 1, kind: 'base', desc: '不鉤入下方針目，直接增加 1 針' },
-    SL: { zh: '引拔針', us: 'sl st', c: 1, p: 1, kind: 'base', desc: '收圈或移動位置用' }
+    SL: { zh: '引拔針', us: 'sl st', c: 1, p: 1, kind: 'base', desc: '收圈或移動位置用' },
+    FPX: { zh: '外鉤短針', us: 'FPsc', c: 1, p: 1, kind: 'base', desc: '從前方繞過上一圈針目的柱子鉤短針，紋路凸向正面' },
+    BPX: { zh: '內鉤短針', us: 'BPsc', c: 1, p: 1, kind: 'base', desc: '從後方繞過上一圈針目的柱子鉤短針，紋路凸向背面' },
+    FPT: { zh: '外鉤中長針', us: 'FPhdc', c: 1, p: 1, kind: 'base', desc: '從前方繞過柱子鉤中長針' },
+    BPT: { zh: '內鉤中長針', us: 'BPhdc', c: 1, p: 1, kind: 'base', desc: '從後方繞過柱子鉤中長針' },
+    FPF: { zh: '外鉤長針', us: 'FPdc', c: 1, p: 1, kind: 'base', desc: '從前方繞過柱子鉤長針，常用於羅紋、麻花' },
+    BPF: { zh: '內鉤長針', us: 'BPdc', c: 1, p: 1, kind: 'base', desc: '從後方繞過柱子鉤長針，常與外鉤長針交替做羅紋' },
+    FPE: { zh: '外鉤長長針', us: 'FPtr', c: 1, p: 1, kind: 'base', desc: '從前方繞過柱子鉤長長針' },
+    BPE: { zh: '內鉤長長針', us: 'BPtr', c: 1, p: 1, kind: 'base', desc: '從後方繞過柱子鉤長長針' }
   };
   const KNIT = {
     K: { zh: '下針', us: 'k', c: 1, p: 1, kind: 'base', desc: '正面看到 V 字的平針' },
@@ -253,6 +265,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     C6F: { zh: '左上 3×3 交叉', us: 'C6F', c: 6, p: 6, kind: 'cable', desc: '麻花針放前方的 6 針交叉' },
     C6B: { zh: '右上 3×3 交叉', us: 'C6B', c: 6, p: 6, kind: 'cable', desc: '麻花針放後方的 6 針交叉' }
   };
+  const HOOKS = ['2.0mm (2/0號)', '2.3mm (3/0號)', '2.5mm (4/0號)', '3.0mm (5/0號)', '3.5mm (6/0號)', '4.0mm (7/0號)', '4.5mm (8/0號)', '5.0mm (9/0號)', '6.0mm (10/0號)', '7.0mm (7mm)', '8.0mm (8mm)', '10.0mm (10mm)'];
   const FOUND = { mr: '環起 (MR)', ch: '鎖針起針 (CH)', oval: '橢圓起針 (Oval)' };
   const YARN = [['奶油白', '#F3E5AB'], ['燕麥亞麻', '#D6C7B2'], ['焦糖棕', '#B45309'], ['鼠尾草綠', '#0F766E'], ['暖陽黃', '#EAB308'], ['珊瑚粉', '#E11D48'], ['迷霧藍', '#2563EB'], ['炭灰黑', '#292524']];
   // 判讀時把英文、中文寫法換成代號
@@ -260,7 +273,11 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     sc: 'X', '短針': 'X', '短': 'X', inc: 'V', '加針': 'V', '加': 'V', '短針加針': 'V', dec: 'A', sc2tog: 'A', invdec: 'A', '減針': 'A', '減': 'A', '短針減針': 'A',
     sc3tog: 'M', hdc: 'T', '中長針': 'T', dc: 'F', '長針': 'F', tr: 'E', '長長針': 'E', ch: 'CH', '鎖針': 'CH', 'sl st': 'SL', slst: 'SL', '引拔': 'SL', '引拔針': 'SL',
     'hdc inc': 'TV', 'dc inc': 'FV', hdc2tog: 'TA', dc2tog: 'FA',
-    k: 'K', '下針': 'K', p: 'P', '上針': 'P', yo: 'YO', '掛針': 'YO', k2tog: 'K2tog', ssk: 'SSK', p2tog: 'P2tog', kfb: 'KFB', pfb: 'PFB', m1l: 'M1L', m1r: 'M1R', k3tog: 'K3tog', s2kp: 'S2KP', cdd: 'S2KP', 'k tbl': 'KTBL', ktbl: 'KTBL', sl: 'SL'
+    k: 'K', '下針': 'K', p: 'P', '上針': 'P', yo: 'YO', '掛針': 'YO', k2tog: 'K2tog', ssk: 'SSK', p2tog: 'P2tog', kfb: 'KFB', pfb: 'PFB', m1l: 'M1L', m1r: 'M1R', k3tog: 'K3tog', s2kp: 'S2KP', cdd: 'S2KP', 'k tbl': 'KTBL', ktbl: 'KTBL', sl: 'SL',
+    '外鉤短針': 'FPX', fpsc: 'FPX', '內鉤短針': 'BPX', bpsc: 'BPX',
+    '外鉤中長針': 'FPT', fphdc: 'FPT', '內鉤中長針': 'BPT', bphdc: 'BPT',
+    '外鉤長針': 'FPF', fpdc: 'FPF', '內鉤長針': 'BPF', bpdc: 'BPF',
+    '外鉤長長針': 'FPE', fptr: 'FPE', '內鉤長長針': 'BPE', bptr: 'BPE'
   };
 
   /* ---------------- 範例專案 ---------------- */
@@ -620,6 +637,11 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 
   function renderSidebar() {
     const P = proj();
+    const hookOpts = (!P.hookSize || HOOKS.includes(P.hookSize) ? HOOKS : [P.hookSize, ...HOOKS])
+      .map(h => `<option value="${esc(h)}" ${h === P.hookSize ? 'selected' : ''}>${esc(h)}</option>`).join('');
+    const hookField = craftOf(P) === 'knitting'
+      ? `<input data-field="p.hookSize" value="${esc(P.hookSize)}">`
+      : `<select data-field="p.hookSize">${hookOpts}</select>`;
     const list = projects.filter(p => ui.filter === 'all' || craftOf(p) === ui.filter).map(p => {
       const rows = p.parts.reduce((a, t) => a + t.rows.length, 0), done = p.parts.reduce((a, t) => a + t.rows.filter(r => r.completed).length, 0);
       const k = craftOf(p) === 'knitting';
@@ -637,7 +659,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       </section>
       <section class="panel box">
         <label class="lbl">專案名稱<input data-field="p.title" value="${esc(P.title)}"></label>
-        <div class="two"><label class="lbl">${craftOf(P) === 'knitting' ? '棒針' : '鉤針'}<input data-field="p.hookSize" value="${esc(P.hookSize)}"></label><label class="lbl">線材<input data-field="p.yarnInfo" value="${esc(P.yarnInfo)}"></label></div>
+        <div class="two"><label class="lbl">${craftOf(P) === 'knitting' ? '棒針' : '鉤針'}${hookField}</label><label class="lbl">線材<input data-field="p.yarnInfo" value="${esc(P.yarnInfo)}"></label></div>
         <div class="box-h"><h2>部件 (${P.parts.length})</h2><button type="button" class="link" data-act="addPart">＋ 新增部件</button></div>
         <div class="part-list">${parts}</div>
         <div class="side-actions"><button type="button" class="btn small" data-act="dupProject">複製專案</button><button type="button" class="btn small danger" data-act="delProject">刪除專案</button>${P.parts.length > 1 ? '<button type="button" class="btn small danger" data-act="delPart">刪除此部件</button>' : ''}</div>
@@ -798,6 +820,13 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       ['C4B', '右上交叉', G('<path d="M20 20L4 4M20 4l-6 6M10 14l-6 6"/>')]
     ]
   };
+  const hk = (base, back) => G(base + (back ? '<path d="M12 18.5c0 3-4.5 3-4.5 0"/>' : '<path d="M12 18.5c0 3 4.5 3 4.5 0"/>'));
+  SYMS.crochet.push(
+    ['FPX', '外鉤短針', hk('<path d="M7 5l10 10M17 5L7 15"/>', false)], ['BPX', '內鉤短針', hk('<path d="M7 5l10 10M17 5L7 15"/>', true)],
+    ['FPT', '外鉤中長針', hk('<path d="M6 4h12M12 4v14"/>', false)], ['BPT', '內鉤中長針', hk('<path d="M6 4h12M12 4v14"/>', true)],
+    ['FPF', '外鉤長針', hk('<path d="M6 3h12M12 3v15M9 10l6-3"/>', false)], ['BPF', '內鉤長針', hk('<path d="M6 3h12M12 3v15M9 10l6-3"/>', true)],
+    ['FPE', '外鉤長長針', hk('<path d="M6 2h12M12 2v16M9 8l6-3M9 12l6-3"/>', false)], ['BPE', '內鉤長長針', hk('<path d="M6 2h12M12 2v16M9 8l6-3M9 12l6-3"/>', true)]
+  );
   async function shrinkImage(file) {
     const url = URL.createObjectURL(file);
     try {
@@ -819,20 +848,34 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     if (size > 6e6) alert('這個專案的圖解很多，同步會比較慢；建議把不需要的圖解刪掉。');
     ui.view = { z: 1, x: 0, y: 0 }; touch(); render();
   }
+  const curChart = () => (proj().charts || []).find(x => x.id === ui.chartId);
+  const chartMode = (P, c) => c?.mode || ((part()?.workStyle !== 'flat' && craftOf(P) !== 'knitting') ? 'round' : 'flat');
+  const ringOf = c => c.ring || (c.ring = { cx: .5, cy: .5, r: .12, w: .05 });
+  function ringSvg(c) {
+    const W = c.w || 1000, H = c.h || 1000;
+    return `<svg class="vring" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><circle id="vring" fill="none" stroke="#F48A90" stroke-opacity=".32"/><circle id="vringIn" fill="none" stroke="#E5737B" stroke-width="2" vector-effect="non-scaling-stroke"/><circle id="vringOut" fill="none" stroke="#E5737B" stroke-width="2" vector-effect="non-scaling-stroke"/><circle id="vcenter" fill="#E5737B" stroke="#fff" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+  }
+  function drawRing(c) {
+    const g = ringOf(c), W = c.w || 1000, H = c.h || 1000, cx = g.cx * W, cy = g.cy * H, r = g.r * W, w = g.w * W;
+    const s = (id, o) => { const e = $(id); if (e) for (const k in o) e.setAttribute(k, o[k]); };
+    s('vring', { cx, cy, r, 'stroke-width': w }); s('vringIn', { cx, cy, r: Math.max(1, r - w / 2) });
+    s('vringOut', { cx, cy, r: r + w / 2 }); s('vcenter', { cx, cy, r: W * 0.012 });
+  }
   function chartViewer(P) {
     const charts = P.charts || [];
     const c = charts.find(x => x.id === ui.chartId) || charts[0];
     if (c) ui.chartId = c.id;
     const thumbs = charts.map(x => `<button type="button" class="thumb ${c && x.id === c.id ? 'on' : ''}" data-act="chartPick" data-id="${x.id}" title="${esc(x.name)}"><img src="${x.src}" alt="${esc(x.name)}"></button>`).join('');
     const v = ui.view || (ui.view = { z: 1, x: 0, y: 0 });
+    const mode = c ? chartMode(P, c) : 'flat';
     const sym = (SYMS[craftOf(P)] || SYMS.crochet).map(([code, nm, svg]) => `<button type="button" class="symbtn" data-act="symInsert" data-code="${code}" title="插入 ${code}">${svg}<b>${code}</b><small>${nm}</small></button>`).join('');
     return `<section class="panel card"><div class="card-h"><h2>圖解區</h2><div class="tools"><label class="btn small upbtn">＋ 上傳圖解<input type="file" id="chartFile" accept="image/*" multiple hidden></label></div></div>
       <p class="muted small">上傳書上或網路上的符號圖解（照片、截圖都可以，也能直接 Ctrl+V 貼上）。圖解會跟著「${esc(P.title)}」一起存到雲端。</p>
       ${charts.length ? `<div class="thumbs">${thumbs}</div>
       <div class="viewer-bar"><input class="cname" data-chart="name" value="${esc(c.name)}" aria-label="圖解名稱">
-        <div class="tools"><button type="button" class="btn small" data-act="zoom" data-d="-1" aria-label="縮小">－</button><span class="zv">${Math.round(v.z * 100)}%</span><button type="button" class="btn small" data-act="zoom" data-d="1" aria-label="放大">＋</button><button type="button" class="btn small" data-act="zoomFit">符合</button><button type="button" class="btn small" data-act="rotate">↻ 旋轉</button><button type="button" class="btn small" data-act="ruler" data-d="-1">▲ 行尺</button><button type="button" class="btn small" data-act="ruler" data-d="1">▼ 行尺</button><button type="button" class="btn small danger" data-act="chartDel">刪除</button></div></div>
-      <div class="viewer" id="viewer"><div class="vstage" id="vstage" style="transform:translate(${v.x}px,${v.y}px) scale(${v.z}) rotate(${c.rot || 0}deg)"><div class="vimg"><img src="${c.src}" alt="${esc(c.name)}" draggable="false"><span class="vruler" id="vruler" style="top:${(c.ruler ?? .15) * 100}%"></span></div></div></div>
-      <p class="muted small">拖曳可以移動圖片，滾輪或按鈕縮放；粉紅色「行尺」標記你織到哪一行，會記住位置，換裝置也一樣。</p>` : `<label class="dropzone" id="dropzone">把圖解圖片拖到這裡，或點一下選擇檔案<input type="file" id="chartFile2" accept="image/*" multiple hidden></label>`}
+        <div class="tools"><button type="button" class="btn small" data-act="zoom" data-d="-1" aria-label="縮小">－</button><span class="zv">${Math.round(v.z * 100)}%</span><button type="button" class="btn small" data-act="zoom" data-d="1" aria-label="放大">＋</button><button type="button" class="btn small" data-act="zoomFit">符合</button><button type="button" class="btn small" data-act="rotate">↻ 旋轉</button><button type="button" class="btn small" data-act="chartMode">${mode === 'flat' ? '▭ 片織行尺' : '◎ 環織圓環'}（切換）</button>${mode === 'flat' ? `<button type="button" class="btn small" data-act="ruler" data-d="-1">▲ 行尺</button><button type="button" class="btn small" data-act="ruler" data-d="1">▼ 行尺</button>` : `<button type="button" class="btn small" data-act="ringStep" data-d="-1">◎ 內一圈</button><button type="button" class="btn small" data-act="ringStep" data-d="1">外一圈 ◎</button><button type="button" class="btn small" data-act="ringW" data-d="-1">細</button><button type="button" class="btn small" data-act="ringW" data-d="1">粗</button><button type="button" class="btn small" data-act="ringCenter">置中</button>`}<button type="button" class="btn small danger" data-act="chartDel">刪除</button></div></div>
+      <div class="viewer" id="viewer"><div class="vstage" id="vstage" style="transform:translate(${v.x}px,${v.y}px) scale(${v.z}) rotate(${c.rot || 0}deg)"><div class="vimg"><img src="${c.src}" alt="${esc(c.name)}" draggable="false">${mode === 'flat' ? `<span class="vruler" id="vruler" style="top:${(c.ruler ?? .15) * 100}%"></span>` : ringSvg(c)}</div></div></div>
+      <p class="muted small">拖曳可以移動圖片，滾輪或按鈕縮放。片織：粉紅色「行尺」標記織到哪一行。環織：拖曳圓環邊緣調半徑、拖曳圓心對準圖解中心，再用「內一圈／外一圈」逐圈移動。位置會記住，換裝置也一樣。</p>` : `<label class="dropzone" id="dropzone">把圖解圖片拖到這裡，或點一下選擇檔案<input type="file" id="chartFile2" accept="image/*" multiple hidden></label>`}
       </section>
       <section class="panel card"><div class="card-h"><h2>符號對照</h2><span class="muted small">點符號就會把代號插入右邊的文字框</span></div><div class="syms">${sym}</div></section>`;
   }
@@ -866,7 +909,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 
   function renderDict() {
     const P = proj(), sec = (title, L) => `<h3>${title}</h3><div class="tbl-wrap"><table class="rows dict"><thead><tr><th>代號</th><th>中文</th><th>美規</th><th class="r">消耗→產生</th><th>說明</th><th></th></tr></thead><tbody>${Object.entries(L).map(([c, d]) => `<tr><td><span class="st-badge st-${d.kind}">${c}</span></td><td>${esc(d.zh)}</td><td class="mono">${esc(d.us)}</td><td class="r mono">${d.c}→${d.p}</td><td class="small">${esc(d.desc)}</td><td class="r">${lib(P) === L ? `<button type="button" class="btn small" data-act="dictAdd" data-code="${c}">加到 R${(curRow() || {}).rowNumber || 1}</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`;
-    return `<section class="panel card"><div class="card-h"><h2>縮寫對照表</h2></div><p class="muted small">BLO = 只鉤後半針（內半針）、FLO = 只鉤前半針（外半針）；RS = 正面行、WS = 反面行；MR = 環起。</p>${sec('鉤針', CROCHET)}${sec('棒針', KNIT)}</section>`;
+    return `<section class="panel card"><div class="card-h"><h2>縮寫對照表</h2></div><p class="muted small">BLO = 只鉤後半針（內半針）、FLO = 只鉤前半針（外半針）；RS = 正面行、WS = 反面行；MR = 環起；FP = 外鉤（Front Post，從前方繞柱子）、BP = 內鉤（Back Post，從後方繞柱子）。</p>${sec('鉤針', CROCHET)}${sec('棒針', KNIT)}</section>`;
   }
 
   function exportText(P, mode) {
@@ -894,6 +937,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     renderSidebar();
     document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === ui.tab)));
     $('main').innerHTML = ui.tab === 'work' ? renderWork() : ui.tab === 'shapes' ? renderShapes() : ui.tab === 'interp' ? renderInterp() : ui.tab === 'dict' ? renderDict() : renderExport();
+    if (ui.tab === 'interp') { const c = curChart(); if (c && chartMode(proj(), c) === 'round') drawRing(c); }
   }
 
   /* ---------------- 動作 ---------------- */
@@ -984,6 +1028,10 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       case 'zoom': { const v = ui.view; v.z = Math.min(6, Math.max(0.2, v.z * (+el.dataset.d > 0 ? 1.25 : 0.8))); applyView(); break; }
       case 'zoomFit': ui.view = { z: 1, x: 0, y: 0 }; applyView(); break;
       case 'rotate': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c) { c.rot = ((c.rot || 0) + 90) % 360; touch(); applyView(); } break; }
+      case 'chartMode': { const c = curChart(); if (c) { c.mode = chartMode(P, c) === 'flat' ? 'round' : 'flat'; touch(); render(); } break; }
+      case 'ringStep': { const c = curChart(); if (c) { const g = ringOf(c); g.r = Math.max(g.w / 2 + .002, g.r + (+el.dataset.d) * g.w); touch(); drawRing(c); } break; }
+      case 'ringW': { const c = curChart(); if (c) { const g = ringOf(c); g.w = Math.min(.3, Math.max(.01, g.w + (+el.dataset.d) * .005)); g.r = Math.max(g.r, g.w / 2 + .002); touch(); drawRing(c); } break; }
+      case 'ringCenter': { const c = curChart(); if (c) { const g = ringOf(c); g.cx = .5; g.cy = .5; touch(); drawRing(c); } break; }
       case 'ruler': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c) { c.ruler = Math.min(0.98, Math.max(0.02, (c.ruler ?? .15) + (+el.dataset.d) * 0.02)); touch(); const r = $('vruler'); if (r) r.style.top = c.ruler * 100 + '%'; } break; }
       case 'symInsert': { const ta = $('interpText'); if (!ta) break; const s0 = ta.selectionStart ?? ta.value.length, before = ta.value.slice(0, s0), after = ta.value.slice(ta.selectionEnd ?? s0); const sep = before && !/[\s,(（:：]$/.test(before) ? ', ' : ''; const ins = sep + el.dataset.code; ta.value = before + ins + after; ta.focus(); ta.setSelectionRange(s0 + ins.length, s0 + ins.length); ui.interpText = ta.value; break; }
       case 'interpRun': {
@@ -997,7 +1045,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
         const res = ui.interpRes; if (!res?.rows.length) break;
         const craft = ui.interpCraft, id = uid(), newPart = { id, name: '判讀的織圖', quantity: 1, workStyle: craft === 'knitting' ? 'flat' : 'round', foundationType: craft === 'knitting' ? 'ch' : 'mr', notes: '', rows: res.rows };
         if (act === 'interpAsPart') { if (craftOf(P) !== craft) { alert('目前專案的類型不同，請改用「建立成新專案」。'); break; } P.parts.push(newPart); ui.partId = id; }
-        else { const p = { id: uid(), title: '判讀的織圖', category: craft === 'knitting' ? '棒針織物' : '鉤針作品', hookSize: craft === 'knitting' ? '4.0mm' : '3.0mm', yarnInfo: '', updatedAt: today(), craftType: craft, parts: [newPart] }; projects.unshift(p); ui.projectId = p.id; ui.partId = id; }
+        else { const p = { id: uid(), title: '判讀的織圖', category: craft === 'knitting' ? '棒針織物' : '鉤針作品', hookSize: craft === 'knitting' ? '4.0mm (棒針6號)' : '3.0mm (5/0號)', yarnInfo: '', updatedAt: today(), craftType: craft, parts: [newPart] }; projects.unshift(p); ui.projectId = p.id; ui.partId = id; }
         ui.row = 0; ui.tab = 'work'; ui.interpOut = ''; ui.interpRes = null; touch(); render(); break;
       }
       case 'dictAdd': ui.tab = 'work'; addAtomToRow(el.dataset.code, 1, ''); break;
@@ -1022,7 +1070,8 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     const val = t.type === 'number' ? Math.max(1, +t.value || 1) : t.value;
     if (scope === 'p') P[key] = val; else if (scope === 'pt' && pt) pt[key] = val; else if (scope === 'r' && r) r[key] = val;
     if (scope === 'pt' && key === 'workStyle' && craftOf(P) === 'knitting') pt.rows.forEach((x, i) => { if (val === 'flat') x.rowSide = i % 2 ? 'WS' : 'RS'; else delete x.rowSide; });
-    touch(); if (quiet && scope === 'p') renderSidebar();
+    touch();
+    if (quiet && scope === 'p' && key === 'title') { const s = document.querySelector('#side .proj.on strong'); if (s) s.textContent = val; }
   }
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.target.id === 'formulaText') { e.preventDefault(); document.querySelector('[data-act="applyFormula"]')?.click(); }
@@ -1055,22 +1104,34 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   });
   document.addEventListener('dragover', e => { if (ui.tab === 'interp' && e.target.closest('#dropzone,#viewer')) e.preventDefault(); });
   document.addEventListener('drop', e => { if (ui.tab === 'interp' && e.target.closest('#dropzone,#viewer')) { e.preventDefault(); addCharts([...e.dataTransfer.files]); } });
-  // 圖解：拖曳移動、滾輪縮放、拖曳行尺
+  // 圖解：拖曳移動、滾輪縮放、拖曳行尺／圓環
   let pan = null;
   document.addEventListener('pointerdown', e => {
     const vw = e.target.closest('#viewer'); if (!vw) return;
-    const onRuler = e.target.id === 'vruler';
-    pan = { ruler: onRuler, x0: e.clientX, y0: e.clientY, vx: ui.view.x, vy: ui.view.y };
+    const kind = { vruler: 'ruler', vring: 'ring', vcenter: 'center' }[e.target.id] || 'pan';
+    pan = { kind, x0: e.clientX, y0: e.clientY, vx: ui.view.x, vy: ui.view.y, lx: e.clientX, ly: e.clientY };
     vw.setPointerCapture(e.pointerId); e.preventDefault();
   });
   document.addEventListener('pointermove', e => {
     if (!pan) return;
-    if (pan.ruler) {
-      const img = $('vstage')?.querySelector('img'), c = (proj().charts || []).find(x => x.id === ui.chartId); if (!img || !c) return;
+    const c = curChart(), img = $('vstage')?.querySelector('img');
+    if (pan.kind === 'ruler') {
+      if (!img || !c) return;
       const r = img.getBoundingClientRect(); c.ruler = Math.min(0.98, Math.max(0.02, (e.clientY - r.top) / r.height)); $('vruler').style.top = c.ruler * 100 + '%';
+    } else if (pan.kind === 'ring') {
+      if (!img || !c) return;
+      const b = $('vcenter').getBoundingClientRect(), g = ringOf(c);
+      const d = Math.hypot(e.clientX - (b.left + b.width / 2), e.clientY - (b.top + b.height / 2)) / (img.offsetWidth * ui.view.z);
+      g.r = Math.max(g.w / 2 + .002, d); drawRing(c);
+    } else if (pan.kind === 'center') {
+      if (!img || !c) return;
+      const dx = e.clientX - pan.lx, dy = e.clientY - pan.ly, a = (c.rot || 0) * Math.PI / 180, z = ui.view.z, g = ringOf(c);
+      g.cx = Math.min(1, Math.max(0, g.cx + (dx * Math.cos(a) + dy * Math.sin(a)) / (img.offsetWidth * z)));
+      g.cy = Math.min(1, Math.max(0, g.cy + (-dx * Math.sin(a) + dy * Math.cos(a)) / (img.offsetHeight * z)));
+      pan.lx = e.clientX; pan.ly = e.clientY; drawRing(c);
     } else { ui.view.x = pan.vx + e.clientX - pan.x0; ui.view.y = pan.vy + e.clientY - pan.y0; applyView(); }
   });
-  document.addEventListener('pointerup', () => { if (pan?.ruler) touch(); pan = null; });
+  document.addEventListener('pointerup', () => { if (pan && pan.kind !== 'pan') touch(); pan = null; });
   document.addEventListener('wheel', e => { if (!e.target.closest('#viewer')) return; e.preventDefault(); ui.view.z = Math.min(6, Math.max(0.2, ui.view.z * (e.deltaY < 0 ? 1.1 : 0.9))); applyView(); }, { passive: false });
 
   render(); save();
@@ -1080,4 +1141,5 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 
 </script>
 <script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能使用。</noscript>
-</body></html>
+</body>
+</html>

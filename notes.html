@@ -1,14 +1,12 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1017b"></script>
+<script src="theme.js?v=1018a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1017b"><link rel="stylesheet" href="auth-gate.css?v=1017b">
+<link rel="stylesheet" href="theme.css?v=1018a"><link rel="stylesheet" href="auth-gate.css?v=1018a">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>我的筆記｜我的日常</title><style>
 .notes-head .search{position:relative;flex:1 1 220px;max-width:340px}
 .search input{width:100%;min-height:42px;padding:9px 16px 9px 40px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
 .search .i{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
-.account{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);max-width:100%}
-#account{overflow-wrap:anywhere}
 #message{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--butter-soft);color:var(--ink);white-space:pre-wrap;font-size:14px}
 .search-wrap{display:flex;flex-direction:column;gap:4px;flex:1 1 220px;max-width:340px}
 .search-wrap .search{max-width:none!important;flex:none!important}
@@ -17,11 +15,6 @@
 #workspace.dropping{outline:3px dashed var(--accent);outline-offset:6px;border-radius:var(--radius)}
 #workspace.dropping::after{content:'放開來匯入檔案';position:fixed;left:50%;bottom:40px;transform:translateX(-50%);padding:12px 22px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;z-index:50}
 #message:empty{display:none}
-#login{max-width:440px;margin:40px auto;padding:30px}
-#login h2{margin:0 0 6px;font-size:22px}
-#login label{display:block;margin:16px 0;font-size:14px}
-#login input{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
-#login .btn{width:100%}
 #workspace{display:grid;grid-template-columns:210px 300px minmax(0,1fr);gap:18px;align-items:start}
 .cat-panel,.pages-panel{padding:18px}
 .cat-panel{position:sticky;top:18px;display:flex;flex-direction:column}
@@ -109,7 +102,6 @@
  .page-head .theme-btn span{display:none}.page-head .theme-btn{padding:8px 11px}
  .page-head h1{font-size:21px}
  .search-wrap{order:5;max-width:none;flex-basis:100%}
- .account{order:6}
  #workspace{display:flex;flex-direction:column;gap:12px}
  .cat-panel,.pages-panel{padding:14px}
  #sections{flex-direction:row;overflow-x:auto;gap:6px}
@@ -169,10 +161,8 @@
 <button id="importBtn" class="btn pill" type="button" title="匯入 PDF、Word（.docx）或文字檔"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg>匯入檔案</button><input id="importFile" type="file" accept=".pdf,.docx,.txt,.md,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" multiple hidden>
 <button id="addPage" class="btn primary pill" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>新增筆記</button>
 <div data-theme-switch></div>
-<div class="account"><small id="account"></small><button id="logout" class="btn small hidden" type="button">登出</button></div>
 </header>
 <div id="message" role="status" aria-live="polite"></div>
-<section id="login" class="panel"><h2>留住每一個想法</h2><p class="muted">使用自己的帳號登入，電腦與手機共用筆記。</p><form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required></label><label>密碼<input id="password" type="password" autocomplete="current-password" required></label><button class="btn primary" id="loginButton">登入筆記</button></form></section>
 <div id="workspace" class="hidden">
 <aside class="panel cat-panel" aria-label="筆記分類">
 <h2 class="panel-title"><span class="cat-label">筆記分類</span><button type="button" id="catToggle" class="cat-toggle" aria-expanded="true" aria-controls="sections" title="收合分類欄">‹</button></h2><button type="button" class="cat-rail" id="catRail" aria-label="展開筆記分類"><span>›</span><b>筆<br>記<br>分<br>類</b><small id="catCurrent"></small></button>
@@ -202,5 +192,5 @@
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1017b"></script><script src="messages.js?v=1017b"></script><script src="notes.js?v=1017b"></script><script src="notes-import.js?v=1017b"></script><script src="notes-ui.js?v=1017b"></script><script src="notes-format.js?v=1017b"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1018a"></script><script src="messages.js?v=1018a"></script><script src="notes.js?v=1018a"></script><script src="notes-import.js?v=1018a"></script><script src="notes-ui.js?v=1018a"></script><script src="notes-format.js?v=1018a"></script><script>if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script><noscript>請啟用 JavaScript 才能登入本站。</noscript>
 </body></html>

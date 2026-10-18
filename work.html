@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-Hant" data-locked><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="theme.js?v=1017b"></script>
+<script src="theme.js?v=1018a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1017b"><link rel="stylesheet" href="auth-gate.css?v=1017b">
+<link rel="stylesheet" href="theme.css?v=1018a"><link rel="stylesheet" href="auth-gate.css?v=1018a">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>工作區｜我的日常</title><style>
 .kt-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .kt-tabs button{min-height:42px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;color:var(--muted)}
@@ -171,7 +171,7 @@ dialog::backdrop{background:#2a1f1a66;backdrop-filter:blur(3px)}dialog h2{margin
 </main>
 </div>
 <nav class="mobile-tabs" aria-label="手機導覽"><a href="index.html"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>首頁</a><a href="notes.html"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg>筆記</a><a href="work.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-brief"/></svg>工作</a><a href="draw.html"><svg class="i" aria-hidden="true"><use href="#i-food"/></svg>吃什麼</a><a href="knit.html"><svg class="i" aria-hidden="true"><use href="#i-yarn"/></svg>手作</a><a href="relax.html"><svg class="i" aria-hidden="true"><use href="#i-bubble"/></svg>舒壓</a><a href="review.html"><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>回顧</a></nav>
-<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1017b"></script><script src="messages.js?v=1017b"></script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-gate.js?v=1018a"></script><script src="messages.js?v=1018a"></script>
 <script>
 // 工作區：專案、目標、里程碑、甘特圖、任務、每週清單（雲端同步：work_items）
 (() => {
@@ -213,6 +213,9 @@ dialog::backdrop{background:#2a1f1a66;backdrop-filter:blur(3px)}dialog h2{margin
   let all;
   try { all = JSON.parse(localStorage.getItem(LOCAL) || 'null'); } catch { all = null; }
   if (!Array.isArray(all)) all = sample();
+  // [新增] 舊資料：已完成但沒有完成時間的任務標成 null（月份回顧改用截止日），之後新完成的才會記錄時間
+  const markLegacyDone = p => { if (p && p.type === 'project' && Array.isArray(p.tasks)) p.tasks.forEach(t => { if (t.status === 'done' && t.doneAt === undefined) t.doneAt = null; }); };
+  all.forEach(markLegacyDone);
   const projects = () => all.filter(x => x.type === 'project');
   const weekRec = k => all.find(x => x.type === 'week' && x.id === 'week-' + k);
   let ui = { infoOpen: !matchMedia('(max-width: 980px)').matches, tab: 'overview', pid: projects()[0]?.id || null, ganttAll: false, scale: 'week', taskView: 'list', week: monday(today()), showDone: true };
@@ -225,7 +228,8 @@ dialog::backdrop{background:#2a1f1a66;backdrop-filter:blur(3px)}dialog h2{margin
   const hhmm = () => new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
   function status(t, k = '') { const el = $('syncState'); if (el) { el.textContent = t; el.className = k; } }
   function saveLocal() { try { localStorage.setItem(LOCAL, JSON.stringify(all)); } catch { status('瀏覽器空間不足', 'warn'); } }
-  function dirty(rec) { if (!rec) return; rec._ts = Date.now(); sync.dirty.add(rec.id); sync.deleted.delete(rec.id); keepSync(); saveLocal(); schedule(); }
+  // [修改] 在更新 _ts 之前，先記錄／清除任務的完成時間 doneAt
+  function dirty(rec) { if (!rec) return; if (rec.type === 'project' && Array.isArray(rec.tasks)) rec.tasks.forEach(t => { if (t.status === 'done') { if (t.doneAt === undefined) t.doneAt = new Date().toISOString(); } else if (t.doneAt !== undefined) delete t.doneAt; }); rec._ts = Date.now(); sync.dirty.add(rec.id); sync.deleted.delete(rec.id); keepSync(); saveLocal(); schedule(); }
   function schedule() {
     if (!sync.ready) { status(sync.missing ? '尚未建立雲端資料表，目前只存在這台裝置（請執行 work.sql）' : '已暫存在這台裝置', sync.missing ? 'warn' : ''); return; }
     status('有變更，準備同步…'); clearTimeout(sync.timer); sync.timer = setTimeout(push, 1200);
@@ -261,8 +265,9 @@ dialog::backdrop{background:#2a1f1a66;backdrop-filter:blur(3px)}dialog h2{margin
       const i = all.findIndex(x => x.id === r.id);
       if (r.deleted) { if (i >= 0 && !sync.dirty.has(r.id)) { all.splice(i, 1); changed = true; } continue; }
       if (sync.deleted.has(r.id) || !r.data || !r.data.type) continue;
-      if (i < 0) { all.push(r.data); changed = true; }
-      else if ((r.data._ts || 0) > (all[i]._ts || 0)) { all[i] = r.data; sync.dirty.delete(r.id); changed = true; }
+      // [修改] 兩行都加上 markLegacyDone
+      if (i < 0) { markLegacyDone(r.data); all.push(r.data); changed = true; }
+      else if ((r.data._ts || 0) > (all[i]._ts || 0)) { markLegacyDone(r.data); all[i] = r.data; sync.dirty.delete(r.id); changed = true; }
     }
     if (!cur() && projects().length) ui.pid = projects()[0].id;
     keepSync();

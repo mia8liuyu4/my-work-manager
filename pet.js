@@ -14,13 +14,33 @@
   // 真的換臉：mascots/expressions.json 列出每隻動物有哪些表情圖（mascots/動物-x-表情.webp）
   const FACE_IMG = { smile: 'smile', pat: 'shy', poke: 'surprised', tickle: 'laugh', love: 'love', laugh: 'laugh', cry: 'cry', stress: 'stress', relief: 'smile', sleepy: 'sleepy', shy: 'shy', joke: 'smile' };
   let exprList = {};
+  const broken = new Set();               // 載入失敗的表情圖，之後不再嘗試
+  const ALIAS = { puppy: ['puppy', 'dog'], cat: ['cat', 'kitten'], bunny: ['bunny', 'rabbit'], tiger: ['tiger'], elephant: ['elephant'] };
   const mascotId = () => window.dailyTheme?.mascot()?.id || 'bunny';
   const baseSrc = () => `mascots/${mascotId()}-${img.dataset.pose || 'heart'}.webp`;
-  function preload() { (exprList[mascotId()] || []).forEach(e => { const i = new Image(); i.src = `mascots/${mascotId()}-x-${e}.webp`; }); }
-  fetch('mascots/expressions.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : {})).then(j => { exprList = j || {}; preload(); }).catch(() => {});
+  // 表情清單的名稱容錯：id 或別名、大小寫都可以
+  function exprFor() {
+    const names = (ALIAS[mascotId()] || [mascotId()]).map(s => s.toLowerCase());
+    const key = Object.keys(exprList).find(k => names.includes(k.toLowerCase()));
+    return key ? (exprList[key] || []) : [];
+  }
+  function preload() { exprFor().forEach(e => { const i = new Image(); i.src = `mascots/${mascotId()}-x-${e}.webp`; }); }
+  fetch('mascots/expressions.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : {})).then(j => {
+    exprList = j || {}; preload();
+    if (!exprFor().length) console.warn('[pet] expressions.json 找不到「' + mascotId() + '」的表情清單，會一直使用預設圖。');
+  }).catch(() => {});
+  // 表情圖讀不出來時，退回預設姿勢，不要顯示破圖
+  img.addEventListener('error', () => {
+    const base = baseSrc();
+    if (img.src.endsWith(base)) return;
+    broken.add(img.getAttribute('src'));
+    console.warn('[pet] 表情圖載入失敗：', img.getAttribute('src'));
+    img.src = base;
+  });
   function setFace(expr) {
-    const k = FACE_IMG[expr], has = k && (exprList[mascotId()] || []).includes(k);
-    const want = has ? `mascots/${mascotId()}-x-${k}.webp` : baseSrc();
+    const k = FACE_IMG[expr], has = k && exprFor().includes(k);
+    let want = has ? `mascots/${mascotId()}-x-${k}.webp` : baseSrc();
+    if (broken.has(want)) want = baseSrc();
     if (!img.src.endsWith(want)) img.src = want;
   }
 
