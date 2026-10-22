@@ -2,7 +2,7 @@
 <script src="theme.js?v=1018a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
-<link rel="stylesheet" href="theme.css?v=1018a"><link rel="stylesheet" href="auth-gate.css?v=1018a">
+<link rel="stylesheet" href="theme.css?v=1021b"><link rel="stylesheet" href="auth-gate.css?v=1018a">
 <link rel="icon" type="image/png" href="app-icon.png"><link rel="apple-touch-icon" href="app-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FCF8F2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="我的日常"><title>手作區｜我的日常</title><style>
 .kt-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .kt-tabs button{min-height:42px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;color:var(--muted)}
@@ -150,6 +150,9 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 @media(max-width:1200px){.split{grid-template-columns:1fr}}
 @media(max-width:980px){.kgrid{grid-template-columns:1fr}#side{position:static}.proj-list,.part-list{max-height:220px}}
 @media(max-width:640px){.gb{flex-basis:100%;order:3}.page-head{flex-wrap:wrap}.page-head .theme-btn span{display:none}.kt-tabs button{flex:1;padding:8px 6px;font-size:12px}.box,.card{padding:12px}.stitches{grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}.rows td,.rows th{padding:6px 4px}.counter{flex-direction:column;align-items:stretch}.cbar{width:100%}.paper{padding:16px}}
+
+/* 大型織圖工作台 */
+.batch-panel{padding:14px;background:var(--surface2);border-radius:14px;margin:12px 0}.batch-panel summary{cursor:pointer;min-height:44px;font-weight:700}.batch-panel .tools{margin-top:12px}.batch-panel input{max-width:88px;min-height:42px}.rows .btn{min-height:40px;min-width:44px}.rows .sel{outline:2px solid var(--accent);outline-offset:-2px}.tbl-wrap{max-height:62vh;overflow:auto}.rows thead{position:sticky;top:0;z-index:1;background:var(--surface)}.guide-controls{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:14px 0;padding:12px;border-radius:12px;background:var(--surface2)}.guide-controls label{display:flex;flex-direction:column;gap:4px;font-size:12px}.guide-controls input{width:75px}.guide-controls input,.guide-controls select{min-height:42px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}.vring #vring{pointer-events:stroke;cursor:move}.vring #vsize,.vring [data-point]{pointer-events:all;cursor:nwse-resize}.viewer .vimg{flex-shrink:0}.interp-split{grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr)}.reader-full{overflow:hidden}.reader-full #side,.reader-full .kt-tabs,.reader-full .page-h,.reader-full .mobile-tabs,.reader-full .side-nav{display:none!important}.reader-full .interp-split{position:fixed;inset:0;z-index:55;background:var(--bg);padding:12px;overflow:auto;display:block}.reader-full .interp-split>.col:nth-child(2){display:none}.reader-full .viewer{height:65vh}.reader-full .vstage img{max-height:calc(65vh - 16px)}.diag.flat{min-width:650px}.panel:has(>.diag.flat){overflow:auto}@media(max-width:850px){.kgrid{grid-template-columns:1fr}#side{position:static}.interp-split{display:block}.viewer{height:58vh}.vstage img{max-height:calc(58vh - 16px)}.split{grid-template-columns:1fr}.reader-full .viewer{height:60vh}.reader-full .vstage img{max-height:calc(60vh - 16px)}.guide-controls{gap:6px}}
 </style></head><body class="app">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/></symbol>
@@ -202,7 +205,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
 <input type="file" id="importFile" accept=".json,application/json" hidden>
 </header>
 <p id="saveState" aria-live="polite"></p>
-<nav class="kt-tabs" aria-label="功能"><button type="button" data-tab="work">工作台</button><button type="button" data-tab="shapes">形狀產生器</button><button type="button" data-tab="interp">織圖判讀</button><button type="button" data-tab="dict">縮寫對照表</button><button type="button" data-tab="export">匯出／列印 PDF</button></nav>
+<nav class="kt-tabs" aria-label="功能"><button type="button" data-tab="work">工作台</button><button type="button" data-tab="shapes">形狀產生器</button><button type="button" data-tab="interp">圖解閱讀／文字解析</button><button type="button" data-tab="dict">縮寫對照表</button><button type="button" data-tab="export">匯出／列印 PDF</button></nav>
 <div class="kgrid"><aside id="side" aria-label="專案與部件"></aside><div id="main"></div></div>
 </main>
 </div>
@@ -300,7 +303,14 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   try { projects = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { projects = null; }
   if (!Array.isArray(projects) || !projects.length) projects = sample();
   let ui = { tab: 'work', projectId: projects[0].id, partId: projects[0].parts[0]?.id, row: 0, filter: 'all', notation: 'code', formulaMode: false, counter: 0, palCount: 1, loopMod: '', groupBuf: [], groupRepeat: 6 };
-  const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); } catch { status('瀏覽器空間不足，請先匯出備份', 'warn'); } schedulePush(); };
+  let cacheTimer=null,cachePending=false;
+  function cacheDB(){return new Promise((ok,bad)=>{const r=indexedDB.open('stitchnote_large_charts',1);r.onupgradeneeded=()=>r.result.createObjectStore('cache');r.onsuccess=()=>ok(r.result);r.onerror=()=>bad(r.error);});}
+  async function cacheRead(){const db=await cacheDB();try{return await new Promise((ok,bad)=>{const t=db.transaction('cache'),r=t.objectStore('cache').get('projects');r.onsuccess=()=>ok(r.result);r.onerror=()=>bad(r.error)})}finally{db.close()}}
+  async function cacheWrite(value){const db=await cacheDB();try{await new Promise((ok,bad)=>{const t=db.transaction('cache','readwrite');t.objectStore('cache').put(value,'projects');t.oncomplete=ok;t.onerror=()=>bad(t.error)})}finally{db.close()}}
+  function mirrorProjects(){cachePending=true;clearTimeout(cacheTimer);cacheTimer=setTimeout(async()=>{const stamp=Date.now(),snapshot=structuredClone(projects);try{await cacheWrite({savedAt:stamp,projects:snapshot});cachePending=false;}catch{cachePending=false;status('大型圖解本機備份失敗，請立即匯出 JSON 備份並確認雲端同步。','warn')}},350);}
+  const save = () => {try{localStorage.setItem(STORAGE_KEY,JSON.stringify(projects));localStorage.setItem(STORAGE_KEY+'_savedAt',String(Date.now()));}catch{status('大型圖解使用本機資料庫保存；請確認雲端同步並定期匯出備份。','warn')}mirrorProjects();schedulePush();};
+  window.addEventListener('beforeunload',e=>{if(cachePending){e.preventDefault();e.returnValue=''}});
+
   const craftOf = p => {
     if (!p) return 'crochet';
     if (p.craftType) return p.craftType;
@@ -591,7 +601,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     if (!projects.length) { projects = sample(); changed = true; }
     if (!projects.some(p => p.id === ui.projectId)) { ui.projectId = projects[0].id; ui.partId = projects[0].parts[0]?.id; ui.row = 0; }
     keepSync();
-    if (changed) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); } catch {} safeRender(); }
+    if (changed) { save(); safeRender(); }
   }
   async function pull(all) {
     let q = sync.client.from(TABLE).select('id,data,deleted,updated_at');
@@ -696,15 +706,16 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   function diagram(pt, v, L) {
     const round = pt.workStyle !== 'flat';
     if (round) {
-      const n = pt.rows.length, R = 150, step = Math.min(14, (R - 16) / Math.max(1, n));
+      const n = Math.min(17,pt.rows.length), R = 150, step = Math.min(14, (R - 16) / Math.max(1, n));
       let svg = `<svg viewBox="-160 -160 320 320" class="diag" role="img" aria-label="圈織示意圖">`;
       pt.rows.forEach((r, i) => {
-        const rad = 14 + step * (i + 0.5), seq = [];
+        if(Math.abs(i-ui.row)>8)return;
+        const rad = 14 + step * (i - Math.max(0,ui.row-8) + 0.5), seq = [];
         for (const seg of r.segments) { const rep = seg.type === 'group' ? seg.repeat : 1; for (let k = 0; k < rep; k++) for (const a of seg.type === 'group' ? seg.items : [seg.atom]) for (let j = 0; j < a.count; j++) seq.push(a.code); }
         const sel = i === ui.row;
         svg += `<circle r="${rad}" fill="none" stroke="${esc(r.yarnColorHex || '#ccc')}" stroke-opacity="${r.completed ? .35 : .55}" stroke-width="${step * .9}" data-act="pickRow" data-i="${i}" class="ringrow"/>`;
         if (sel) svg += `<circle r="${rad}" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="3 3"/>`;
-        const show = seq.slice(0, 240);
+        const show = seq; // 不截掉大型圈的針目
         show.forEach((c, j) => {
           const ang = (j / show.length) * Math.PI * 2 - Math.PI / 2, x = Math.cos(ang) * rad, y = Math.sin(ang) * rad, k = (L[c] || {}).kind;
           svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${Math.max(1.2, Math.min(2.6, step / 4))}" fill="${k === 'inc' ? '#0F766E' : k === 'dec' ? '#D97706' : 'var(--ink)'}" opacity="${k === 'base' ? .45 : .95}"/>`;
@@ -713,10 +724,10 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       svg += `</svg>`;
       return svg;
     }
-    const W = 300, rows = pt.rows, maxN = Math.max(1, ...v.map(x => x.produced)), cell = Math.min(14, W / maxN), h = Math.min(14, 300 / Math.max(1, rows.length));
+    const W = 900, rows = pt.rows.slice(Math.max(0,ui.row-8),ui.row+9), rowOffset=Math.max(0,ui.row-8), maxN = Math.max(1, ...v.map(x => x.produced)), cell = Math.min(14, W / maxN), h = Math.min(14, 300 / Math.max(1, rows.length));
     let svg = `<svg viewBox="0 0 ${W + 34} ${rows.length * h + 4}" class="diag flat" role="img" aria-label="片織示意圖">`;
     [...rows].reverse().forEach((r, ri) => {
-      const i = rows.length - 1 - ri, y = ri * h + 2, seq = [];
+      const i = rowOffset + rows.length - 1 - ri, y = ri * h + 2, seq = [];
       for (const seg of r.segments) { const rep = seg.type === 'group' ? seg.repeat : 1; for (let k = 0; k < rep; k++) for (const a of seg.type === 'group' ? seg.items : [seg.atom]) { const d = L[a.code] || { p: 1 }; for (let j = 0; j < a.count * Math.max(1, d.p); j++) seq.push(a.code); } }
       svg += `<text x="0" y="${y + h * .75}" font-size="${Math.min(9, h * .8)}" fill="var(--muted)">${r.rowSide || 'R' + (i + 1)}</text>`;
       seq.forEach((c, j) => { const k = (L[c] || {}).kind; svg += `<rect x="${30 + j * cell}" y="${y}" width="${cell - 1}" height="${h - 1}" rx="2" fill="${k === 'inc' ? '#0F766E' : k === 'dec' ? '#D97706' : k === 'cable' ? '#4F46E5' : esc(r.yarnColorHex || '#ccc')}" opacity="${c === 'P' ? .55 : .9}" data-act="pickRow" data-i="${i}"/>`; });
@@ -752,19 +763,19 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     }
     const table = `<section class="panel card">
       <div class="card-h"><h2>各圈織圖與針數驗算</h2><button type="button" class="btn small primary" data-act="addPlain">＋ 新增不加不減圈</button></div>
-      <div class="tbl-wrap"><table class="rows"><thead><tr><th>完成</th><th>圈</th><th>公式</th><th class="r">消耗→針數</th><th class="r">增減</th><th class="r">操作</th></tr></thead><tbody>
+      ${batchPanel(pt)}<div class="tbl-wrap"><table class="rows"><thead><tr><th>完成</th><th>圈</th><th>公式</th><th class="r">消耗→針數</th><th class="r">增減</th><th class="r">操作</th></tr></thead><tbody>
       ${pt.rows.map((row, k) => { const x = v[k]; return `<tr class="${k === ui.row ? 'sel' : ''} ${row.completed ? 'done' : ''}" data-act="pickRow" data-i="${k}">
         <td><input type="checkbox" data-act="toggleDone" data-i="${k}" ${row.completed ? 'checked' : ''} aria-label="R${row.rowNumber} 完成"></td>
         <td class="mono"><span class="dot" style="background:${esc(row.yarnColorHex || '#ccc')}"></span>R${row.rowNumber}${row.rowSide ? `<small> ${row.rowSide}</small>` : ''}</td>
         <td><div class="mono f">${esc(formula(row, ui.notation, L, pt.foundationType))}</div>${row.note ? `<div class="muted small">${esc(row.note)}</div>` : ''}${!x.ok ? `<div class="warn small">⚠ ${esc(x.msg)}${x.expected !== null && x.consumed < x.expected ? ` <button type="button" class="link" data-act="balance" data-i="${k}">自動補齊 +${x.expected - x.consumed}${craftOf(P) === 'knitting' ? 'K' : 'X'}</button>` : ''}</div>` : ''}</td>
         <td class="r mono">${k === 0 ? `起針 ${x.produced}` : `${x.consumed}→<b>${x.produced}</b>`}</td>
         <td class="r mono ${x.ok ? (x.delta > 0 && k ? 'inc' : x.delta < 0 ? 'dec' : '') : 'warn'}">${k === 0 ? '起始' : x.delta > 0 ? '+' + x.delta : x.delta < 0 ? x.delta : '不加不減'}</td>
-        <td class="r nowrap"><button type="button" class="icon" data-act="dupRow" data-i="${k}" title="複製到下一圈">⧉</button><button type="button" class="icon" data-act="delRow" data-i="${k}" title="刪除此圈" ${pt.rows.length <= 1 ? 'disabled' : ''}>🗑</button></td></tr>`; }).join('')}
+        <td class="r nowrap"><button type="button" class="btn small" data-act="dupRow" data-i="${k}" title="複製到下一圈">複製</button><button type="button" class="btn small" data-act="delRow" data-i="${k}" title="刪除此圈" ${pt.rows.length <= 1 ? 'disabled' : ''}>🗑</button></td></tr>`; }).join('')}
       </tbody></table></div></section>`;
     const counter = r ? `<section class="panel card"><div class="card-h"><div><h2>跟織計數器（R${r.rowNumber}）</h2><p class="muted small">${esc(formula(r, 'zh', L, pt.foundationType))}</p></div><button type="button" class="link" data-act="cReset">歸零</button></div>
       <div class="counter"><div><small class="muted">已完成</small><div class="cnum">${ui.counter}<small> / ${v[i].produced} 針</small></div><div class="cbar"><i style="width:${Math.min(100, v[i].produced ? ui.counter / v[i].produced * 100 : 0)}%"></i></div></div><div class="cbtns"><button type="button" class="btn" data-act="cMinus">−1</button><button type="button" class="btn primary" data-act="cPlus">＋1</button></div></div>
       ${ui.counter >= v[i].produced && v[i].produced ? `<button type="button" class="btn small" data-act="finishRow">✓ 這圈完成，前往下一圈</button>` : ''}</section>` : '';
-    const diag = `<section class="panel card"><div class="card-h"><h2>${pt.workStyle === 'flat' ? '片織' : '圈織'}示意圖</h2><span class="legend"><i style="background:#0F766E"></i>加針 <i style="background:#D97706"></i>減針${craftOf(P) === 'knitting' ? ' <i style="background:#4F46E5"></i>交叉' : ''}</span></div>${diagram(pt, v, L)}<p class="muted small">點圈或格子可以切換到那一圈。</p></section>`;
+    const diag = `<section class="panel card"><div class="card-h"><h2>${pt.workStyle === 'flat' ? '片織' : '圈織'}示意圖</h2><span class="legend"><i style="background:#0F766E"></i>加針 <i style="background:#D97706"></i>減針${craftOf(P) === 'knitting' ? ' <i style="background:#4F46E5"></i>交叉' : ''}</span></div>${diagram(pt, v, L)}<p class="muted small">顯示目前圈列前後各 8 圈；這是針數示意，不是依原圖辨識的正式針目圖。點圈或格子可切換。</p></section>`;
     return head + palette(P, pt, prev) + `<div class="split"><div class="col">${editor}${table}</div><div class="col">${counter}${diag}</div></div>`;
   }
 
@@ -831,10 +842,16 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     const url = URL.createObjectURL(file);
     try {
       const img = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => bad(Error('圖片讀不出來')); i.src = url; });
-      const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      // 不再壓到 1600px；保留原始 PNG/JPEG/WebP，避免大型圖解細線模糊。
+      if (file.size > 12 * 1024 * 1024) throw Error('單張圖解上限 12MB，請先裁切成數張細節圖。');
+      if (/^image\/(png|jpeg|webp)$/.test(file.type)) {
+        const src = await new Promise((ok,bad)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>bad(Error('讀取失敗'));r.readAsDataURL(file)});
+        return {src,w:img.naturalWidth,h:img.naturalHeight,original:true};
+      }
+      const k = Math.min(1, 6000 / Math.max(img.width, img.height)), c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
-      return { src: c.toDataURL('image/jpeg', 0.82), w: c.width, h: c.height };
+      return { src: c.toDataURL('image/png'), w: c.width, h: c.height };
     } finally { URL.revokeObjectURL(url); }
   }
   async function addCharts(files) {
@@ -849,18 +866,21 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     ui.view = { z: 1, x: 0, y: 0 }; touch(); render();
   }
   const curChart = () => (proj().charts || []).find(x => x.id === ui.chartId);
-  const chartMode = (P, c) => c?.mode || ((part()?.workStyle !== 'flat' && craftOf(P) !== 'knitting') ? 'round' : 'flat');
-  const ringOf = c => c.ring || (c.ring = { cx: .5, cy: .5, r: .12, w: .05 });
-  function ringSvg(c) {
-    const W = c.w || 1000, H = c.h || 1000;
-    return `<svg class="vring" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><circle id="vring" fill="none" stroke="#F48A90" stroke-opacity=".32"/><circle id="vringIn" fill="none" stroke="#E5737B" stroke-width="2" vector-effect="non-scaling-stroke"/><circle id="vringOut" fill="none" stroke="#E5737B" stroke-width="2" vector-effect="non-scaling-stroke"/><circle id="vcenter" fill="#E5737B" stroke="#fff" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+  const chartMode = (P,c) => c?.shape || (c?.mode==='flat'?'flat':'circle');
+  const shapeNames={circle:'圓形',square:'正方形',rectangle:'長方形',triangle:'三角形',free:'自由多邊形',flat:'片織行尺'};
+  function ringOf(c){c.guides=c.guides||{};const n=c.guideRow||1;return c.guides[n]||(c.guides[n]={...(c.ring||{cx:.5,cy:.5,r:.12,w:.025}),rx:c.ring?.r||.12,ry:(c.ring?.r||.12)*(c.w||1)/(c.h||1),points:[]});}
+  function ringSvg(c){const W=c.w||1000,H=c.h||1000;return `<svg class="vring" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path id="vring" fill="none" stroke="#ED5870" stroke-opacity=".3"/><path id="vringEdge" fill="none" stroke="#b02e45" stroke-width="2" vector-effect="non-scaling-stroke" pointer-events="none"/><circle id="vcenter" fill="#b02e45" stroke="white" r="${W*.01}"/><circle id="vsize" fill="#fff" stroke="#b02e45" r="${W*.012}"/><g id="vpoints"></g></svg>`;}
+  function drawRing(c){
+    const g=ringOf(c),W=c.w||1000,H=c.h||1000,cx=g.cx*W,cy=g.cy*H,rx=(g.rx??g.r)*W,ry=(g.ry??g.r)*H,mode=chartMode(proj(),c);let d='';
+    if(mode==='circle')d=`M ${cx-rx},${cy} a ${rx},${rx} 0 1 0 ${rx*2},0 a ${rx},${rx} 0 1 0 ${-rx*2},0`;
+    else if(mode==='square'||mode==='rectangle'){const y=mode==='square'?rx:ry;d=`M ${cx-rx},${cy-y} H ${cx+rx} V ${cy+y} H ${cx-rx} Z`;}
+    else if(mode==='triangle')d=`M ${cx},${cy-ry} L ${cx+rx},${cy+ry} L ${cx-rx},${cy+ry} Z`;
+    else if(mode==='free'&&g.points?.length)d=g.points.map((q,i)=>`${i?'L':'M'} ${q.x*W},${q.y*H}`).join(' ')+(g.points.length>2?' Z':'');
+    const attr=(id,o)=>{const e=$(id);if(e)for(const k in o)e.setAttribute(k,o[k])};
+    attr('vring',{d,'stroke-width':Math.max(3,g.w*W)});attr('vringEdge',{d});attr('vcenter',{cx,cy});attr('vsize',{cx:cx+rx,cy:cy+(mode==='circle'||mode==='square'?rx:ry)});
+    const points=$('vpoints');if(points)points.innerHTML=mode==='free'?(g.points||[]).map((q,i)=>`<circle data-point="${i}" cx="${q.x*W}" cy="${q.y*H}" r="${W*.012}" fill="white" stroke="#b02e45"/>`).join(''):'';
   }
-  function drawRing(c) {
-    const g = ringOf(c), W = c.w || 1000, H = c.h || 1000, cx = g.cx * W, cy = g.cy * H, r = g.r * W, w = g.w * W;
-    const s = (id, o) => { const e = $(id); if (e) for (const k in o) e.setAttribute(k, o[k]); };
-    s('vring', { cx, cy, r, 'stroke-width': w }); s('vringIn', { cx, cy, r: Math.max(1, r - w / 2) });
-    s('vringOut', { cx, cy, r: r + w / 2 }); s('vcenter', { cx, cy, r: W * 0.012 });
-  }
+  function guideControls(c){const g=ringOf(c),mode=chartMode(proj(),c);return `<div class="guide-controls"><label>圖解形狀<select id="chartShape">${Object.entries(shapeNames).map(([k,v])=>`<option value="${k}" ${mode===k?'selected':''}>${v}</option>`).join('')}</select></label><label>目前標記 R<input id="guideRow" type="number" min="1" max="2000" value="${c.guideRow||1}"></label><button class="btn small" type="button" data-act="guidePrev">上一圈／列</button><button class="btn small" type="button" data-act="guideNext">下一圈／列</button>${mode==='flat'?`<button class="btn small" type="button" data-act="ruler" data-d="-1">▲ 行尺</button><button class="btn small" type="button" data-act="ruler" data-d="1">▼ 行尺</button>`:`<label>中心 X %<input data-guide="cx" type="number" step=".1" min="0" max="100" value="${(g.cx*100).toFixed(1)}"></label><label>中心 Y %<input data-guide="cy" type="number" step=".1" min="0" max="100" value="${(g.cy*100).toFixed(1)}"></label><label>半寬 %<input data-guide="rx" type="number" step=".1" min=".1" max="200" value="${((g.rx??g.r)*100).toFixed(1)}"></label><label>半高 %<input data-guide="ry" type="number" step=".1" min=".1" max="200" value="${((g.ry??g.r)*100).toFixed(1)}"></label>`}${mode==='free'?`<button class="btn small" type="button" data-act="markPoints">${ui.markPoints?'完成描點':'開始描點'}</button><button class="btn small" type="button" data-act="undoPoint">撤銷一點</button>`:''}<label>標記粗細 %<input data-guide="w" type="number" step=".1" min=".1" max="30" value="${(g.w*100).toFixed(1)}"></label><span class="muted small">每一圈分開保存定位，可手動對準不規則圖解。</span></div>`;}
   function chartViewer(P) {
     const charts = P.charts || [];
     const c = charts.find(x => x.id === ui.chartId) || charts[0];
@@ -873,16 +893,16 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       <p class="muted small">上傳書上或網路上的符號圖解（照片、截圖都可以，也能直接 Ctrl+V 貼上）。圖解會跟著「${esc(P.title)}」一起存到雲端。</p>
       ${charts.length ? `<div class="thumbs">${thumbs}</div>
       <div class="viewer-bar"><input class="cname" data-chart="name" value="${esc(c.name)}" aria-label="圖解名稱">
-        <div class="tools"><button type="button" class="btn small" data-act="zoom" data-d="-1" aria-label="縮小">－</button><span class="zv">${Math.round(v.z * 100)}%</span><button type="button" class="btn small" data-act="zoom" data-d="1" aria-label="放大">＋</button><button type="button" class="btn small" data-act="zoomFit">符合</button><button type="button" class="btn small" data-act="rotate">↻ 旋轉</button><button type="button" class="btn small" data-act="chartMode">${mode === 'flat' ? '▭ 片織行尺' : '◎ 環織圓環'}（切換）</button>${mode === 'flat' ? `<button type="button" class="btn small" data-act="ruler" data-d="-1">▲ 行尺</button><button type="button" class="btn small" data-act="ruler" data-d="1">▼ 行尺</button>` : `<button type="button" class="btn small" data-act="ringStep" data-d="-1">◎ 內一圈</button><button type="button" class="btn small" data-act="ringStep" data-d="1">外一圈 ◎</button><button type="button" class="btn small" data-act="ringW" data-d="-1">細</button><button type="button" class="btn small" data-act="ringW" data-d="1">粗</button><button type="button" class="btn small" data-act="ringCenter">置中</button>`}<button type="button" class="btn small danger" data-act="chartDel">刪除</button></div></div>
-      <div class="viewer" id="viewer"><div class="vstage" id="vstage" style="transform:translate(${v.x}px,${v.y}px) scale(${v.z}) rotate(${c.rot || 0}deg)"><div class="vimg"><img src="${c.src}" alt="${esc(c.name)}" draggable="false">${mode === 'flat' ? `<span class="vruler" id="vruler" style="top:${(c.ruler ?? .15) * 100}%"></span>` : ringSvg(c)}</div></div></div>
-      <p class="muted small">拖曳可以移動圖片，滾輪或按鈕縮放。片織：粉紅色「行尺」標記織到哪一行。環織：拖曳圓環邊緣調半徑、拖曳圓心對準圖解中心，再用「內一圈／外一圈」逐圈移動。位置會記住，換裝置也一樣。</p>` : `<label class="dropzone" id="dropzone">把圖解圖片拖到這裡，或點一下選擇檔案<input type="file" id="chartFile2" accept="image/*" multiple hidden></label>`}
+        <div class="tools"><button type="button" class="btn small" data-act="zoom" data-d="-1" aria-label="縮小">－</button><span class="zv">${Math.round(v.z * 100)}%</span><button type="button" class="btn small" data-act="zoom" data-d="1" aria-label="放大">＋</button><button type="button" class="btn small" data-act="zoomFit">符合</button><button type="button" class="btn small" data-act="rotate">↻ 旋轉</button><button type="button" class="btn small" data-act="readerFull">${ui.readerFull?'退出專注':'專注閱讀'}</button><button type="button" class="btn small" data-act="nativeSize">原圖 1:1</button><button type="button" class="btn small" data-act="originalDownload">下載原圖</button><button type="button" class="btn small danger" data-act="chartDel">刪除</button></div></div>
+      ${guideControls(c)}<div class="viewer" id="viewer"><div class="vstage" id="vstage" style="transform:translate(${v.x}px,${v.y}px) scale(${v.z}) rotate(${c.rot || 0}deg)"><div class="vimg"><img src="${c.src}" alt="${esc(c.name)}" draggable="false">${mode === 'flat' ? `<span class="vruler" id="vruler" style="top:${(c.ruler ?? .15) * 100}%"></span>` : ringSvg(c)}</div></div></div>
+      <p class="muted small">雙指縮放／單指拖曳；電腦可滾輪縮放。深紅圓心可拖移定位，白色控制點可調整大小；自由形可逐點描出輪廓。這些是手動閱讀標記，不會自動辨識針目。舊圖若已被壓縮，請重新上傳原圖。</p>` : `<label class="dropzone" id="dropzone">把圖解圖片拖到這裡，或點一下選擇檔案<input type="file" id="chartFile2" accept="image/*" multiple hidden></label>`}
       </section>
       <section class="panel card"><div class="card-h"><h2>符號對照</h2><span class="muted small">點符號就會把代號插入右邊的文字框</span></div><div class="syms">${sym}</div></section>`;
   }
   function renderInterp() {
     const P = proj();
     return `<div class="interp-split"><div class="col">${chartViewer(P)}</div><div class="col"><section class="panel card"><div class="card-h"><h2>文字織圖</h2></div>
-      <p class="muted small">一行一圈，看著左邊的圖解把每圈寫下來，或直接貼上文字織圖。支援 <code>R1: MR 6X</code>、<code>R3-5: 18X</code>、<code>Rnd 2: (sc, inc) x6</code>、<code>第4圈：(2短針, 加針)×6</code>、棒針 <code>Row 1: K2, P2</code>。</p>
+      <p class="muted small">目前沒有圖片 OCR 或 AI 針目辨識。請看著圖解人工輸入每圈公式，再解析與驗算；圖形不同不會自動轉成針法。一行一圈，或直接貼上文字織圖。支援 <code>R1: MR 6X</code>、<code>R3-5: 18X</code>、<code>Rnd 2: (sc, inc) x6</code>、<code>第4圈：(2短針, 加針)×6</code>、棒針 <code>Row 1: K2, P2</code>。</p>
       <textarea id="interpText" rows="12" class="mono" placeholder="R1: MR 6X\nR2: 6V\nR3: (X, V)*6\nR4-6: 18X\nR7: (X, A)*6">${esc(ui.interpText || '')}</textarea>
       <div class="tools"><label class="mini">類型<select id="interpCraft"><option value="crochet">鉤針</option><option value="knitting" ${(ui.interpCraft || craftOf(P)) === 'knitting' ? 'selected' : ''}>棒針</option></select></label><button type="button" class="btn primary" data-act="interpRun">解析並驗算</button></div>
       <div id="interpOut">${ui.interpOut || ''}</div></section></div></div>`;
@@ -900,6 +920,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
         const segs = parseFormula(body, L);
         if (!segs.length) throw Error('沒有針目');
         const times = from !== null ? to - from + 1 : 1;
+        if(!Number.isInteger(times)||times<1||times>2000||rows.length+times>2000)throw Error('圈列範圍需遞增，總數上限 2000');
         for (let t = 0; t < times; t++) rows.push(row(JSON.parse(JSON.stringify(segs)).map(sg => ({ ...sg, id: uid() })), t === 0 ? note : '', craft === 'knitting' ? ['燕麥亞麻', '#D6C7B2'] : undefined));
       } catch (e) { errs.push(`第 ${li + 1} 行：${e.message}`); }
     });
@@ -934,10 +955,11 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   }
 
   function render() {
+    document.body.classList.toggle('reader-full',!!ui.readerFull);
     renderSidebar();
     document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === ui.tab)));
     $('main').innerHTML = ui.tab === 'work' ? renderWork() : ui.tab === 'shapes' ? renderShapes() : ui.tab === 'interp' ? renderInterp() : ui.tab === 'dict' ? renderDict() : renderExport();
-    if (ui.tab === 'interp') { const c = curChart(); if (c && chartMode(proj(), c) === 'round') drawRing(c); }
+    if (ui.tab === 'interp') { const c = curChart(); if (c && chartMode(proj(), c) !== 'flat') drawRing(c); }
   }
 
   /* ---------------- 動作 ---------------- */
@@ -964,6 +986,25 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
     pt.rows = renumber([...pt.rows, nr]); ui.row = pt.rows.length - 1; ui.counter = 0; touch(); render();
   }
 
+
+  let rowUndo = null;
+  function rememberRows(){rowUndo={project:proj().id,part:part().id,rows:structuredClone(part().rows),row:ui.row};}
+  function cloneRow(r){const c=structuredClone(r);c.id=uid();c.completed=false;delete c.isFoundation;(c.segments||[]).forEach(s=>{s.id=uid()});return c;}
+  function normalizeRows(){const pt=part();pt.rows=renumber(pt.rows);if(craftOf(proj())==='knitting'&&pt.workStyle==='flat')pt.rows.forEach((r,i)=>r.rowSide=i%2?'WS':'RS');ui.counter=0;touch();render();}
+  function batchRows(kind){
+    const pt=part(),read=id=>Number($(id)?.value),times=read('batchTimes'),after=read('batchAfter');
+    if(!Number.isInteger(times)||times<1||times>300||!Number.isInteger(after)||after<0||after>pt.rows.length){alert('次數需為 1–300，插入位置需為 0 到目前末圈。');return;}
+    let copies=[];
+    if(kind==='pattern'){
+      const from=read('batchFrom'),to=read('batchTo');
+      if(!Number.isInteger(from)||!Number.isInteger(to)||from<1||to<from||to>pt.rows.length){alert('請確認起訖圈／列範圍。');return;}
+      const source=pt.rows.slice(from-1,to);for(let j=0;j<times;j++)copies.push(...source.map(cloneRow));
+    }else if(kind==='empty'){for(let j=0;j<times;j++)copies.push(row([], '待填寫針目'));}
+    else {const prev=after?validate(pt,lib(proj()))[after-1].produced:6;const source=pt.rows[Math.max(0,after-1)];for(let j=0;j<times;j++)copies.push(row([single(craftOf(proj())==='knitting'?'K':'X',prev)],`不加不減 ${prev} 針`,[source?.yarnColorName||'奶油白',source?.yarnColorHex||'#F3E5AB']));}
+    if(pt.rows.length+copies.length>2000){alert('單部件最多 2000 圈／列，請分成不同部件。');return;}
+    rememberRows();pt.rows.splice(after,0,...copies);ui.row=after;normalizeRows();
+  }
+  function batchPanel(pt){return `<details class="batch-panel"><summary>＋ 新增圈列／複製重複花樣</summary><p class="muted small">插入位置填 0＝最前面；填目前末圈＝接續在最後。複製是展開成獨立圈列，可分別編輯及勾選完成。</p><div class="tools"><label class="mini">來源 R<input id="batchFrom" type="number" min="1" max="${pt.rows.length}" value="${ui.row+1}"></label><label class="mini">至 R<input id="batchTo" type="number" min="1" max="${pt.rows.length}" value="${ui.row+1}"></label><label class="mini">追加幾組<input id="batchTimes" type="number" min="1" max="300" value="1"></label><label class="mini">插在 R 後<input id="batchAfter" type="number" min="0" max="${pt.rows.length}" value="${ui.row+1}"></label></div><div class="tools"><button type="button" class="btn primary" data-act="batchPattern">複製上述圈列</button><button type="button" class="btn" data-act="batchPlain">新增不加不減圈</button><button type="button" class="btn" data-act="batchEmpty">新增空白圈</button><button type="button" class="btn" data-act="undoRows" ${rowUndo?.part===pt.id?'':'disabled'}>復原上次圈列新增／刪除</button></div></details>`;}
   document.addEventListener('click', e => {
     const tab = e.target.closest('[data-tab]');
     if (tab) { ui.tab = tab.dataset.tab; render(); return; }
@@ -1005,8 +1046,8 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       }
       case 'pickRow': if (e.target.closest('input,button:not([data-act="pickRow"])') && el.tagName === 'TR') break; ui.row = +el.dataset.i; ui.counter = 0; ui.formulaMode = false; render(); break;
       case 'toggleDone': e.stopPropagation(); pt.rows[+el.dataset.i].completed = el.checked; touch(); render(); break;
-      case 'dupRow': { e.stopPropagation(); const k = +el.dataset.i, c = JSON.parse(JSON.stringify(pt.rows[k])); c.id = uid(); c.completed = false; c.segments.forEach(s => { s.id = uid(); }); if (c.rowSide) c.rowSide = c.rowSide === 'RS' ? 'WS' : 'RS'; pt.rows.splice(k + 1, 0, c); pt.rows = renumber(pt.rows); ui.row = k + 1; touch(); render(); break; }
-      case 'delRow': { e.stopPropagation(); if (pt.rows.length <= 1) break; const k = +el.dataset.i; if (!confirm(`刪除 R${k + 1}？`)) break; pt.rows.splice(k, 1); pt.rows = renumber(pt.rows); ui.row = Math.max(0, k - 1); touch(); render(); break; }
+      case 'dupRow': { e.stopPropagation(); rememberRows(); const k = +el.dataset.i, c = JSON.parse(JSON.stringify(pt.rows[k])); c.id = uid(); c.completed = false; c.segments.forEach(s => { s.id = uid(); }); if (c.rowSide) c.rowSide = c.rowSide === 'RS' ? 'WS' : 'RS'; pt.rows.splice(k + 1, 0, c); ui.row = k + 1; normalizeRows(); break; }
+      case 'delRow': { e.stopPropagation(); if (pt.rows.length <= 1) break; const k = +el.dataset.i; if (!confirm(`刪除 R${k + 1}？`)) break; rememberRows(); pt.rows.splice(k, 1); ui.row = Math.max(0, k - 1); normalizeRows(); break; }
       case 'balance': { e.stopPropagation(); const k = +el.dataset.i, v = validate(pt, L)[k], d = v.expected - v.consumed; if (d > 0) { pt.rows[k].segments.push(single(craftOf(P) === 'knitting' ? 'K' : 'X', d)); touch(); render(); } break; }
       case 'segAdj': updRow(r => { r.segments = r.segments.map(s => { if (s.id !== el.dataset.id) return s; const d = +el.dataset.d; if (s.type === 'group') { s.repeat += d; return s.repeat > 0 ? s : null; } s.atom.count += d; return s.atom.count > 0 ? s : null; }).filter(Boolean); }); break;
       case 'segDel': updRow(r => { r.segments = r.segments.filter(s => s.id !== el.dataset.id); }); break;
@@ -1014,7 +1055,11 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       case 'formulaMode': ui.formulaMode = !ui.formulaMode; render(); break;
       case 'applyFormula': try { const segs = parseFormula($('formulaText').value, L); if (!segs.length) throw Error('沒有輸入針目'); ui.formulaMode = false; updRow(r => { r.segments = segs; }); } catch (err) { $('formulaErr').textContent = err.message + '（可參考縮寫對照表）'; } break;
       case 'yarn': updRow(r => { r.yarnColorName = el.dataset.n; r.yarnColorHex = el.dataset.h; }); break;
-      case 'addPlain': { const v = validate(pt, L), n = v[v.length - 1]?.produced || 6; appendRow([single(craftOf(P) === 'knitting' ? (pt.rows[pt.rows.length - 1]?.rowSide === 'RS' ? 'P' : 'K') : 'X', n)], `不加不減 ${n} 針`); break; }
+      case 'addPlain': { rememberRows(); const v = validate(pt, L), n = v[v.length - 1]?.produced || 6; appendRow([single(craftOf(P) === 'knitting' ? (pt.rows[pt.rows.length - 1]?.rowSide === 'RS' ? 'P' : 'K') : 'X', n)], `不加不減 ${n} 針`); break; }
+      case 'batchPattern': batchRows('pattern'); break;
+      case 'batchPlain': batchRows('plain'); break;
+      case 'batchEmpty': batchRows('empty'); break;
+      case 'undoRows': if(rowUndo?.part===pt.id&&rowUndo.project===P.id){pt.rows=structuredClone(rowUndo.rows);ui.row=rowUndo.row;rowUndo=null;normalizeRows();} break;
       case 'cPlus': ui.counter++; render(); break;
       case 'cMinus': ui.counter = Math.max(0, ui.counter - 1); render(); break;
       case 'cReset': ui.counter = 0; render(); break;
@@ -1025,9 +1070,15 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       case 'shapeImport': { const sh = ui.shape || { type: 'sphere' }; if (craftOf(P) === 'knitting') { alert('形狀產生器是鉤針用的，請先在左邊選一個鉤針專案。'); break; } const id = uid(), rows = shapeRows(sh), v = validate({ rows }, CROCHET); P.parts.push({ id, name: `${SHAPES[sh.type].name} ${v[v.length - 1].produced} 針`, quantity: 1, workStyle: 'round', foundationType: sh.type === 'oval' ? 'oval' : 'mr', notes: '', rows }); ui.partId = id; ui.row = 0; ui.tab = 'work'; touch(); render(); break; }
       case 'chartPick': ui.chartId = el.dataset.id; ui.view = { z: 1, x: 0, y: 0 }; render(); break;
       case 'chartDel': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c && confirm(`刪除圖解「${c.name}」？`)) { P.charts = P.charts.filter(x => x.id !== c.id); ui.chartId = null; touch(); render(); } break; }
-      case 'zoom': { const v = ui.view; v.z = Math.min(6, Math.max(0.2, v.z * (+el.dataset.d > 0 ? 1.25 : 0.8))); applyView(); break; }
+      case 'zoom': { const v = ui.view; v.z = Math.min(24, Math.max(0.1, v.z * (+el.dataset.d > 0 ? 1.25 : 0.8))); applyView(); break; }
       case 'zoomFit': ui.view = { z: 1, x: 0, y: 0 }; applyView(); break;
       case 'rotate': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c) { c.rot = ((c.rot || 0) + 90) % 360; touch(); applyView(); } break; }
+      case 'readerFull': ui.readerFull=!ui.readerFull; render(); break;
+      case 'nativeSize': {const c=curChart(),im=$('vstage')?.querySelector('img');if(c&&im){ui.view={z:Math.max(.1,Math.min(24,c.w/im.clientWidth)),x:0,y:0};applyView();} break;}
+      case 'originalDownload': {const c=curChart();if(c){const a=document.createElement('a');a.href=c.src;a.download=c.name+(/image\/png/.test(c.src)?'.png':/image\/webp/.test(c.src)?'.webp':'.jpg');a.click();}break;}
+      case 'guidePrev': case 'guideNext': {const c=curChart();if(!c)break;const old=structuredClone(ringOf(c)),next=Math.max(1,Math.min(2000,(c.guideRow||1)+(act==='guideNext'?1:-1)));c.guideRow=next;if(!c.guides[next])c.guides[next]=old;touch();render();break;}
+      case 'markPoints': ui.markPoints=!ui.markPoints;render();break;
+      case 'undoPoint': {const c=curChart();if(c){ringOf(c).points.pop();touch();drawRing(c)}break;}
       case 'chartMode': { const c = curChart(); if (c) { c.mode = chartMode(P, c) === 'flat' ? 'round' : 'flat'; touch(); render(); } break; }
       case 'ringStep': { const c = curChart(); if (c) { const g = ringOf(c); g.r = Math.max(g.w / 2 + .002, g.r + (+el.dataset.d) * g.w); touch(); drawRing(c); } break; }
       case 'ringW': { const c = curChart(); if (c) { const g = ringOf(c); g.w = Math.min(.3, Math.max(.01, g.w + (+el.dataset.d) * .005)); g.r = Math.max(g.r, g.w / 2 + .002); touch(); drawRing(c); } break; }
@@ -1060,6 +1111,9 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   });
   document.addEventListener('change', e => {
     const t = e.target;
+    if(t.id==='chartShape'){const c=curChart();if(c){c.shape=t.value;ui.markPoints=false;touch();render()}return;}
+    if(t.id==='guideRow'){const c=curChart();if(c){const old=structuredClone(ringOf(c));c.guideRow=Math.max(1,Math.min(2000,Math.floor(+t.value||1)));if(!c.guides[c.guideRow])c.guides[c.guideRow]=old;touch();render()}return;}
+    if(t.dataset.guide){const c=curChart();if(c){const k=t.dataset.guide;ringOf(c)[k]=Math.max(k==='cx'||k==='cy'?0:.001,Math.min(k==='cx'||k==='cy'?1:2,+t.value/100||0));touch();drawRing(c)}return;}
     if (t.id === 'toGroup') { ui.toGroup = t.checked; return; }
     if (t.id === 'palCount') { ui.palCount = Math.max(1, +t.value || 1); return; }
     if (t.dataset.field) { setField(t); render(); }
@@ -1104,39 +1158,31 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
   });
   document.addEventListener('dragover', e => { if (ui.tab === 'interp' && e.target.closest('#dropzone,#viewer')) e.preventDefault(); });
   document.addEventListener('drop', e => { if (ui.tab === 'interp' && e.target.closest('#dropzone,#viewer')) { e.preventDefault(); addCharts([...e.dataTransfer.files]); } });
-  // 圖解：拖曳移動、滾輪縮放、拖曳行尺／圓環
-  let pan = null;
-  document.addEventListener('pointerdown', e => {
-    const vw = e.target.closest('#viewer'); if (!vw) return;
-    const kind = { vruler: 'ruler', vring: 'ring', vcenter: 'center' }[e.target.id] || 'pan';
-    pan = { kind, x0: e.clientX, y0: e.clientY, vx: ui.view.x, vy: ui.view.y, lx: e.clientX, ly: e.clientY };
-    vw.setPointerCapture(e.pointerId); e.preventDefault();
+  // 所有標記共用圖片座標：縮放、旋轉、手機與桌面仍保持同一相對位置。
+  function chartPoint(x,y){const v=$('viewer').getBoundingClientRect(),im=$('vstage').querySelector('img'),c=curChart(),a=-(c.rot||0)*Math.PI/180;const dx=x-(v.left+v.width/2+ui.view.x),dy=y-(v.top+v.height/2+ui.view.y);return {x:.5+(dx*Math.cos(a)-dy*Math.sin(a))/(im.clientWidth*ui.view.z),y:.5+(dx*Math.sin(a)+dy*Math.cos(a))/(im.clientHeight*ui.view.z)};}
+  let pan=null,pointers=new Map(),pinch=null;
+  document.addEventListener('pointerdown',e=>{const vw=e.target.closest('#viewer');if(!vw)return;const c=curChart();if(!c)return;const q=chartPoint(e.clientX,e.clientY);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});vw.setPointerCapture(e.pointerId);e.preventDefault();
+    if(pointers.size===2){const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),z:ui.view.z,x:ui.view.x,y:ui.view.y,mx:(a.x+b.x)/2,my:(a.y+b.y)/2};pan=null;return;}
+    const point=e.target.dataset.point;let kind={vruler:'ruler',vring:'move',vcenter:'move',vsize:'size'}[e.target.id]||(point!==undefined?'point':'pan');
+    if(ui.markPoints&&chartMode(proj(),c)==='free'&&kind==='pan'){const g=ringOf(c);if(g.points.length<64){g.points.push({x:Math.max(0,Math.min(1,q.x)),y:Math.max(0,Math.min(1,q.y))});touch();drawRing(c)}return;}
+    pan={id:e.pointerId,kind,point:+point,q,x:e.clientX,y:e.clientY,vx:ui.view.x,vy:ui.view.y,g:structuredClone(ringOf(c))};
   });
-  document.addEventListener('pointermove', e => {
-    if (!pan) return;
-    const c = curChart(), img = $('vstage')?.querySelector('img');
-    if (pan.kind === 'ruler') {
-      if (!img || !c) return;
-      const r = img.getBoundingClientRect(); c.ruler = Math.min(0.98, Math.max(0.02, (e.clientY - r.top) / r.height)); $('vruler').style.top = c.ruler * 100 + '%';
-    } else if (pan.kind === 'ring') {
-      if (!img || !c) return;
-      const b = $('vcenter').getBoundingClientRect(), g = ringOf(c);
-      const d = Math.hypot(e.clientX - (b.left + b.width / 2), e.clientY - (b.top + b.height / 2)) / (img.offsetWidth * ui.view.z);
-      g.r = Math.max(g.w / 2 + .002, d); drawRing(c);
-    } else if (pan.kind === 'center') {
-      if (!img || !c) return;
-      const dx = e.clientX - pan.lx, dy = e.clientY - pan.ly, a = (c.rot || 0) * Math.PI / 180, z = ui.view.z, g = ringOf(c);
-      g.cx = Math.min(1, Math.max(0, g.cx + (dx * Math.cos(a) + dy * Math.sin(a)) / (img.offsetWidth * z)));
-      g.cy = Math.min(1, Math.max(0, g.cy + (-dx * Math.sin(a) + dy * Math.cos(a)) / (img.offsetHeight * z)));
-      pan.lx = e.clientX; pan.ly = e.clientY; drawRing(c);
-    } else { ui.view.x = pan.vx + e.clientX - pan.x0; ui.view.y = pan.vy + e.clientY - pan.y0; applyView(); }
+  document.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pinch&&pointers.size===2){const [a,b]=[...pointers.values()],d=Math.hypot(a.x-b.x,a.y-b.y);ui.view.z=Math.max(.1,Math.min(24,pinch.z*d/Math.max(1,pinch.distance)));ui.view.x=pinch.x+(a.x+b.x)/2-pinch.mx;ui.view.y=pinch.y+(a.y+b.y)/2-pinch.my;applyView();return;}if(!pan||pan.id!==e.pointerId)return;const c=curChart(),g=ringOf(c),q=chartPoint(e.clientX,e.clientY),clamp=n=>Math.max(0,Math.min(1,n));
+    if(pan.kind==='pan'){ui.view.x=pan.vx+e.clientX-pan.x;ui.view.y=pan.vy+e.clientY-pan.y;applyView()}
+    else if(pan.kind==='ruler'){c.ruler=clamp(q.y);$('vruler').style.top=c.ruler*100+'%'}
+    else if(pan.kind==='move'){const dx=q.x-pan.q.x,dy=q.y-pan.q.y;g.cx=clamp(pan.g.cx+dx);g.cy=clamp(pan.g.cy+dy);g.points=(pan.g.points||[]).map(p=>({x:clamp(p.x+dx),y:clamp(p.y+dy)}));drawRing(c)}
+    else if(pan.kind==='size'){g.rx=Math.max(.005,Math.abs(q.x-g.cx));g.ry=Math.max(.005,Math.abs(q.y-g.cy));drawRing(c)}
+    else if(pan.kind==='point'){g.points[pan.point]={x:clamp(q.x),y:clamp(q.y)};drawRing(c)}
   });
-  document.addEventListener('pointerup', () => { if (pan && pan.kind !== 'pan') touch(); pan = null; });
-  document.addEventListener('wheel', e => { if (!e.target.closest('#viewer')) return; e.preventDefault(); ui.view.z = Math.min(6, Math.max(0.2, ui.view.z * (e.deltaY < 0 ? 1.1 : 0.9))); applyView(); }, { passive: false });
+  function endPointer(e){pointers.delete(e.pointerId);if(pan&&pan.kind!=='pan')touch();pan=null;if(pointers.size<2)pinch=null;}
+  document.addEventListener('pointerup',endPointer);document.addEventListener('pointercancel',endPointer);
+  document.addEventListener('wheel',e=>{const vw=e.target.closest('#viewer');if(!vw)return;e.preventDefault();const rect=vw.getBoundingClientRect(),x=e.clientX-rect.left-rect.width/2,y=e.clientY-rect.top-rect.height/2,old=ui.view.z;ui.view.z=Math.min(24,Math.max(.1,old*(e.deltaY<0?1.12:1/1.12)));const ratio=ui.view.z/old;ui.view.x=x-(x-ui.view.x)*ratio;ui.view.y=y-(y-ui.view.y)*ratio;applyView();},{passive:false});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ui.readerFull){ui.readerFull=false;render()}});
 
-  render(); save();
-  if (document.documentElement.hasAttribute('data-locked')) window.addEventListener('daily-unlocked', () => setTimeout(startSync, 0), { once: true });
-  else setTimeout(startSync, 0);
+  (async()=>{try{const cached=await cacheRead(),stamp=Number(localStorage.getItem(STORAGE_KEY+'_savedAt')||0);if(cached?.projects?.length&&cached.savedAt>stamp){projects=cached.projects;ui.projectId=projects[0].id;ui.partId=projects[0].parts[0]?.id;ui.row=0}}catch{}render();save();
+    if(document.documentElement.hasAttribute('data-locked'))window.addEventListener('daily-unlocked',()=>setTimeout(startSync,0),{once:true});else setTimeout(startSync,0);
+  })();
+
 })();
 
 </script>

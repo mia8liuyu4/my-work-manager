@@ -14,6 +14,8 @@
   // 真的換臉：mascots/expressions.json 列出每隻動物有哪些表情圖（mascots/動物-x-表情.webp）
   const FACE_IMG = { smile: 'smile', pat: 'shy', poke: 'surprised', tickle: 'laugh', love: 'love', laugh: 'laugh', cry: 'cry', stress: 'stress', relief: 'smile', sleepy: 'sleepy', shy: 'shy', joke: 'smile' };
   let exprList = {};
+  // 舊貓狗表情資產含有錯位的第二組眼睛：改用原生乾淨姿勢，以動作與氣泡表達情緒。
+  const naturalFace = () => ['cat', 'puppy'].includes(mascotId());
   const broken = new Set();               // 載入失敗的表情圖，之後不再嘗試
   const ALIAS = { puppy: ['puppy', 'dog'], cat: ['cat', 'kitten'], bunny: ['bunny', 'rabbit'], tiger: ['tiger'], elephant: ['elephant'] };
   const mascotId = () => window.dailyTheme?.mascot()?.id || 'bunny';
@@ -38,22 +40,22 @@
     img.src = base;
   });
   function setFace(expr) {
-    const k = FACE_IMG[expr], has = k && exprFor().includes(k);
+    const k = FACE_IMG[expr], has = !naturalFace() && k && exprFor().includes(k);
     let want = has ? `mascots/${mascotId()}-x-${k}.webp` : baseSrc();
     if (broken.has(want)) want = baseSrc();
     if (!img.src.endsWith(want)) img.src = want;
   }
 
   // ---- 今日互動次數（存在這台裝置） ----
-  const today = new Date().toISOString().slice(0, 10);
+  const localDay = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
   function bump() {
-    let c = { day: today, n: 0 };
+    const today = localDay(); let c = { day: today, n: 0 };
     try { const s = JSON.parse(localStorage.getItem('daily-pet-count') || 'null'); if (s && s.day === today) c = s; } catch {}
     c.n++;
     try { localStorage.setItem('daily-pet-count', JSON.stringify(c)); } catch {}
     paintCount(c.n);
   }
-  function paintCount(n) {
+  function paintCount(n) { const today = localDay();
     if (n == null) { try { const s = JSON.parse(localStorage.getItem('daily-pet-count') || 'null'); n = s && s.day === today ? s.n : 0; } catch { n = 0; } }
     count.textContent = n ? `今天互動了 ${n} 次` : '點我、摸我、長按抱抱我';
   }
@@ -61,9 +63,12 @@
   // ---- 特效小工具 ----
   function imgBox() {
     const s = stage.getBoundingClientRect(), r = img.getBoundingClientRect();
-    return { x: r.left - s.left, y: r.top - s.top, w: r.width, h: r.height };
+    const ratio = Math.min(r.width / (img.naturalWidth || r.width), r.height / (img.naturalHeight || r.height));
+    const w = (img.naturalWidth || r.width) * ratio, h = (img.naturalHeight || r.height) * ratio;
+    return { x: r.left - s.left + (r.width-w)/2, y: r.top-s.top+r.height-h, w, h };
   }
   function spawn(cls, text, x, y, life = 1800, style = {}) {
+    if (naturalFace() && (cls.startsWith('blush') || cls === 'tear' || cls === 'shy-mark')) return null;
     const e = document.createElement('span');
     e.className = 'fx ' + cls;
     if (text) e.textContent = text;
