@@ -68,7 +68,7 @@
     return { x: r.left - s.left + (r.width-w)/2, y: r.top-s.top+r.height-h, w, h };
   }
   function spawn(cls, text, x, y, life = 1800, style = {}) {
-    if (naturalFace() && (cls.startsWith('blush') || cls === 'tear' || cls === 'shy-mark')) return null;
+    if (body.classList.contains('soft-pet') && (cls.startsWith('blush') || cls === 'tear' || cls === 'shy-mark')) return null;
     const e = document.createElement('span');
     e.className = 'fx ' + cls;
     if (text) e.textContent = text;
@@ -193,133 +193,80 @@
   window.addEventListener('daily-mascot', () => { preload(); play('smile', { text: '換我陪你囉！' }); });
   later(() => play('smile'), 600);
 })();
-// 3D 公仔層：只替換貓與狗；原互動、圖片與其他動物仍保留。
-(async () => {
-  'use strict';
-  const body = document.getElementById('petBody');
-  const img = document.getElementById('petImg');
-  const stage = document.getElementById('petStage');
-  if (!body || !img || !stage) return;
-  let THREE;
-  try { THREE = await import(new URL('vendor/three.module.js', location.href).href); }
-  catch (e) { console.warn('[pet3d] 使用原本圖片', e); return; }
-  const style = document.createElement('style');
-  style.textContent = '#petBody.pet-3d-active{overflow:visible}#petBody.pet-3d-active #petImg{opacity:0!important}#petBody .pet-3d-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;pointer-events:none}';
-  document.head.append(style);
-  let renderer;
-  try { renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true, powerPreference:'low-power' }); }
-  catch (e) { return; }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setClearColor(0x000000, 0);
-  renderer.domElement.className = 'pet-3d-canvas';
-  renderer.domElement.setAttribute('aria-hidden', 'true');
-  body.append(renderer.domElement);
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(32, 1, .1, 30);
-  camera.position.set(0, 1.6, 8.4); camera.lookAt(0, 1.38, 0);
-  scene.add(new THREE.HemisphereLight(0xfff7eb, 0x998680, 2.7));
-  const light = new THREE.DirectionalLight(0xffe9d0, 3.6); light.position.set(-3,5,5); scene.add(light);
-  const rim = new THREE.DirectionalLight(0xffffff, 2); rim.position.set(4,3,-3); scene.add(rim);
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let root, head, tail, eyes = [], cheeks = [], current = '', active = false, visible = true;
-  let aim = 0, exprAt = performance.now(), lastExpr = '', lastTime = 0;
-  const materials = new Map();
-  function material(color) {
-    if (!materials.has(color)) materials.set(color, new THREE.MeshStandardMaterial({color, roughness:.78, metalness:0}));
-    return materials.get(color);
+// 暖色公仔插畫：五官位於同一個 SVG 頭部群組，不另疊表情圖片。
+(()=>{
+  const body=document.getElementById('petBody'),stage=document.getElementById('petStage'),img=document.getElementById('petImg');
+  if(!body||!stage||!img)return;
+  const css=document.createElement('style');css.textContent=`
+  #petBody.soft-pet{width:220px;height:205px;margin-left:-110px;bottom:9px;isolation:isolate}
+  #petBody.soft-pet #petImg{opacity:0!important;animation:none!important}
+  .soft-pet-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:drop-shadow(0 8px 5px #98775e18)}
+  .sp-character{transform-origin:160px 299px;animation:sp-breathe 3.6s ease-in-out infinite}
+  .sp-head{transform-origin:160px 188px;animation:sp-look 6s ease-in-out infinite}
+  .sp-ear-l{transform-origin:129px 124px;animation:sp-ear 4s ease-in-out infinite}
+  .sp-ear-r{transform-origin:192px 124px;animation:sp-ear 4s ease-in-out infinite reverse}
+  .sp-eye{transform-box:fill-box;transform-origin:center;animation:sp-blink 5s infinite}
+  .sp-cheek{opacity:.6;transition:opacity .3s}.sp-closed,.sp-open-mouth,.sp-tear{display:none}
+  .sp-star{transform-box:fill-box;transform-origin:center;animation:sp-float 4s ease-in-out infinite}.sp-star.b{animation-delay:-2s}
+  #petStage[data-expr=sleepy] .sp-eye,#petStage[data-expr=cry] .sp-eye,#petStage[data-expr=laugh] .sp-eye,#petStage[data-expr=tickle] .sp-eye{display:none}
+  #petStage[data-expr=sleepy] .sp-closed,#petStage[data-expr=cry] .sp-closed,#petStage[data-expr=laugh] .sp-closed,#petStage[data-expr=tickle] .sp-closed{display:inline}
+  #petStage[data-expr=cry] .sp-tear{display:inline;animation:sp-tear 1.6s ease-in infinite}
+  #petStage[data-expr=love] .sp-cheek,#petStage[data-expr=shy] .sp-cheek,#petStage[data-expr=pat] .sp-cheek{opacity:1}
+  #petStage[data-expr=poke] .sp-open-mouth{display:inline}#petStage[data-expr=poke] .sp-smile{display:none}
+  #petStage[data-expr=sleepy] .sp-head{animation:none;transform:rotate(6deg)}
+  #petStage[data-expr=love] .sp-character,#petStage[data-expr=poke] .sp-character{animation:sp-hop .7s ease-in-out 2}
+  #petStage[data-expr=laugh] .sp-character,#petStage[data-expr=tickle] .sp-character{animation:sp-dance .65s ease-in-out 3}
+  #petStage[data-expr=pat] .sp-head,#petStage[data-expr=shy] .sp-head{animation:sp-nuzzle 1s ease-in-out 2}
+  #petStage[data-expr=stress] .sp-character{animation:sp-nuzzle .2s ease-in-out 10}
+  #petBody.soft-pet:focus-visible{outline:3px solid #bd807a;outline-offset:5px;border-radius:32px}
+  @keyframes sp-breathe{50%{transform:translateY(-2px) scale(1.012,1.008)}}
+  @keyframes sp-look{25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+  @keyframes sp-ear{50%{transform:rotate(-5deg)}}
+  @keyframes sp-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.08)}}
+  @keyframes sp-float{50%{transform:translateY(-7px) rotate(12deg)}}
+  @keyframes sp-hop{40%{transform:translateY(-25px) rotate(-4deg)}70%{transform:scale(1.04,.96)}}
+  @keyframes sp-dance{25%{transform:rotate(-7deg) translateY(-6px)}75%{transform:rotate(7deg) translateY(-6px)}}
+  @keyframes sp-nuzzle{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+  @keyframes sp-tear{0%{opacity:0;transform:translateY(0)}40%{opacity:.8}100%{opacity:0;transform:translateY(15px)}}
+  @media(prefers-reduced-motion:reduce){#petBody.soft-pet *{animation:none!important;transition:none!important}}
+  @media(max-width:600px){#petBody.soft-pet{width:205px;height:190px;margin-left:-102.5px}}
+  `;document.head.append(css);
+  const art=document.createElementNS('http://www.w3.org/2000/svg','svg');art.setAttribute('viewBox','0 0 320 330');art.setAttribute('aria-hidden','true');art.classList.add('soft-pet-art');
+  let last='';
+  function update(){
+    const id=window.dailyTheme?.mascot?.()?.id||document.documentElement.dataset.mascot||'bunny';if(id===last)return;last=id;
+    const cat=id==='cat',dog=id==='puppy',tiger=id==='tiger',elephant=id==='elephant',bunny=!cat&&!dog&&!tiger&&!elephant;
+    const fur=elephant?['#eee1d9','#c5b4b2']:tiger?['#fbe0ad','#d9ac72']:cat?['#f7e2c8','#d7b48f']:dog?['#eed9ba','#c39b77']:['#fffbf1','#e7d2b6'];
+    let ears='';
+    if(bunny)ears=`<g class="sp-ear-l"><path d="M133 130C92 119 89 20 111 19C139 15 151 99 143 128" fill="url(#sp-fur)" stroke="#bc9e7a" stroke-opacity=".16"/><path d="M123 113C107 95 103 43 113 39C124 36 136 94 133 113" fill="url(#sp-pink)"/></g><g class="sp-ear-r"><path d="M177 128C168 92 184 12 207 20C233 28 211 117 187 132" fill="url(#sp-fur)" stroke="#bc9e7a" stroke-opacity=".16"/><path d="M186 112C183 89 199 38 205 40C216 44 202 98 194 115" fill="url(#sp-pink)"/></g>`;
+    else if(cat)ears=`<path d="M91 143Q72 58 98 70L139 109M182 108L224 70Q249 60 231 145" fill="url(#sp-fur)" stroke="#c5a788" stroke-width="2"/><path d="M96 122L95 86L120 111M202 112L225 86L224 125" fill="url(#sp-pink)"/>`;
+    else if(dog)ears=`<ellipse cx="84" cy="159" rx="29" ry="62" transform="rotate(13 84 159)" fill="#b18a68"/><ellipse cx="236" cy="159" rx="29" ry="62" transform="rotate(-13 236 159)" fill="#b18a68"/><ellipse cx="80" cy="164" rx="13" ry="38" fill="#cda58b"/><ellipse cx="240" cy="164" rx="13" ry="38" fill="#cda58b"/>`;
+    else ears=`<ellipse cx="${elephant?81:101}" cy="${elephant?157:114}" rx="${elephant?43:25}" ry="${elephant?60:28}" fill="url(#sp-fur)"/><ellipse cx="${elephant?239:219}" cy="${elephant?157:114}" rx="${elephant?43:25}" ry="${elephant?60:28}" fill="url(#sp-fur)"/><ellipse cx="${elephant?77:101}" cy="${elephant?157:114}" rx="${elephant?26:14}" ry="${elephant?42:16}" fill="url(#sp-pink)"/><ellipse cx="${elephant?243:219}" cy="${elephant?157:114}" rx="${elephant?26:14}" ry="${elephant?42:16}" fill="url(#sp-pink)"/>`;
+    art.innerHTML=`<defs><radialGradient id="sp-fur" cx="30%" cy="20%" r="85%"><stop stop-color="${fur[0]}"/><stop offset=".65" stop-color="${fur[0]}"/><stop offset="1" stop-color="${fur[1]}"/></radialGradient><radialGradient id="sp-pink"><stop stop-color="#f6d3cb"/><stop offset="1" stop-color="#e4b2aa"/></radialGradient><radialGradient id="sp-blush"><stop stop-color="#e9a49b" stop-opacity=".9"/><stop offset="1" stop-color="#e9a49b" stop-opacity="0"/></radialGradient><radialGradient id="sp-eye"><stop stop-color="#816353"/><stop offset="1" stop-color="#493b33"/></radialGradient><radialGradient id="sp-shadow"><stop stop-color="#98775e" stop-opacity=".18"/><stop offset="1" stop-color="#98775e" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="160" cy="308" rx="91" ry="13" fill="url(#sp-shadow)"/>
+    <g fill="#dfbf76"><path class="sp-star" d="M47 105L50 115L61 118L50 122L47 133L43 122L33 118L43 115Z"/><path class="sp-star b" d="M272 195L275 203L283 206L275 209L272 217L269 209L261 206L269 203Z"/></g><circle cx="265" cy="88" r="3" fill="#decbae"/><circle cx="49" cy="247" r="3" fill="#decbae"/>
+    <g class="sp-character">
+    ${cat?'<path d="M211 279C273 286 266 224 249 236" fill="none" stroke="'+fur[1]+'" stroke-width="19" stroke-linecap="round"/>':''}
+    <ellipse cx="160" cy="248" rx="59" ry="57" fill="url(#sp-fur)"/><ellipse cx="160" cy="253" rx="35" ry="39" fill="#fff7e9"/>
+    <ellipse cx="116" cy="295" rx="33" ry="15" fill="url(#sp-fur)"/><ellipse cx="204" cy="295" rx="33" ry="15" fill="url(#sp-fur)"/>
+    <ellipse cx="109" cy="248" rx="16" ry="28" transform="rotate(-20 109 248)" fill="url(#sp-fur)"/><ellipse cx="211" cy="248" rx="16" ry="28" transform="rotate(20 211 248)" fill="url(#sp-fur)"/>
+    <g class="sp-head">${ears}
+    <path d="M160 101C108 100 78 124 78 168C75 213 111 233 160 233C209 233 245 213 242 168C242 124 212 100 160 101Z" fill="url(#sp-fur)" stroke="#b99978" stroke-opacity=".13"/>
+    <ellipse cx="135" cy="126" rx="29" ry="11" fill="#fffdf7" opacity=".22"/>
+    ${dog?'<ellipse cx="160" cy="190" rx="43" ry="26" fill="#fff2de"/>':''}
+    ${tiger?'<g fill="#a77c55"><path d="M153 102L160 130L167 102Z"/><path d="M130 108L141 127L145 105Z"/><path d="M177 105L180 127L192 108Z"/><path d="M80 158L105 167L80 171Z"/><path d="M240 158L215 167L240 171Z"/></g>':''}
+    <g class="sp-eye"><ellipse cx="130" cy="165" rx="7" ry="9" fill="url(#sp-eye)"/><circle cx="128" cy="162" r="2.1" fill="#fff8ec"/></g>
+    <g class="sp-eye"><ellipse cx="190" cy="165" rx="7" ry="9" fill="url(#sp-eye)"/><circle cx="188" cy="162" r="2.1" fill="#fff8ec"/></g>
+    <g class="sp-closed" fill="none" stroke="#826451" stroke-width="3" stroke-linecap="round"><path d="M121 168Q130 160 139 168M181 168Q190 160 199 168"/></g>
+    <g class="sp-cheek"><ellipse cx="109" cy="187" rx="23" ry="13" fill="url(#sp-blush)"/><ellipse cx="211" cy="187" rx="23" ry="13" fill="url(#sp-blush)"/></g>
+    ${elephant?'<path d="M158 184Q147 205 155 230Q165 244 178 227" fill="none" stroke="'+fur[1]+'" stroke-width="18" stroke-linecap="round"/><path d="M158 202L165 202M158 210L166 210" stroke="#aa9691" stroke-width="2"/>':`<path d="M153 183Q160 178 167 183Q166 190 160 191Q154 190 153 183" fill="${dog?'#725a4a':'#d39b94'}"/><path class="sp-smile" d="M160 191L160 197Q153 206 145 199M160 197Q167 206 175 199" fill="none" stroke="#9e7b66" stroke-width="2" stroke-linecap="round"/><ellipse class="sp-open-mouth" cx="160" cy="203" rx="6" ry="8" fill="#a77d72"/>`}
+    ${cat?'<path d="M99 182L76 178M100 191L74 193M221 182L244 178M220 191L246 193" stroke="#b49679" stroke-width="1.5" stroke-linecap="round"/>':''}
+    <g class="sp-tear" fill="#a7d3df"><path d="M123 176Q113 190 123 191Q132 190 123 176"/><path d="M197 176Q187 190 197 191Q207 190 197 176"/></g>
+    </g>
+    <path d="M133 227Q160 237 187 227L183 239Q159 247 137 239Z" fill="#d6aaa0"/><path d="M176 237L187 260L171 255L164 241" fill="#e4bbb0"/>
+    <circle cx="160" cy="240" r="5" fill="#e5c583"/><path d="M159 242L162 242" stroke="#b69659" stroke-width="1"/>
+    </g>`;
+    body.classList.add('soft-pet');if(!art.isConnected)body.append(art);
   }
-  const sphere = new THREE.SphereGeometry(1, 32, 24);
-  function ball(parent, color, x,y,z, sx,sy,sz) {
-    const m = new THREE.Mesh(sphere, material(color)); m.position.set(x,y,z); m.scale.set(sx,sy,sz); parent.add(m); return m;
-  }
-  function stroke(parent, points, color, radius=.018) {
-    const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
-    const m = new THREE.Mesh(new THREE.TubeGeometry(curve,24,radius,8,false),material(color)); parent.add(m); return m;
-  }
-  function ear(parent, x, color, inner) {
-    const group = new THREE.Group(); group.position.set(x, .67, .02); group.rotation.z = x < 0 ? .22 : -.22; parent.add(group);
-    const shape = new THREE.Shape(); shape.moveTo(-.27,0); shape.quadraticCurveTo(-.25,.4,0,.76); shape.quadraticCurveTo(.12,.8,.27,0); shape.closePath();
-    const geometry = new THREE.ExtrudeGeometry(shape,{depth:.19,bevelEnabled:true,bevelSize:.075,bevelThickness:.08,bevelSegments:4,steps:1,curveSegments:20});
-    const mesh = new THREE.Mesh(geometry,material(color)); group.add(mesh);
-    ball(group,inner,0,.30,.27,.12,.24,.035);
-  }
-  function build(id) {
-    if (root) { scene.remove(root); root.traverse(o => { if(o.geometry && o.geometry !== sphere) o.geometry.dispose(); }); }
-    root = new THREE.Group(); scene.add(root); eyes=[]; cheeks=[];
-    const cat=id==='cat', fur=cat ? 0xe5b98f : 0xc79b72, cream=0xffedda, dark=0x45322d;
-    ball(root,fur,0,.84,0,.67,.78,.49);
-    ball(root,cream,0,.80,.43,.43,.52,.13);
-    for(const x of [-.4,.4]) { ball(root,fur,x,.23,.28,.30,.22,.37); ball(root,cream,x,.25,.53,.21,.14,.15); }
-    for(const x of [-.62,.62]) { const arm=ball(root,fur,x,.85,.13,.21,.43,.23); arm.rotation.z=x<0?-.24:.24; }
-    tail=new THREE.Group(); tail.position.set(cat?.54:.48,.53,-.3); root.add(tail);
-    if(cat) stroke(tail,[[0,0,0],[.48,.12,0],[.63,.55,0],[.48,.78,0]],fur,.13);
-    else { const t=ball(tail,fur,.27,.22,0,.15,.40,.15); t.rotation.z=-.8; }
-    head=new THREE.Group(); head.position.set(0,1.92,.06); root.add(head);
-    ball(head,fur,0,0,0,.88,.75,.64);
-    if(cat) { ear(head,-.57,fur,0xe5a6a0); ear(head,.57,fur,0xe5a6a0); }
-    else for(const x of [-.76,.76]) { const e=ball(head,0x957052,x,-.04,-.01,.28,.63,.28); e.rotation.z=x<0?-.26:.26; ball(head,0xb78a70,x,-.13,.22,.13,.35,.055); }
-    ball(head,cream,0,-.25,.51,cat?.43:.51,.29,.22);
-    for(const x of [-.33,.33]) {
-      const eye = new THREE.Group(); eye.position.set(x,.06,.586); head.add(eye); eyes.push(eye);
-      ball(eye,dark,0,0,0,.095,.135,.055);
-      ball(eye,0xffffff,-.026,.048,.049,.026,.033,.014);
-      ball(eye,0xffe5c6,.025,-.044,.049,.012,.016,.009);
-      const brow=ball(head,fur,x,.26,.555,.14,.045,.045); brow.rotation.z=x<0?.1:-.1;
-      cheeks.push(ball(head,0xe9a29a,x*1.55,-.20,.51,.14,.065,.035));
-    }
-    ball(head,cat?0x986d64:dark,0,-.15,.75,cat?.095:.15,.075,.07);
-    stroke(head,[[0,-.20,.735],[0,-.28,.74],[-.12,-.32,.71],[-.19,-.27,.68]],dark,.015);
-    stroke(head,[[0,-.28,.74],[.12,-.32,.71],[.19,-.27,.68]],dark,.015);
-    if(cat) {
-      for(const side of [-1,1]) for(let i=0;i<3;i++) stroke(head,[[side*.43,-.24-i*.065,.59],[side*.68,-.21-i*.09,.58],[side*.89,-.17-i*.12,.46]],0x9e7963,.009);
-      for(const x of [-.20,0,.20]) ball(head,0xb58763,x,.48,.46,.045,.16,.028);
-    }
-    // 公仔頸巾與鈴鐺
-    const band=new THREE.Mesh(new THREE.TorusGeometry(.45,.075,12,48),material(0xb98982)); band.rotation.x=Math.PI/2; band.position.set(0,1.43,.03); root.add(band);
-    ball(root,0xe9bd72,0,1.37,.51,.105,.11,.08);
-    stroke(root,[[-.04,1.35,.588],[.04,1.35,.588]],0x876541,.009);
-  }
-  function mascot() { return window.dailyTheme?.mascot?.()?.id || (img.getAttribute('src')||'').match(/(?:^|\/)(cat|puppy)-/)?.[1] || 'bunny'; }
-  function update() {
-    const id=mascot(); active=['cat','puppy'].includes(id);
-    body.classList.toggle('pet-3d-active',active); renderer.domElement.hidden=!active;
-    if(active && id!==current) { current=id; build(id); }
-    resize();
-  }
-  function resize() {
-    const r=body.getBoundingClientRect(); if(!r.width||!r.height) return;
-    renderer.setSize(r.width,r.height,false); camera.aspect=r.width/r.height; camera.updateProjectionMatrix();
-    // 窄容器也保留耳朵與尾巴的完整範圍。
-    camera.position.z=Math.max(8.4,6.6/camera.aspect); camera.lookAt(0,1.48,0);
-  }
-  const ro=new ResizeObserver(resize); ro.observe(body);
-  new MutationObserver(update).observe(img,{attributes:true,attributeFilter:['src']});
-  window.addEventListener('daily-mascot',()=>setTimeout(update,0));
-  stage.addEventListener('pointermove',e=>{ const r=stage.getBoundingClientRect(); aim=Math.max(-.35,Math.min(.35,((e.clientX-r.left)/r.width-.5)*.7)); });
-  stage.addEventListener('pointerleave',()=>{aim=0;});
-  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();active=false;body.classList.remove('pet-3d-active');renderer.domElement.hidden=true;});
-  renderer.domElement.addEventListener('webglcontextrestored',update);
-  if('IntersectionObserver' in window) new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;}).observe(stage);
-  function frame(t) {
-    requestAnimationFrame(frame);
-    if(!active || !visible || document.hidden || t-lastTime<33) return;
-    lastTime=t; const expr=stage.dataset.expr || 'rest';
-    if(expr!==lastExpr) { lastExpr=expr; exprAt=t; }
-    const elapsed=(t-exprAt)/1000, sec=t/1000;
-    const happy=['love','pat','laugh','tickle','smile','relief','shy'].includes(expr);
-    const asleep=expr==='sleepy';
-    root.position.y=reduced?0:Math.sin(sec*2)*.025;
-    root.rotation.y += ((reduced?0:aim*.55)-root.rotation.y)*.12;
-    head.rotation.y += ((reduced?0:aim)-head.rotation.y)*.12;
-    head.rotation.z=reduced?0:(happy?Math.sin(sec*4)*.045:expr==='stress'?Math.sin(sec*10)*.04:asleep?.12:Math.sin(sec*.8)*.022);
-    head.rotation.x=asleep?.12:0;
-    tail.rotation.z=reduced?0:Math.sin(sec*(happy?10:2.3))*(happy?.30:.09);
-    const blink=!reduced && sec%4.7<.14;
-    eyes.forEach(eye=> {eye.scale.y=asleep?.13:blink?.08:happy?.68:expr==='poke'?1.2:1;});
-    cheeks.forEach(c=>{c.visible=happy;});
-    if(!reduced && ['poke','laugh','tickle'].includes(expr) && elapsed<.7) root.position.y+=Math.abs(Math.sin(elapsed*15))*.13*(1-elapsed/.7);
-    renderer.render(scene,camera);
-  }
-  update(); requestAnimationFrame(frame);
+  window.addEventListener('daily-mascot',update);update();
 })();
