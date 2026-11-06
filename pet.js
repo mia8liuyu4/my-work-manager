@@ -193,3 +193,133 @@
   window.addEventListener('daily-mascot', () => { preload(); play('smile', { text: '換我陪你囉！' }); });
   later(() => play('smile'), 600);
 })();
+// 3D 公仔層：只替換貓與狗；原互動、圖片與其他動物仍保留。
+(async () => {
+  'use strict';
+  const body = document.getElementById('petBody');
+  const img = document.getElementById('petImg');
+  const stage = document.getElementById('petStage');
+  if (!body || !img || !stage) return;
+  let THREE;
+  try { THREE = await import(new URL('vendor/three.module.js', location.href).href); }
+  catch (e) { console.warn('[pet3d] 使用原本圖片', e); return; }
+  const style = document.createElement('style');
+  style.textContent = '#petBody.pet-3d-active{overflow:visible}#petBody.pet-3d-active #petImg{opacity:0!important}#petBody .pet-3d-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;pointer-events:none}';
+  document.head.append(style);
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true, powerPreference:'low-power' }); }
+  catch (e) { return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(0x000000, 0);
+  renderer.domElement.className = 'pet-3d-canvas';
+  renderer.domElement.setAttribute('aria-hidden', 'true');
+  body.append(renderer.domElement);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, 1, .1, 30);
+  camera.position.set(0, 1.6, 8.4); camera.lookAt(0, 1.38, 0);
+  scene.add(new THREE.HemisphereLight(0xfff7eb, 0x998680, 2.7));
+  const light = new THREE.DirectionalLight(0xffe9d0, 3.6); light.position.set(-3,5,5); scene.add(light);
+  const rim = new THREE.DirectionalLight(0xffffff, 2); rim.position.set(4,3,-3); scene.add(rim);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let root, head, tail, eyes = [], cheeks = [], current = '', active = false, visible = true;
+  let aim = 0, exprAt = performance.now(), lastExpr = '', lastTime = 0;
+  const materials = new Map();
+  function material(color) {
+    if (!materials.has(color)) materials.set(color, new THREE.MeshStandardMaterial({color, roughness:.78, metalness:0}));
+    return materials.get(color);
+  }
+  const sphere = new THREE.SphereGeometry(1, 32, 24);
+  function ball(parent, color, x,y,z, sx,sy,sz) {
+    const m = new THREE.Mesh(sphere, material(color)); m.position.set(x,y,z); m.scale.set(sx,sy,sz); parent.add(m); return m;
+  }
+  function stroke(parent, points, color, radius=.018) {
+    const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
+    const m = new THREE.Mesh(new THREE.TubeGeometry(curve,24,radius,8,false),material(color)); parent.add(m); return m;
+  }
+  function ear(parent, x, color, inner) {
+    const group = new THREE.Group(); group.position.set(x, .67, .02); group.rotation.z = x < 0 ? .22 : -.22; parent.add(group);
+    const shape = new THREE.Shape(); shape.moveTo(-.27,0); shape.quadraticCurveTo(-.25,.4,0,.76); shape.quadraticCurveTo(.12,.8,.27,0); shape.closePath();
+    const geometry = new THREE.ExtrudeGeometry(shape,{depth:.19,bevelEnabled:true,bevelSize:.075,bevelThickness:.08,bevelSegments:4,steps:1,curveSegments:20});
+    const mesh = new THREE.Mesh(geometry,material(color)); group.add(mesh);
+    ball(group,inner,0,.30,.27,.12,.24,.035);
+  }
+  function build(id) {
+    if (root) { scene.remove(root); root.traverse(o => { if(o.geometry && o.geometry !== sphere) o.geometry.dispose(); }); }
+    root = new THREE.Group(); scene.add(root); eyes=[]; cheeks=[];
+    const cat=id==='cat', fur=cat ? 0xe5b98f : 0xc79b72, cream=0xffedda, dark=0x45322d;
+    ball(root,fur,0,.84,0,.67,.78,.49);
+    ball(root,cream,0,.80,.43,.43,.52,.13);
+    for(const x of [-.4,.4]) { ball(root,fur,x,.23,.28,.30,.22,.37); ball(root,cream,x,.25,.53,.21,.14,.15); }
+    for(const x of [-.62,.62]) { const arm=ball(root,fur,x,.85,.13,.21,.43,.23); arm.rotation.z=x<0?-.24:.24; }
+    tail=new THREE.Group(); tail.position.set(cat?.54:.48,.53,-.3); root.add(tail);
+    if(cat) stroke(tail,[[0,0,0],[.48,.12,0],[.63,.55,0],[.48,.78,0]],fur,.13);
+    else { const t=ball(tail,fur,.27,.22,0,.15,.40,.15); t.rotation.z=-.8; }
+    head=new THREE.Group(); head.position.set(0,1.92,.06); root.add(head);
+    ball(head,fur,0,0,0,.88,.75,.64);
+    if(cat) { ear(head,-.57,fur,0xe5a6a0); ear(head,.57,fur,0xe5a6a0); }
+    else for(const x of [-.76,.76]) { const e=ball(head,0x957052,x,-.04,-.01,.28,.63,.28); e.rotation.z=x<0?-.26:.26; ball(head,0xb78a70,x,-.13,.22,.13,.35,.055); }
+    ball(head,cream,0,-.25,.51,cat?.43:.51,.29,.22);
+    for(const x of [-.33,.33]) {
+      const eye = new THREE.Group(); eye.position.set(x,.06,.586); head.add(eye); eyes.push(eye);
+      ball(eye,dark,0,0,0,.095,.135,.055);
+      ball(eye,0xffffff,-.026,.048,.049,.026,.033,.014);
+      ball(eye,0xffe5c6,.025,-.044,.049,.012,.016,.009);
+      const brow=ball(head,fur,x,.26,.555,.14,.045,.045); brow.rotation.z=x<0?.1:-.1;
+      cheeks.push(ball(head,0xe9a29a,x*1.55,-.20,.51,.14,.065,.035));
+    }
+    ball(head,cat?0x986d64:dark,0,-.15,.75,cat?.095:.15,.075,.07);
+    stroke(head,[[0,-.20,.735],[0,-.28,.74],[-.12,-.32,.71],[-.19,-.27,.68]],dark,.015);
+    stroke(head,[[0,-.28,.74],[.12,-.32,.71],[.19,-.27,.68]],dark,.015);
+    if(cat) {
+      for(const side of [-1,1]) for(let i=0;i<3;i++) stroke(head,[[side*.43,-.24-i*.065,.59],[side*.68,-.21-i*.09,.58],[side*.89,-.17-i*.12,.46]],0x9e7963,.009);
+      for(const x of [-.20,0,.20]) ball(head,0xb58763,x,.48,.46,.045,.16,.028);
+    }
+    // 公仔頸巾與鈴鐺
+    const band=new THREE.Mesh(new THREE.TorusGeometry(.45,.075,12,48),material(0xb98982)); band.rotation.x=Math.PI/2; band.position.set(0,1.43,.03); root.add(band);
+    ball(root,0xe9bd72,0,1.37,.51,.105,.11,.08);
+    stroke(root,[[-.04,1.35,.588],[.04,1.35,.588]],0x876541,.009);
+  }
+  function mascot() { return window.dailyTheme?.mascot?.()?.id || (img.getAttribute('src')||'').match(/(?:^|\/)(cat|puppy)-/)?.[1] || 'bunny'; }
+  function update() {
+    const id=mascot(); active=['cat','puppy'].includes(id);
+    body.classList.toggle('pet-3d-active',active); renderer.domElement.hidden=!active;
+    if(active && id!==current) { current=id; build(id); }
+    resize();
+  }
+  function resize() {
+    const r=body.getBoundingClientRect(); if(!r.width||!r.height) return;
+    renderer.setSize(r.width,r.height,false); camera.aspect=r.width/r.height; camera.updateProjectionMatrix();
+    // 窄容器也保留耳朵與尾巴的完整範圍。
+    camera.position.z=Math.max(8.4,6.6/camera.aspect); camera.lookAt(0,1.48,0);
+  }
+  const ro=new ResizeObserver(resize); ro.observe(body);
+  new MutationObserver(update).observe(img,{attributes:true,attributeFilter:['src']});
+  window.addEventListener('daily-mascot',()=>setTimeout(update,0));
+  stage.addEventListener('pointermove',e=>{ const r=stage.getBoundingClientRect(); aim=Math.max(-.35,Math.min(.35,((e.clientX-r.left)/r.width-.5)*.7)); });
+  stage.addEventListener('pointerleave',()=>{aim=0;});
+  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();active=false;body.classList.remove('pet-3d-active');renderer.domElement.hidden=true;});
+  renderer.domElement.addEventListener('webglcontextrestored',update);
+  if('IntersectionObserver' in window) new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;}).observe(stage);
+  function frame(t) {
+    requestAnimationFrame(frame);
+    if(!active || !visible || document.hidden || t-lastTime<33) return;
+    lastTime=t; const expr=stage.dataset.expr || 'rest';
+    if(expr!==lastExpr) { lastExpr=expr; exprAt=t; }
+    const elapsed=(t-exprAt)/1000, sec=t/1000;
+    const happy=['love','pat','laugh','tickle','smile','relief','shy'].includes(expr);
+    const asleep=expr==='sleepy';
+    root.position.y=reduced?0:Math.sin(sec*2)*.025;
+    root.rotation.y += ((reduced?0:aim*.55)-root.rotation.y)*.12;
+    head.rotation.y += ((reduced?0:aim)-head.rotation.y)*.12;
+    head.rotation.z=reduced?0:(happy?Math.sin(sec*4)*.045:expr==='stress'?Math.sin(sec*10)*.04:asleep?.12:Math.sin(sec*.8)*.022);
+    head.rotation.x=asleep?.12:0;
+    tail.rotation.z=reduced?0:Math.sin(sec*(happy?10:2.3))*(happy?.30:.09);
+    const blink=!reduced && sec%4.7<.14;
+    eyes.forEach(eye=> {eye.scale.y=asleep?.13:blink?.08:happy?.68:expr==='poke'?1.2:1;});
+    cheeks.forEach(c=>{c.visible=happy;});
+    if(!reduced && ['poke','laugh','tickle'].includes(expr) && elapsed<.7) root.position.y+=Math.abs(Math.sin(elapsed*15))*.13*(1-elapsed/.7);
+    renderer.render(scene,camera);
+  }
+  update(); requestAnimationFrame(frame);
+})();

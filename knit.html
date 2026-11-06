@@ -899,11 +899,55 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       </section>
       <section class="panel card"><div class="card-h"><h2>符號對照</h2><span class="muted small">點符號就會把代號插入右邊的文字框</span></div><div class="syms">${sym}</div></section>`;
   }
+
+  let recognitionBusy = false;
+  function recognitionStatus(text) { const e=$('recognitionStatus'); if(e)e.textContent=text; }
+  async function recognizeChart(ai) {
+    if(recognitionBusy)return;
+    const P=proj(), c=curChart(); if(!c){alert('請先上傳並選擇一張圖解');return;}
+    const projectId=P.id, chartId=c.id, craft=$('interpCraft')?.value||craftOf(P);
+    const original=$('interpText')?.value||'';
+    recognitionBusy=true;
+    document.querySelectorAll('[data-act="chartOCR"],[data-act="chartAI"]').forEach(b=>b.disabled=true);
+    recognitionStatus(ai?'正在辨識符號與圈列…':'正在載入文字辨識引擎，第一次可能較久…');
+    let worker;
+    try {
+      let result, warnings=[];
+      if(ai){
+        if(!confirm('將把目前這張圖解傳送至你設定的 AI 服務，可能產生 API 費用。繼續辨識？'))return;
+        const client=window.dailyClient;
+        if(!client)throw Error('請先完成登入');
+        const {data:{session}}=await client.auth.getSession();
+        if(!session)throw Error('登入已過期，請重新登入');
+        const {data,error}=await client.functions.invoke('recognize-chart',{body:{image:c.src,craft},headers:{Authorization:'Bearer '+session.access_token}});
+        if(error){let detail='';try{detail=(await error.context.json()).error||''}catch{}throw Error(detail||'AI 服務尚未設定或連線失敗，請依更新包的設定說明部署 recognize-chart。');}
+        if(data?.error)throw Error(data.error);
+        if(typeof data?.text!=='string')throw Error('AI 回傳格式不正確');
+        result=data.text;warnings=Array.isArray(data.warnings)?data.warnings:[];
+        if(data.shape && ['circle','square','rectangle','triangle','free','flat'].includes(data.shape))warnings.unshift('判斷形狀：'+shapeNames[data.shape]+'（不會自動移動你的手動標記）');
+      }else{
+        if(!window.Tesseract){await new Promise((ok,bad)=>{const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';script.onload=ok;script.onerror=()=>{script.remove();bad(Error('文字辨識引擎下載失敗，請確認網路後重試'))};document.head.append(script)});}
+        worker=await window.Tesseract.createWorker('eng+chi_tra',1,{logger:m=>recognitionStatus('文字辨識：'+m.status+' '+Math.round((m.progress||0)*100)+'%')});
+        const {data}=await worker.recognize(c.src);result=data.text;
+        warnings=['這是文字 OCR，不能判讀純針目符號；請核對 X/V/A、數字與圈列。'];
+      }
+      result=result.trim();if(!result)throw Error('沒有辨識到可讀內容；請裁切清晰的圖解與符號圖例再試。');
+      if(proj().id!==projectId || curChart()?.id!==chartId)throw Error('你已切換專案或圖片，本次結果未套用；請回到原圖重新辨識。');
+      const ta=$('interpText');if(!ta)throw Error('已離開辨識頁，請返回重試');
+      // Protect edits made while the remote request was in flight.
+      if(ta.value!==original)throw Error('辨識期間文字已被修改，為保留你的修改，本次結果未覆蓋。');
+      ui.recognitionPrevious=original;ui.interpCraft=craft;ui.interpText=result;ta.value=result;
+      ui.interpRes=null;ui.interpOut='';const out=$('interpOut');if(out)out.replaceChildren();
+      recognitionStatus('辨識完成，請先校對再按「解析並驗算」。'+warnings.map(x=>String(x)).join('；'));
+    }catch(e){recognitionStatus('辨識未完成：'+e.message);}
+    finally{if(worker)await worker.terminate().catch(()=>{});recognitionBusy=false;document.querySelectorAll('[data-act="chartOCR"],[data-act="chartAI"]').forEach(b=>b.disabled=false);}
+  }
+
   function renderInterp() {
     const P = proj();
     return `<div class="interp-split"><div class="col">${chartViewer(P)}</div><div class="col"><section class="panel card"><div class="card-h"><h2>文字織圖</h2></div>
-      <p class="muted small">目前沒有圖片 OCR 或 AI 針目辨識。請看著圖解人工輸入每圈公式，再解析與驗算；圖形不同不會自動轉成針法。一行一圈，或直接貼上文字織圖。支援 <code>R1: MR 6X</code>、<code>R3-5: 18X</code>、<code>Rnd 2: (sc, inc) x6</code>、<code>第4圈：(2短針, 加針)×6</code>、棒針 <code>Row 1: K2, P2</code>。</p>
-      <textarea id="interpText" rows="12" class="mono" placeholder="R1: MR 6X\nR2: 6V\nR3: (X, V)*6\nR4-6: 18X\nR7: (X, A)*6">${esc(ui.interpText || '')}</textarea>
+      <p class="muted small">圖片含文字可用「圖片文字辨識」；只有針目符號則使用「AI 圖解辨識」（需先部署 AI 服務）。辨識可能出錯，先核對圈列、起點與重複花樣，再解析與驗算。一行一圈，或直接貼上文字織圖。支援 <code>R1: MR 6X</code>、<code>R3-5: 18X</code>、<code>Rnd 2: (sc, inc) x6</code>、<code>第4圈：(2短針, 加針)×6</code>、棒針 <code>Row 1: K2, P2</code>。</p>
+      <div class="tools"><button type="button" class="btn" data-act="chartOCR">圖片文字辨識</button><button type="button" class="btn primary" data-act="chartAI">AI 圖解辨識</button><button type="button" class="btn small" data-act="recognitionUndo">還原辨識前文字</button></div><p class="muted small" id="recognitionStatus" role="status" aria-live="polite">先在左側選擇圖片。文字 OCR 在瀏覽器處理；AI 會傳送所選原圖至服務。既有圈數不會自動覆蓋。</p><textarea id="interpText" rows="12" class="mono" placeholder="R1: MR 6X\nR2: 6V\nR3: (X, V)*6\nR4-6: 18X\nR7: (X, A)*6">${esc(ui.interpText || '')}</textarea>
       <div class="tools"><label class="mini">類型<select id="interpCraft"><option value="crochet">鉤針</option><option value="knitting" ${(ui.interpCraft || craftOf(P)) === 'knitting' ? 'selected' : ''}>棒針</option></select></label><button type="button" class="btn primary" data-act="interpRun">解析並驗算</button></div>
       <div id="interpOut">${ui.interpOut || ''}</div></section></div></div>`;
   }
@@ -917,6 +961,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       let note = '';
       const n1 = body.match(/\s*(?:\/\/|#|——|--)\s*(.*)$/); if (n1) { note = n1[1]; body = body.slice(0, n1.index); }
       try {
+        if(from !== null && from !== rows.length + 1) throw Error(`圈列不連續：預期 R${rows.length+1}，收到 R${from}。請補齊缺少圈列，避免錯誤編號。`);
         const segs = parseFormula(body, L);
         if (!segs.length) throw Error('沒有針目');
         const times = from !== null ? to - from + 1 : 1;
@@ -1085,6 +1130,9 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
       case 'ringCenter': { const c = curChart(); if (c) { const g = ringOf(c); g.cx = .5; g.cy = .5; touch(); drawRing(c); } break; }
       case 'ruler': { const c = (P.charts || []).find(x => x.id === ui.chartId); if (c) { c.ruler = Math.min(0.98, Math.max(0.02, (c.ruler ?? .15) + (+el.dataset.d) * 0.02)); touch(); const r = $('vruler'); if (r) r.style.top = c.ruler * 100 + '%'; } break; }
       case 'symInsert': { const ta = $('interpText'); if (!ta) break; const s0 = ta.selectionStart ?? ta.value.length, before = ta.value.slice(0, s0), after = ta.value.slice(ta.selectionEnd ?? s0); const sep = before && !/[\s,(（:：]$/.test(before) ? ', ' : ''; const ins = sep + el.dataset.code; ta.value = before + ins + after; ta.focus(); ta.setSelectionRange(s0 + ins.length, s0 + ins.length); ui.interpText = ta.value; break; }
+      case 'chartOCR': recognizeChart(false); break;
+      case 'chartAI': recognizeChart(true); break;
+      case 'recognitionUndo': if(ui.recognitionPrevious!==undefined){ui.interpText=ui.recognitionPrevious;ui.interpRes=null;ui.interpOut='';render();} break;
       case 'interpRun': {
         ui.interpText = $('interpText').value; ui.interpCraft = $('interpCraft').value;
         const res = interpret(ui.interpText, ui.interpCraft), Lx = ui.interpCraft === 'knitting' ? KNIT : CROCHET, v = validate({ rows: res.rows }, Lx);
@@ -1093,7 +1141,7 @@ table.rows{width:100%;border-collapse:collapse;font-size:13px}
         render(); break;
       }
       case 'interpAsPart': case 'interpAsProject': {
-        const res = ui.interpRes; if (!res?.rows.length) break;
+        const res = ui.interpRes; if (!res?.rows.length) break; if(res.errs.length){alert('請先修正所有解析錯誤，再加入圈數。');break;}
         const craft = ui.interpCraft, id = uid(), newPart = { id, name: '判讀的織圖', quantity: 1, workStyle: craft === 'knitting' ? 'flat' : 'round', foundationType: craft === 'knitting' ? 'ch' : 'mr', notes: '', rows: res.rows };
         if (act === 'interpAsPart') { if (craftOf(P) !== craft) { alert('目前專案的類型不同，請改用「建立成新專案」。'); break; } P.parts.push(newPart); ui.partId = id; }
         else { const p = { id: uid(), title: '判讀的織圖', category: craft === 'knitting' ? '棒針織物' : '鉤針作品', hookSize: craft === 'knitting' ? '4.0mm (棒針6號)' : '3.0mm (5/0號)', yarnInfo: '', updatedAt: today(), craftType: craft, parts: [newPart] }; projects.unshift(p); ui.projectId = p.id; ui.partId = id; }
