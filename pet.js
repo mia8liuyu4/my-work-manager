@@ -68,7 +68,7 @@
     return { x: r.left - s.left + (r.width-w)/2, y: r.top-s.top+r.height-h, w, h };
   }
   function spawn(cls, text, x, y, life = 1800, style = {}) {
-    if (body.classList.contains('soft-pet') && (cls.startsWith('blush') || cls === 'tear' || cls === 'shy-mark')) return null;
+    if (body.classList.contains('plush-pet') && (cls.startsWith('blush') || cls === 'tear' || cls === 'shy-mark')) return null;
     const e = document.createElement('span');
     e.className = 'fx ' + cls;
     if (text) e.textContent = text;
@@ -134,6 +134,13 @@
   };
   const pick = l => l[Math.floor(Math.random() * l.length)];
 
+  const FULL_POSES = [
+    ['idle','放空','靜靜陪著你。'],['smile','微笑','看到你真開心！'],['laugh','大笑','哈哈哈，今天也要笑一笑！'],['shy','害羞','被你稱讚，好害羞～'],['cry','哭泣','給我一個抱抱，好嗎？'],['surprised','驚訝','哇！發生什麼事了？'],
+    ['angry','生氣','哼！先深呼吸一下。'],['sleep','睡覺','晚安，做個好夢。'],['blink','眨眼','送你一個俏皮的眨眼！'],['wave','揮手','嗨嗨，我在這裡！'],['jump','跳跳','開心到跳起來！'],['dance','跳舞','一起搖擺一下吧！'],
+    ['eat','吃點心','補充一點能量～'],['stretch','伸懶腰','伸個懶腰，重新出發！'],['celebrate','慶祝','太棒了！值得慶祝！'],['curious','好奇','讓我看看，是什麼呢？'],['pet','被摸摸','好舒服，還想再被摸摸～'],['chase-star','追星星','一起追一顆小星星！']
+  ];
+
+  Object.assign(FACES,{surprised:'😮',angry:'😠',sleep:'😴',blink:'😉',wave:'👋',jump:'✨',dance:'🎵',eat:'🍪',stretch:'🌤️',celebrate:'🎉',curious:'🤔',pet:'🥰','chase-star':'⭐'});
   // ---- 播放表情 ----
   function play(expr, opts = {}) {
     clearTimeout(back);
@@ -151,7 +158,8 @@
     back = setTimeout(rest, opts.hold || DUR[expr] || 2400);
   }
   function rest() { stage.dataset.expr = 'rest'; face.textContent = '🙂'; setFace(null); }
-  window.dailyPet = { play };
+  window.dailyPet = { play, poses: FULL_POSES.map(([id,label])=>({id,label})) };
+  window.addEventListener('daily-pet-pose',e=>{const entry=FULL_POSES.find(p=>p[0]===e.detail?.pose);if(!entry)return;bump();play(entry[0],{text:entry[2],hold:e.detail?.hold||4500});});
 
   // ---- 手勢：點、連點、雙擊、長按 ----
   let taps = [], press = null, longDone = false, single = null;
@@ -193,80 +201,79 @@
   window.addEventListener('daily-mascot', () => { preload(); play('smile', { text: '換我陪你囉！' }); });
   later(() => play('smile'), 600);
 })();
-// 暖色公仔插畫：五官位於同一個 SVG 頭部群組，不另疊表情圖片。
+// 立體公仔圖片整合：兔兔使用提供的 18 張姿勢，其餘動物共用六種完整表情。
 (()=>{
-  const body=document.getElementById('petBody'),stage=document.getElementById('petStage'),img=document.getElementById('petImg');
-  if(!body||!stage||!img)return;
-  const css=document.createElement('style');css.textContent=`
-  #petBody.soft-pet{width:220px;height:205px;margin-left:-110px;bottom:9px;isolation:isolate}
-  #petBody.soft-pet #petImg{opacity:0!important;animation:none!important}
-  .soft-pet-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:drop-shadow(0 8px 5px #98775e18)}
-  .sp-character{transform-origin:160px 299px;animation:sp-breathe 3.6s ease-in-out infinite}
-  .sp-head{transform-origin:160px 188px;animation:sp-look 6s ease-in-out infinite}
-  .sp-ear-l{transform-origin:129px 124px;animation:sp-ear 4s ease-in-out infinite}
-  .sp-ear-r{transform-origin:192px 124px;animation:sp-ear 4s ease-in-out infinite reverse}
-  .sp-eye{transform-box:fill-box;transform-origin:center;animation:sp-blink 5s infinite}
-  .sp-cheek{opacity:.6;transition:opacity .3s}.sp-closed,.sp-open-mouth,.sp-tear{display:none}
-  .sp-star{transform-box:fill-box;transform-origin:center;animation:sp-float 4s ease-in-out infinite}.sp-star.b{animation-delay:-2s}
-  #petStage[data-expr=sleepy] .sp-eye,#petStage[data-expr=cry] .sp-eye,#petStage[data-expr=laugh] .sp-eye,#petStage[data-expr=tickle] .sp-eye{display:none}
-  #petStage[data-expr=sleepy] .sp-closed,#petStage[data-expr=cry] .sp-closed,#petStage[data-expr=laugh] .sp-closed,#petStage[data-expr=tickle] .sp-closed{display:inline}
-  #petStage[data-expr=cry] .sp-tear{display:inline;animation:sp-tear 1.6s ease-in infinite}
-  #petStage[data-expr=love] .sp-cheek,#petStage[data-expr=shy] .sp-cheek,#petStage[data-expr=pat] .sp-cheek{opacity:1}
-  #petStage[data-expr=poke] .sp-open-mouth{display:inline}#petStage[data-expr=poke] .sp-smile{display:none}
-  #petStage[data-expr=sleepy] .sp-head{animation:none;transform:rotate(6deg)}
-  #petStage[data-expr=love] .sp-character,#petStage[data-expr=poke] .sp-character{animation:sp-hop .7s ease-in-out 2}
-  #petStage[data-expr=laugh] .sp-character,#petStage[data-expr=tickle] .sp-character{animation:sp-dance .65s ease-in-out 3}
-  #petStage[data-expr=pat] .sp-head,#petStage[data-expr=shy] .sp-head{animation:sp-nuzzle 1s ease-in-out 2}
-  #petStage[data-expr=stress] .sp-character{animation:sp-nuzzle .2s ease-in-out 10}
-  #petBody.soft-pet:focus-visible{outline:3px solid #bd807a;outline-offset:5px;border-radius:32px}
-  @keyframes sp-breathe{50%{transform:translateY(-2px) scale(1.012,1.008)}}
-  @keyframes sp-look{25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
-  @keyframes sp-ear{50%{transform:rotate(-5deg)}}
-  @keyframes sp-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.08)}}
-  @keyframes sp-float{50%{transform:translateY(-7px) rotate(12deg)}}
-  @keyframes sp-hop{40%{transform:translateY(-25px) rotate(-4deg)}70%{transform:scale(1.04,.96)}}
-  @keyframes sp-dance{25%{transform:rotate(-7deg) translateY(-6px)}75%{transform:rotate(7deg) translateY(-6px)}}
-  @keyframes sp-nuzzle{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
-  @keyframes sp-tear{0%{opacity:0;transform:translateY(0)}40%{opacity:.8}100%{opacity:0;transform:translateY(15px)}}
-  @media(prefers-reduced-motion:reduce){#petBody.soft-pet *{animation:none!important;transition:none!important}}
-  @media(max-width:600px){#petBody.soft-pet{width:205px;height:190px;margin-left:-102.5px}}
-  `;document.head.append(css);
-  const art=document.createElementNS('http://www.w3.org/2000/svg','svg');art.setAttribute('viewBox','0 0 320 330');art.setAttribute('aria-hidden','true');art.classList.add('soft-pet-art');
-  let last='';
-  function update(){
-    const id=window.dailyTheme?.mascot?.()?.id||document.documentElement.dataset.mascot||'bunny';if(id===last)return;last=id;
-    const cat=id==='cat',dog=id==='puppy',tiger=id==='tiger',elephant=id==='elephant',bunny=!cat&&!dog&&!tiger&&!elephant;
-    const fur=elephant?['#eee1d9','#c5b4b2']:tiger?['#fbe0ad','#d9ac72']:cat?['#f7e2c8','#d7b48f']:dog?['#eed9ba','#c39b77']:['#fffbf1','#e7d2b6'];
-    let ears='';
-    if(bunny)ears=`<g class="sp-ear-l"><path d="M133 130C92 119 89 20 111 19C139 15 151 99 143 128" fill="url(#sp-fur)" stroke="#bc9e7a" stroke-opacity=".16"/><path d="M123 113C107 95 103 43 113 39C124 36 136 94 133 113" fill="url(#sp-pink)"/></g><g class="sp-ear-r"><path d="M177 128C168 92 184 12 207 20C233 28 211 117 187 132" fill="url(#sp-fur)" stroke="#bc9e7a" stroke-opacity=".16"/><path d="M186 112C183 89 199 38 205 40C216 44 202 98 194 115" fill="url(#sp-pink)"/></g>`;
-    else if(cat)ears=`<path d="M91 143Q72 58 98 70L139 109M182 108L224 70Q249 60 231 145" fill="url(#sp-fur)" stroke="#c5a788" stroke-width="2"/><path d="M96 122L95 86L120 111M202 112L225 86L224 125" fill="url(#sp-pink)"/>`;
-    else if(dog)ears=`<ellipse cx="84" cy="159" rx="29" ry="62" transform="rotate(13 84 159)" fill="#b18a68"/><ellipse cx="236" cy="159" rx="29" ry="62" transform="rotate(-13 236 159)" fill="#b18a68"/><ellipse cx="80" cy="164" rx="13" ry="38" fill="#cda58b"/><ellipse cx="240" cy="164" rx="13" ry="38" fill="#cda58b"/>`;
-    else ears=`<ellipse cx="${elephant?81:101}" cy="${elephant?157:114}" rx="${elephant?43:25}" ry="${elephant?60:28}" fill="url(#sp-fur)"/><ellipse cx="${elephant?239:219}" cy="${elephant?157:114}" rx="${elephant?43:25}" ry="${elephant?60:28}" fill="url(#sp-fur)"/><ellipse cx="${elephant?77:101}" cy="${elephant?157:114}" rx="${elephant?26:14}" ry="${elephant?42:16}" fill="url(#sp-pink)"/><ellipse cx="${elephant?243:219}" cy="${elephant?157:114}" rx="${elephant?26:14}" ry="${elephant?42:16}" fill="url(#sp-pink)"/>`;
-    art.innerHTML=`<defs><radialGradient id="sp-fur" cx="30%" cy="20%" r="85%"><stop stop-color="${fur[0]}"/><stop offset=".65" stop-color="${fur[0]}"/><stop offset="1" stop-color="${fur[1]}"/></radialGradient><radialGradient id="sp-pink"><stop stop-color="#f6d3cb"/><stop offset="1" stop-color="#e4b2aa"/></radialGradient><radialGradient id="sp-blush"><stop stop-color="#e9a49b" stop-opacity=".9"/><stop offset="1" stop-color="#e9a49b" stop-opacity="0"/></radialGradient><radialGradient id="sp-eye"><stop stop-color="#816353"/><stop offset="1" stop-color="#493b33"/></radialGradient><radialGradient id="sp-shadow"><stop stop-color="#98775e" stop-opacity=".18"/><stop offset="1" stop-color="#98775e" stop-opacity="0"/></radialGradient></defs>
-    <ellipse cx="160" cy="308" rx="91" ry="13" fill="url(#sp-shadow)"/>
-    <g fill="#dfbf76"><path class="sp-star" d="M47 105L50 115L61 118L50 122L47 133L43 122L33 118L43 115Z"/><path class="sp-star b" d="M272 195L275 203L283 206L275 209L272 217L269 209L261 206L269 203Z"/></g><circle cx="265" cy="88" r="3" fill="#decbae"/><circle cx="49" cy="247" r="3" fill="#decbae"/>
-    <g class="sp-character">
-    ${cat?'<path d="M211 279C273 286 266 224 249 236" fill="none" stroke="'+fur[1]+'" stroke-width="19" stroke-linecap="round"/>':''}
-    <ellipse cx="160" cy="248" rx="59" ry="57" fill="url(#sp-fur)"/><ellipse cx="160" cy="253" rx="35" ry="39" fill="#fff7e9"/>
-    <ellipse cx="116" cy="295" rx="33" ry="15" fill="url(#sp-fur)"/><ellipse cx="204" cy="295" rx="33" ry="15" fill="url(#sp-fur)"/>
-    <ellipse cx="109" cy="248" rx="16" ry="28" transform="rotate(-20 109 248)" fill="url(#sp-fur)"/><ellipse cx="211" cy="248" rx="16" ry="28" transform="rotate(20 211 248)" fill="url(#sp-fur)"/>
-    <g class="sp-head">${ears}
-    <path d="M160 101C108 100 78 124 78 168C75 213 111 233 160 233C209 233 245 213 242 168C242 124 212 100 160 101Z" fill="url(#sp-fur)" stroke="#b99978" stroke-opacity=".13"/>
-    <ellipse cx="135" cy="126" rx="29" ry="11" fill="#fffdf7" opacity=".22"/>
-    ${dog?'<ellipse cx="160" cy="190" rx="43" ry="26" fill="#fff2de"/>':''}
-    ${tiger?'<g fill="#a77c55"><path d="M153 102L160 130L167 102Z"/><path d="M130 108L141 127L145 105Z"/><path d="M177 105L180 127L192 108Z"/><path d="M80 158L105 167L80 171Z"/><path d="M240 158L215 167L240 171Z"/></g>':''}
-    <g class="sp-eye"><ellipse cx="130" cy="165" rx="7" ry="9" fill="url(#sp-eye)"/><circle cx="128" cy="162" r="2.1" fill="#fff8ec"/></g>
-    <g class="sp-eye"><ellipse cx="190" cy="165" rx="7" ry="9" fill="url(#sp-eye)"/><circle cx="188" cy="162" r="2.1" fill="#fff8ec"/></g>
-    <g class="sp-closed" fill="none" stroke="#826451" stroke-width="3" stroke-linecap="round"><path d="M121 168Q130 160 139 168M181 168Q190 160 199 168"/></g>
-    <g class="sp-cheek"><ellipse cx="109" cy="187" rx="23" ry="13" fill="url(#sp-blush)"/><ellipse cx="211" cy="187" rx="23" ry="13" fill="url(#sp-blush)"/></g>
-    ${elephant?'<path d="M158 184Q147 205 155 230Q165 244 178 227" fill="none" stroke="'+fur[1]+'" stroke-width="18" stroke-linecap="round"/><path d="M158 202L165 202M158 210L166 210" stroke="#aa9691" stroke-width="2"/>':`<path d="M153 183Q160 178 167 183Q166 190 160 191Q154 190 153 183" fill="${dog?'#725a4a':'#d39b94'}"/><path class="sp-smile" d="M160 191L160 197Q153 206 145 199M160 197Q167 206 175 199" fill="none" stroke="#9e7b66" stroke-width="2" stroke-linecap="round"/><ellipse class="sp-open-mouth" cx="160" cy="203" rx="6" ry="8" fill="#a77d72"/>`}
-    ${cat?'<path d="M99 182L76 178M100 191L74 193M221 182L244 178M220 191L246 193" stroke="#b49679" stroke-width="1.5" stroke-linecap="round"/>':''}
-    <g class="sp-tear" fill="#a7d3df"><path d="M123 176Q113 190 123 191Q132 190 123 176"/><path d="M197 176Q187 190 197 191Q207 190 197 176"/></g>
-    </g>
-    <path d="M133 227Q160 237 187 227L183 239Q159 247 137 239Z" fill="#d6aaa0"/><path d="M176 237L187 260L171 255L164 241" fill="#e4bbb0"/>
-    <circle cx="160" cy="240" r="5" fill="#e5c583"/><path d="M159 242L162 242" stroke="#b69659" stroke-width="1"/>
-    </g>`;
-    body.classList.add('soft-pet');if(!art.isConnected)body.append(art);
+  const body=document.getElementById('petBody'),stage=document.getElementById('petStage'),img=document.getElementById('petImg');if(!body||!stage||!img)return;
+  const root=new URL('mascots/plush/',document.currentScript?.src||location.href).href;
+  const style=document.createElement('style');style.textContent=`
+  #petBody.plush-pet{width:220px;height:205px;margin-left:-110px;bottom:8px}
+  #petBody.plush-pet #petImg{opacity:0!important;animation:none!important}
+  .plush-art{position:absolute;left:50%;bottom:0;width:205px;height:205px;margin-left:-102.5px;border-radius:30px;background-color:#fbf5eb;background-repeat:no-repeat;pointer-events:none;transform-origin:50% 88%;animation:plush-idle 3.2s ease-in-out infinite;box-shadow:0 8px 20px #98775e0a}
+  .plush-art.bunny{background-size:600% 300%}
+  .plush-art.atlas{background-size:600% 400%}
+  #petStage[data-expr=jump] .plush-art,#petStage[data-expr=chase-star] .plush-art,#petStage[data-expr=poke] .plush-art,#petStage[data-expr=love] .plush-art{animation:plush-jump .7s ease 2}
+  #petStage[data-expr=dance] .plush-art,#petStage[data-expr=celebrate] .plush-art,#petStage[data-expr=laugh] .plush-art,#petStage[data-expr=tickle] .plush-art{animation:plush-dance .75s ease 3}
+  #petStage[data-expr=wave] .plush-art,#petStage[data-expr=pet] .plush-art,#petStage[data-expr=pat] .plush-art,#petStage[data-expr=shy] .plush-art{animation:plush-pat .8s ease 2}
+  #petStage[data-expr=cry] .plush-art{animation:plush-sob 1s ease-in-out 3}
+  #petStage[data-expr=stress] .plush-art{animation:plush-sob .35s ease-in-out 6}
+  #petBody.plush-pet:focus-visible{outline:3px solid #ba8b79;outline-offset:4px;border-radius:30px}
+  @keyframes plush-idle{50%{transform:translateY(-3px)}}
+  @keyframes plush-jump{40%{transform:translateY(-24px) rotate(-4deg)}75%{transform:scale(1.025,.98)}}
+  @keyframes plush-dance{25%{transform:rotate(-7deg) translateY(-5px)}75%{transform:rotate(7deg) translateY(-5px)}}
+  @keyframes plush-pat{50%{transform:scale(1.025,.975) rotate(2deg)}}
+  @keyframes plush-sob{50%{transform:translateY(2px) rotate(-1.5deg)}}
+  @media(max-width:600px){#petBody.plush-pet{height:190px}.plush-art{width:190px;height:190px;margin-left:-95px}}
+  @media(prefers-reduced-motion:reduce){#petBody.plush-pet .plush-art{animation:none!important}}
+  `;document.head.append(style);
+  const art=document.createElement('span');art.className='plush-art';art.setAttribute('aria-hidden','true');body.append(art);
+  const row={cat:0,puppy:1,tiger:2,elephant:3};
+  const expressions={rest:0,idle:0,smile:0,relief:0,joke:0,pat:2,love:2,shy:2,laugh:1,tickle:1,cry:3,stress:4,poke:4,sleepy:5};
+  const bunny={rest:'idle',idle:'idle',smile:'smile',relief:'celebrate',joke:'curious',pat:'pet',love:'shy',shy:'shy',laugh:'laugh',tickle:'dance',cry:'cry',stress:'angry',poke:'surprised',sleepy:'sleep'};
+  const bunnyCells={idle:0,smile:1,laugh:2,shy:3,cry:4,surprised:5,angry:6,sleep:7,blink:8,wave:9,jump:10,dance:11,eat:12,stretch:13,celebrate:14,curious:15,pet:16,'chase-star':17};
+  const ready=new Map();let version=0,lastKey='',disposed=false;
+  function load(url){if(!ready.has(url))ready.set(url,new Promise((resolve,reject)=>{const i=new Image();i.onload=resolve;i.onerror=()=>{ready.delete(url);reject(Error('圖片載入失敗'))};i.src=url;}));return ready.get(url);}
+  function id(){return window.dailyTheme?.mascot?.()?.id||document.documentElement.dataset.mascot||'bunny';}
+  async function update(){
+    const animal=id(),expr=stage.dataset.expr||'rest',key=animal+':'+expr;if(key===lastKey)return;lastKey=key;const ticket=++version;
+    const isBunny=animal==='bunny',url=root+(isBunny?'bunny-corrected-atlas.png':animal+'-18.png');
+    if(!isBunny && row[animal]===undefined){body.classList.remove('plush-pet');art.hidden=true;return;}
+    try{
+      await load(url);if(ticket!==version||disposed)return;
+      art.className='plush-art bunny';art.style.backgroundImage='url("'+url+'")';
+      const cell=bunnyCells[expr]??bunnyCells[bunny[expr]||'idle'];
+      art.style.backgroundPosition=`${cell%6*20}% ${Math.floor(cell/6)*50}%`;
+      art.dataset.pose=Object.keys(bunnyCells).find(k=>bunnyCells[k]===cell);
+      art.dataset.animal=animal;
+      body.classList.add('plush-pet');art.hidden=false;
+    }catch{if(ticket===version){body.classList.remove('plush-pet');art.hidden=true;lastKey='';}}
   }
+  new MutationObserver(update).observe(stage,{attributes:true,attributeFilter:['data-expr']});
   window.addEventListener('daily-mascot',update);update();
+  // Use supplied bunny blink frame without replacing an active emotion or racing a newer action.
+  const blink=setInterval(async()=>{
+    if(document.hidden||stage.dataset.expr!=='rest')return;
+    const ticket=version,animal=id(),url=root+(animal==='bunny'?'bunny-corrected-atlas.png':animal+'-18.png');try{await load(url);if(ticket!==version)return;art.style.backgroundImage='url("'+url+'")';art.style.backgroundPosition='40% 50%';setTimeout(()=>{if(ticket===version){lastKey='';update();}},170);}catch{}
+  },5200);
+  window.addEventListener('pagehide',e=>{if(!e.persisted){disposed=true;clearInterval(blink);}});
+  window.addEventListener('pageshow',()=>{disposed=false;lastKey='';update();});
+})();
+
+// 全部姿勢公開選單：五種動物使用同一組18個選項。
+(()=>{
+  const stage=document.getElementById('petStage'),api=window.dailyPet;if(!stage||!api?.poses)return;
+  const panel=document.createElement('section');panel.className='pet-pose-panel';panel.setAttribute('aria-label','全部表情與動作');
+  const style=document.createElement('style');style.textContent=`.pet-pose-panel{margin-top:16px;padding:15px;border:1px solid var(--line,#eadccd);border-radius:18px;background:var(--surface,#fffaf2);color:var(--ink,#876d59)}.pet-pose-panel h3{font-size:14px;margin:0 0 10px}.pet-pose-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.pet-pose-panel button{font:inherit;font-size:12px;min-height:40px;border:1px solid var(--line,#eadccd);border-radius:12px;background:var(--surface2,#fff5e8);color:inherit;cursor:pointer;padding:7px 4px}.pet-pose-panel button[aria-pressed=true]{background:#c5947e;color:#fff;border-color:#c5947e}.pet-pose-tools{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.pet-pose-tools button{padding:8px 12px}.pet-pose-status{min-height:20px;font-size:12px;line-height:1.6;color:var(--muted,#9f8270);margin:8px 0 0}.pet-pose-panel button:focus-visible{outline:3px solid #bc8875;outline-offset:2px}`;document.head.append(style);
+  panel.innerHTML='<h3>全部表情與動作 · 18 種</h3><div class="pet-pose-grid"></div><div class="pet-pose-tools"><button type="button" data-pose-tool="cycle">輪播全部</button><button type="button" data-pose-tool="random">隨機一個</button><button type="button" data-pose-tool="rest">回到休息</button></div><p class="pet-pose-status" role="status" aria-live="polite">每一種都可以直接點選。</p>';
+  const grid=panel.querySelector('.pet-pose-grid'),status=panel.querySelector('.pet-pose-status'),cycle=panel.querySelector('[data-pose-tool="cycle"]');
+  for(const pose of api.poses){const button=document.createElement('button');button.type='button';button.dataset.pose=pose.id;button.textContent=pose.label;button.setAttribute('aria-pressed','false');grid.append(button);}
+  const existing=stage.parentElement.querySelector('.pet-actions');if(existing)existing.after(panel);else stage.after(panel);
+  let timer=null,index=0;
+  function stop(){clearTimeout(timer);timer=null;cycle.textContent='輪播全部';cycle.setAttribute('aria-pressed','false');}
+  function choose(pose,cycling=false){if(!cycling)stop();window.dispatchEvent(new CustomEvent('daily-pet-pose',{detail:{pose,hold:cycling?2800:4500}}));}
+  function step(){if(document.hidden){stop();return;}const pose=api.poses[index++%api.poses.length];choose(pose.id,true);status.textContent='輪播中：'+pose.label+'（'+((index-1)%18+1)+'/18）';timer=setTimeout(step,2400);}
+  panel.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.pose){choose(b.dataset.pose);return;}if(b.dataset.poseTool==='cycle'){if(timer){stop();status.textContent='輪播已停止。';}else{index=0;cycle.textContent='停止輪播';cycle.setAttribute('aria-pressed','true');step();}}else if(b.dataset.poseTool==='random'){choose(api.poses[Math.floor(Math.random()*api.poses.length)].id);}else{stop();api.play('idle',{text:'我在這裡陪你。',hold:1000});}});
+  function paint(){const expr=stage.dataset.expr;panel.querySelectorAll('[data-pose]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pose===expr)));if(!timer){const p=api.poses.find(p=>p.id===expr);status.textContent=p?'目前：'+p.label:'每一種都可以直接點選。';}}
+  new MutationObserver(paint).observe(stage,{attributes:true,attributeFilter:['data-expr']});
+  stage.addEventListener('pointerdown',stop);document.addEventListener('click',e=>{if(e.target.closest('[data-pet]'))stop();},true);
+  window.addEventListener('daily-mascot',()=>{stop();paint();});document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});window.addEventListener('pagehide',stop);paint();
 })();
