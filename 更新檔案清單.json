@@ -1,0 +1,77 @@
+[
+  {
+    "file": "pet-weather.js",
+    "status": "add",
+    "sha256": "789d12011887e8abef0b2fd97988e62c7c896a8315dfb1468e79b81dabbce30b"
+  },
+  {
+    "file": "home-extras.js",
+    "status": "replace",
+    "sha256": "625fce3789f2b582b47c0af11895e0343c3b0f90f15309eda1cbae0c73d0b8fe"
+  },
+  {
+    "file": "pet-weather.css",
+    "status": "add",
+    "sha256": "17f6420c2a2ef0d251960d4cab077c0afeb4bbd3ab4798606f12a429671a5878"
+  },
+  {
+    "file": "pet.js",
+    "status": "replace",
+    "sha256": "2404bce55c7eb8774437108b10bdc6dec675441232e160c935a42730126dccf2"
+  },
+  {
+    "file": "relax.js",
+    "status": "replace",
+    "sha256": "d5e894a63e45493a7c7215547df7a6d0ccca1192164bc6e35d68814a2b0e4e22"
+  },
+  {
+    "file": "index.html",
+    "status": "replace",
+    "sha256": "dafd0d0749b26999d777a0abb5f992a8365a896413b0af95b936bd6fb2ca6cf3"
+  },
+  {
+    "file": "preview-home.html",
+    "status": "add",
+    "sha256": "4cbb1abd377d87d1bbfc30030fc535f04b287eae6f8de7ca792c92d60a6e424c"
+  },
+  {
+    "file": "更新說明.txt",
+    "status": "add",
+    "sha256": "0f72a067064e08ba5bc5920183508aaffd6c630d17898cc10aa97ab311d9ce9e"
+  },
+  {
+    "file": "preview-full.html",
+    "status": "add",
+    "sha256": "9f0873426cacd59d7e47b04f098e630d898a3f3087c66a523cea532c96f1559e"
+  },
+  {
+    "file": "relax.html",
+    "status": "replace",
+    "sha256": "1dcfd3b0acd562b4a825b1d3474777a9abcce2c12fae9718cd51f0d93acfff6d"
+  },
+  {
+    "file": "mascots/plush/puppy-18.png",
+    "status": "replace",
+    "sha256": "7f1247d507ded60be6e63e5622bcb2d868ccc8254c2c071c234f1d332a0f2d1e"
+  },
+  {
+    "file": "mascots/plush/elephant-18.png",
+    "status": "replace",
+    "sha256": "31f1dbc5d3936f78f3ae5640cee288a7ca50bf87fc18e575b0858253122e30a6"
+  },
+  {
+    "file": "mascots/plush/cat-18.png",
+    "status": "replace",
+    "sha256": "48f3566378e90fd3957e6748590c674d746551027ecff552974acec999341620"
+  },
+  {
+    "file": "mascots/plush/tiger-18.png",
+    "status": "replace",
+    "sha256": "8e325997b240c9f5e2854f81eaa37704a1a27fbc339e22fd4a663f7cafa808f6"
+  },
+  {
+    "file": "mascots/plush/bunny-corrected-atlas.png",
+    "status": "replace",
+    "sha256": "f168a880fb95cb1b7dbc01fb596cb8e3d0d9886942aedbdef2e38699f83e1786"
+  }
+]

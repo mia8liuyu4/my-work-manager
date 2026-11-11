@@ -26,11 +26,7 @@
     const key = Object.keys(exprList).find(k => names.includes(k.toLowerCase()));
     return key ? (exprList[key] || []) : [];
   }
-  function preload() { exprFor().forEach(e => { const i = new Image(); i.src = `mascots/${mascotId()}-x-${e}.webp`; }); }
-  fetch('mascots/expressions.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : {})).then(j => {
-    exprList = j || {}; preload();
-    if (!exprFor().length) console.warn('[pet] expressions.json 找不到「' + mascotId() + '」的表情清單，會一直使用預設圖。');
-  }).catch(() => {});
+  function preload() {}
   // 表情圖讀不出來時，退回預設姿勢，不要顯示破圖
   img.addEventListener('error', () => {
     const base = baseSrc();
@@ -146,6 +142,7 @@
     clearTimeout(back);
     if (!opts.keepFx) clearFx();
     lastAct = Date.now();
+    if(window.dailyPet)window.dailyPet.lastAction=lastAct;
     stage.dataset.expr = expr;
     setFace(expr === 'stress' ? 'stress' : expr);
     body.classList.remove('go'); void body.offsetWidth; body.classList.add('go');
@@ -240,7 +237,8 @@
     try{
       await load(url);if(ticket!==version||disposed)return;
       art.className='plush-art bunny';art.style.backgroundImage='url("'+url+'")';
-      const cell=bunnyCells[expr]??bunnyCells[bunny[expr]||'idle'];
+      const displayExpr=expr==='rest'?(window.dailyWeather?.restPose||'idle'):expr;
+      const cell=bunnyCells[displayExpr]??bunnyCells[bunny[displayExpr]||'idle'];
       art.style.backgroundPosition=`${cell%6*20}% ${Math.floor(cell/6)*50}%`;
       art.dataset.pose=Object.keys(bunnyCells).find(k=>bunnyCells[k]===cell);
       art.dataset.animal=animal;
@@ -248,10 +246,11 @@
     }catch{if(ticket===version){body.classList.remove('plush-pet');art.hidden=true;lastKey='';}}
   }
   new MutationObserver(update).observe(stage,{attributes:true,attributeFilter:['data-expr']});
-  window.addEventListener('daily-mascot',update);update();
+  window.addEventListener('daily-mascot',update);
+  window.addEventListener('daily-weather',()=>{lastKey='';update();});update();
   // Use supplied bunny blink frame without replacing an active emotion or racing a newer action.
   const blink=setInterval(async()=>{
-    if(document.hidden||stage.dataset.expr!=='rest')return;
+    if(document.hidden||stage.dataset.expr!=='rest'||window.dailyWeather?.restPose==='sleep')return;
     const ticket=version,animal=id(),url=root+(animal==='bunny'?'bunny-corrected-atlas.png':animal+'-18.png');try{await load(url);if(ticket!==version)return;art.style.backgroundImage='url("'+url+'")';art.style.backgroundPosition='40% 50%';setTimeout(()=>{if(ticket===version){lastKey='';update();}},170);}catch{}
   },5200);
   window.addEventListener('pagehide',e=>{if(!e.persisted){disposed=true;clearInterval(blink);}});
@@ -260,7 +259,7 @@
 
 // 全部姿勢公開選單：五種動物使用同一組18個選項。
 (()=>{
-  const stage=document.getElementById('petStage'),api=window.dailyPet;if(!stage||!api?.poses)return;
+  const stage=document.getElementById('petStage'),api=window.dailyPet;if(!stage||!api?.poses||stage.dataset.petMode!=='full')return;
   const panel=document.createElement('section');panel.className='pet-pose-panel';panel.setAttribute('aria-label','全部表情與動作');
   const style=document.createElement('style');style.textContent=`.pet-pose-panel{margin-top:16px;padding:15px;border:1px solid var(--line,#eadccd);border-radius:18px;background:var(--surface,#fffaf2);color:var(--ink,#876d59)}.pet-pose-panel h3{font-size:14px;margin:0 0 10px}.pet-pose-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.pet-pose-panel button{font:inherit;font-size:12px;min-height:40px;border:1px solid var(--line,#eadccd);border-radius:12px;background:var(--surface2,#fff5e8);color:inherit;cursor:pointer;padding:7px 4px}.pet-pose-panel button[aria-pressed=true]{background:#c5947e;color:#fff;border-color:#c5947e}.pet-pose-tools{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.pet-pose-tools button{padding:8px 12px}.pet-pose-status{min-height:20px;font-size:12px;line-height:1.6;color:var(--muted,#9f8270);margin:8px 0 0}.pet-pose-panel button:focus-visible{outline:3px solid #bc8875;outline-offset:2px}`;document.head.append(style);
   panel.innerHTML='<h3>全部表情與動作 · 18 種</h3><div class="pet-pose-grid"></div><div class="pet-pose-tools"><button type="button" data-pose-tool="cycle">輪播全部</button><button type="button" data-pose-tool="random">隨機一個</button><button type="button" data-pose-tool="rest">回到休息</button></div><p class="pet-pose-status" role="status" aria-live="polite">每一種都可以直接點選。</p>';
@@ -274,6 +273,7 @@
   panel.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.pose){choose(b.dataset.pose);return;}if(b.dataset.poseTool==='cycle'){if(timer){stop();status.textContent='輪播已停止。';}else{index=0;cycle.textContent='停止輪播';cycle.setAttribute('aria-pressed','true');step();}}else if(b.dataset.poseTool==='random'){choose(api.poses[Math.floor(Math.random()*api.poses.length)].id);}else{stop();api.play('idle',{text:'我在這裡陪你。',hold:1000});}});
   function paint(){const expr=stage.dataset.expr;panel.querySelectorAll('[data-pose]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pose===expr)));if(!timer){const p=api.poses.find(p=>p.id===expr);status.textContent=p?'目前：'+p.label:'每一種都可以直接點選。';}}
   new MutationObserver(paint).observe(stage,{attributes:true,attributeFilter:['data-expr']});
+  window.addEventListener('relax-game',e=>{if(e.detail!=='pet')stop();});
   stage.addEventListener('pointerdown',stop);document.addEventListener('click',e=>{if(e.target.closest('[data-pet]'))stop();},true);
   window.addEventListener('daily-mascot',()=>{stop();paint();});document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});window.addEventListener('pagehide',stop);paint();
 })();

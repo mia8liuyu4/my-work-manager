@@ -1,0 +1,27 @@
+/* 與新版立體公仔圖片共用的天氣場景與互動版型 */
+.pet-more-link{font-size:12px;text-align:center;margin:10px 0;color:var(--muted)}
+.pet-weather-settings{margin:10px 0 14px;font-size:12px;color:var(--muted);line-height:1.7}
+.pet-weather-settings summary{cursor:pointer;min-height:32px;padding:5px 8px;border-radius:10px;background:var(--surface2,#f7eedf)}
+.pet-weather-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.pet-weather-tools button,.pet-weather-tools select,.pet-animal-picker select{font:inherit;font-size:12px;min-height:38px;padding:6px 9px;border:1px solid var(--line,#e7d9c7);border-radius:10px;background:var(--surface,#fffaf2);color:var(--ink,#876d59)}
+.pet-weather-source{font-size:11px;opacity:.85}.pet-weather-source a{text-decoration:underline}
+.pet-weather-prop{position:absolute;pointer-events:none;z-index:4}
+.pet-weather-umbrella{width:174px;top:-33px;left:50%;margin-left:-57px;transform:rotate(-8deg)}
+.pet-weather-blanket{width:113px;bottom:12px;left:50%;margin-left:-56px}
+.pet-weather-fan{width:49px;bottom:9px;right:-7px}.pet-weather-spare{font-size:43px;color:#ba7c80;right:-5px;bottom:8px}
+.pet-weather-prop svg{display:block;width:100%}.fan-blades{transform-origin:35px 33px;animation:pet-fan-spin 1.1s linear infinite}
+@keyframes pet-fan-spin{to{transform:rotate(360deg)}}
+.pet-weather-lightning{position:absolute;right:20px;top:80px;font-size:44px;color:#f6d87a;opacity:.8}
+.pet-weather-wind{position:absolute;left:10px;top:115px;color:#a4b7bf;font-size:36px;animation:pet-wind 3s ease-in-out infinite}
+@keyframes pet-wind{50%{transform:translateX(20px);opacity:.2}}
+.pet-stage[data-night=true] .plush-art{filter:brightness(.86) saturate(.9)}
+/* Hide bulky weather props during active poses; restore them at rest. */
+.pet-stage:not([data-expr=rest]):not([data-expr=idle]):not([data-expr=smile]) .pet-weather-blanket{opacity:0}
+.pet-playground{padding:22px}.pet-playground h2{font-size:18px;margin:0}.pet-playground .pet-zone{max-width:650px;margin:auto}
+.pet-playground .pet-stage{height:330px}.pet-playground .pet-pose-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+.pet-playground .pet-pose-panel{margin-top:12px}.pet-playground .pet-bubble{max-width:520px}
+.pet-playground .pet-actions{display:flex;justify-content:center;gap:6px}
+.pet-playground .pet-actions button{font:inherit;font-size:12px;min-height:38px;padding:6px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--ink)}
+#relaxPet.btn{font:inherit;font-size:13px;padding:10px 15px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)}
+@media(max-width:640px){.pet-playground{padding:14px}.pet-playground .pet-pose-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.pet-playground .pet-stage{height:305px}.pet-weather-tools{align-items:stretch}}
+@media(prefers-reduced-motion:reduce){.wx-layer *,.pet-weather-prop *,.pet-weather-wind{animation:none!important}.wx-flash{display:none!important}}

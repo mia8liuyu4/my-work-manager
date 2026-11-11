@@ -164,7 +164,7 @@
   $('soundBtn').onclick = () => { sound = !sound; store(); syncToggles(); };
   $('buzzBtn').onclick = () => { buzz = !buzz; store(); syncToggles(); };
   if (!navigator.vibrate) $('buzzBtn').hidden = true;
-  $('relaxPet').onclick = () => talk(pick(['戳我也會啵一聲喔（才不會）', '慢慢戳，不用急～', '想到什麼煩惱，就寫進泡泡裡吧。', '{pet}陪你一起放鬆。']), '🥰');
+  $('relaxPet').onclick = () => show('pet', true);
 
   let resizeT;
   window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (built && round === 0 && sheet.offsetParent) build(); }, 300); });
